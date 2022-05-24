@@ -16,7 +16,7 @@ Add this library as a dependency to the pom of the service under test:
     <dependency>
         <groupId>dev.lydtech</groupId>
         <artifactId>component-test-framework</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <scope>test</scope>
     </dependency>
 ```
