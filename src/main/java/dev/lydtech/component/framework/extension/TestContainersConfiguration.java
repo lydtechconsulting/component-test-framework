@@ -60,7 +60,17 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_DEBEZIUM_ENABLED = "false";
     private static final String DEFAULT_DEBEZIUM_IMAGE_TAG = "1.7.0.Final";
     private static final String DEFAULT_DEBEZIUM_PORT = "8083";
-    private static final String DEFAULT_DEBEZIUM_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED = "false";
+
+    /**
+     * Wiremock default configuration.
+     */
+
+    private static final String DEFAULT_WIREMOCK_ENABLED = "false";
+    private static final String DEFAULT_WIREMOCK_IMAGE_TAG = "2.32.0";
+    private static final String DEFAULT_WIREMOCK_DEFAULT_PORT = "8080";
+    private static final String DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED = "false";
+
 
     /**
      * The runtime configuration.
@@ -96,7 +106,12 @@ public final class TestContainersConfiguration {
     public static final boolean DEBEZIUM_ENABLED = Boolean.valueOf(System.getProperty("debezium.enabled", DEFAULT_DEBEZIUM_ENABLED));
     public static final String DEBEZIUM_IMAGE_TAG = System.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
     public static final int DEBEZIUM_PORT = Integer.parseInt(System.getProperty("debezium.port", DEFAULT_DEBEZIUM_PORT));
-    public static final boolean DEBEZIUM_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("debezium.container.logging.enabled", DEFAULT_DEBEZIUM_LOGGING_ENABLED));
+    public static final boolean DEBEZIUM_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("debezium.container.logging.enabled", DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED));
+
+    public static final boolean WIREMOCK_ENABLED = Boolean.valueOf(System.getProperty("wiremock.enabled", DEFAULT_WIREMOCK_ENABLED));
+    public static final String WIREMOCK_IMAGE_TAG = System.getProperty("wiremock.image.tag", DEFAULT_WIREMOCK_IMAGE_TAG);
+    public static final int WIREMOCK_PORT = Integer.parseInt(System.getProperty("wiremock.port", DEFAULT_WIREMOCK_DEFAULT_PORT));
+    public static final boolean WIREMOCK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("wiremock.container.logging.enabled", DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED));
 
     private static List<String> parseTopics() {
         String topicNamesPropertyValue = System.getProperty("kafka.topics", null);
@@ -150,6 +165,13 @@ public final class TestContainersConfiguration {
             log.info("debezium.image.tag: " + DEBEZIUM_IMAGE_TAG);
             log.info("debezium.port: " + DEBEZIUM_PORT);
             log.info("debezium.container.logging.enabled: " + DEBEZIUM_CONTAINER_LOGGING_ENABLED);
+        }
+
+        log.info("wiremock.enabled: " + WIREMOCK_ENABLED);
+        if(WIREMOCK_ENABLED) {
+            log.info("wiremock.image.tag: " + WIREMOCK_IMAGE_TAG);
+            log.info("wiremock.port: " + WIREMOCK_PORT);
+            log.info("wiremock.container.logging.enabled: " + WIREMOCK_CONTAINER_LOGGING_ENABLED);
         }
     }
 }

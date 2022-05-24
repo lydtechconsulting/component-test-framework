@@ -16,7 +16,7 @@ Add this library as a dependency to the pom of the service under test:
     <dependency>
         <groupId>dev.lydtech</groupId>
         <artifactId>component-test-framework</artifactId>
-        <version>1.0.2</version>
+        <version>1.1.0</version>
         <scope>test</scope>
     </dependency>
 ```
@@ -54,10 +54,14 @@ https://github.com/lydtechconsulting/ctf-example-service
 |kafka.topics|Comma delimited list of topics to create.  Often topics are auto-created, but for Kafka Streams for example they must be created upfront.|
 |kafka.topic.partition.count|The number of partitions for topics that are created.|5|
 |kafka.container.logging.enabled|Whether to output the Kafka Docker logs to the console.|false|
-|debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` to be true.|false|
+|debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.|false|
 |debezium.image.tag|The image tag of the Debezium Docker container to use.|1.7.0.Final|
 |debezium.port|The port of the Debezium Docker container.|8083|
 |debezium.container.logging.enabled|Whether to output the Debezium Docker logs to the console.|false|
+|wiremock.enabled|Whether a Docker Wiremock container should be started.|false|
+|wiremock.image.tag|The image tag of the Wiremock Docker container to use.|2.32.0|
+|wiremock.port|The port of the Wiremock Docker container.|8080|
+|wiremock.container.logging.enabled|Whether to output the Wiremock Docker logs to the console.|false|
 
 The configuration is logged at test execution time at INFO level.  Enable in `logback-test.xml` with:
 ```
@@ -132,6 +136,10 @@ The following shows how to override the configurable properties:
                             <debezium.image.tag>1.7.0.Final</debezium.image.tag>
                             <debezium.port>8083</debezium.port>
                             <debezium.container.logging.enabled>false</debezium.container.logging.enabled>
+                            <wiremock.enabled>true</wiremock.enabled>
+                            <wiremock.image.tag>2.32.0</wiremock.image.tag>
+                            <wiremock.port>8080</wiremock.port>
+                            <wiremock.container.logging.enabled>false</wiremock.container.logging.enabled>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
@@ -322,6 +330,48 @@ Note that if the application code is changed then it must be rebuilt, and the se
 A JSON mapping utility is provided to allow marshalling of PoJOs to/from JSON Strings.  This is a convenient feature for preparing event payloads to be sent in the JSON format to Kafka.
 ```
 dev.lydtech.component.framework.mapper
+```
+
+# Wiremock
+
+The Wiremock container requires a `health.json` file to be provided in the `src/test/resources/wiremock/` directory with the following contents:
+```
+{
+  "request": {
+    "method": "GET",
+    "url": "/health"
+  },
+  "response": {
+    "status": 204
+  }
+}
+```
+
+This is used by the component-test-framework to determine whether the Wiremock container has successfully started.
+
+All other mapping files placed in this same directory will also be loaded.
+
+The Wiremock client provides various methods for querying the admin API.  The API is available here:
+https://wiremock.org/docs/api
+
+An example:
+```
+import dev.lydtech.component.framework.client.wiremock.WiremockClient;
+
+RequestCriteria request = RequestCriteria.builder()
+        .method("GET")
+        .url("/api/thirdparty/"+key)
+        .build();
+Response response = WiremockClient.getInstance().findMatchingRequests(request);
+```
+
+Other mapping files can be loaded by a component test with the following call:
+```
+WiremockClient.getInstance().postMappingFile("thirdParty/retry_behaviour_success.json");
+```
+This requires the corresponding mapping file to be located under `src/test/resources/`.  e.g. in this case:
+```
+src/test/resources/thirdParty/retry_behaviour_success.json
 ```
 
 # Docker Commands

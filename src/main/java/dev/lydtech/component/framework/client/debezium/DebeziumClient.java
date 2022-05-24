@@ -14,23 +14,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class DebeziumClient {
 
-    private static final String CONNECTOR_PATH = "/connectors";
-    private static RequestSpecification requestSpec;
     private static DebeziumClient instance;
+    private static final String CONNECTOR_PATH = "/connectors";
+    private RequestSpecification requestSpec;
 
-    private DebeziumClient(){}
+    private DebeziumClient(){
+        String debeziumHost = Optional.ofNullable(System.getProperty("debezium.host"))
+                .orElse("localhost");
+        String debeziumPort = Optional.ofNullable(System.getProperty("debezium.mapped.port"))
+                .orElseThrow(() -> new RuntimeException("debezium.mapped.port property not found"));
+        String baseUrl = "http://" + debeziumHost + ":" + debeziumPort;
+        log.info("Debezium base URL is: " + baseUrl);
+        requestSpec = new RequestSpecBuilder()
+                .setBaseUri(baseUrl)
+                .build();
+    }
 
     public synchronized static DebeziumClient getInstance() {
         if(instance==null) {
-            String debeziumHost = Optional.ofNullable(System.getProperty("debezium.host"))
-                    .orElse("localhost");
-            String debeziumPort = Optional.ofNullable(System.getProperty("debezium.mapped.port"))
-                    .orElseThrow(() -> new RuntimeException("debezium.mapped.port property not found"));
-            String baseUrl = "http://" + debeziumHost + ":" + debeziumPort;
-            log.info("Debezium base URL is: " + baseUrl);
-            requestSpec = new RequestSpecBuilder()
-                    .setBaseUri(baseUrl)
-                    .build();
             instance = new DebeziumClient();
         }
         return instance;

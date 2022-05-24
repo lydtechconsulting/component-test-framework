@@ -27,6 +27,8 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
 import static java.util.Collections.singletonList;
 
 @Slf4j
@@ -93,6 +95,9 @@ public final class DockerManager {
 
         String debeziumContainerName = CONTAINER_NAME_PREFIX + "-debezium";
         mapPorts("Debezium", DEBEZIUM_ENABLED, listContainersCmd, debeziumContainerName, DEBEZIUM_PORT, "debezium");
+
+        String wiremockContainerName = CONTAINER_NAME_PREFIX + "-wiremock";
+        mapPorts("Wiremock", WIREMOCK_ENABLED, listContainersCmd, wiremockContainerName, WIREMOCK_PORT, "wiremock");
 
         log.info("Docker ports captured.");
     }

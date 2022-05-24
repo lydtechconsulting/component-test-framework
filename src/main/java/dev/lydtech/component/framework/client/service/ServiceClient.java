@@ -10,16 +10,17 @@ public final class ServiceClient {
     private static String baseUrl;
     private static ServiceClient instance;
 
-    private ServiceClient(){}
+    private ServiceClient(){
+        String serviceHost = Optional.ofNullable(System.getProperty("service.host"))
+                .orElse("localhost");
+        String servicePort = Optional.ofNullable(System.getProperty("service.mapped.port"))
+                .orElseThrow(() -> new RuntimeException("service.mapped.port property not found"));
+        baseUrl = "http://" + serviceHost + ":" + servicePort;
+        log.info("Service base URL is: " + baseUrl);
+    }
 
     public synchronized static ServiceClient getInstance() {
         if(instance==null) {
-            String serviceHost = Optional.ofNullable(System.getProperty("service.host"))
-                    .orElse("localhost");
-            String servicePort = Optional.ofNullable(System.getProperty("service.mapped.port"))
-                    .orElseThrow(() -> new RuntimeException("service.mapped.port property not found"));
-            baseUrl = "http://" + serviceHost + ":" + servicePort;
-            log.info("Service base URL is: " + baseUrl);
             instance = new ServiceClient();
         }
         return instance;

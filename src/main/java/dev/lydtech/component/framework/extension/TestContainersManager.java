@@ -52,6 +52,10 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_NAME;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_STARTUP_TIMEOUT_SECONDS;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
 
 @Slf4j
 public final class TestContainersManager {
@@ -61,6 +65,7 @@ public final class TestContainersManager {
     private GenericContainer postgresContainer;
     private KafkaContainer kafkaContainer;
     private DebeziumContainer debeziumContainer;
+    private GenericContainer wiremockContainer;
 
     private TestContainersManager(){}
 
@@ -79,16 +84,19 @@ public final class TestContainersManager {
         }
         network = Network.newNetwork();
         if (POSTGRES_ENABLED) {
-            this.postgresContainer = createPostgresContainer();
+            postgresContainer = createPostgresContainer();
         }
         if (KAFKA_ENABLED) {
-            this.kafkaContainer = createKafkaContainer();
+            kafkaContainer = createKafkaContainer();
         }
         if (DEBEZIUM_ENABLED) {
             if(!KAFKA_ENABLED || !POSTGRES_ENABLED) {
                 throw new RuntimeException("Kafka and Postgres must be enabled in order to use Debezium.");
             }
-            this.debeziumContainer = createDebeziumContainer();
+            debeziumContainer = createDebeziumContainer();
+        }
+        if (WIREMOCK_ENABLED) {
+            wiremockContainer = createWiremockContainer();
         }
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT+1)
                 .mapToObj(this::createServiceContainer)
@@ -106,6 +114,9 @@ public final class TestContainersManager {
             }
             if(DEBEZIUM_ENABLED) {
                 debeziumContainer.start();
+            }
+            if(WIREMOCK_ENABLED) {
+                wiremockContainer.start();
             }
             serviceContainers.stream().forEach(container -> container.start());
         } catch (Exception e) {
@@ -186,6 +197,23 @@ public final class TestContainersManager {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 });
         if(DEBEZIUM_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    private GenericContainer createWiremockContainer() {
+        String containerName = "wiremock";
+        GenericContainer container = new GenericContainer<>("wiremock/wiremock:" + WIREMOCK_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                })
+                .withClasspathResourceMapping("/wiremock", "/home/wiremock/mappings", BindMode.READ_WRITE)
+                .withExposedPorts(WIREMOCK_PORT)
+                .waitingFor(Wait.forHttp("/health").forStatusCode(204));
+        if(WIREMOCK_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.0] - 2022-05-24
+### Added
+- Supports Wiremock.
+
 ## [1.0.2] - 2022-05-24
 ### Changed
 - Documentation.

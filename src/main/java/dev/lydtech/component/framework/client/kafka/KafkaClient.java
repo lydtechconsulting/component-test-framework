@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +21,8 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.awaitility.Awaitility;
@@ -29,16 +32,17 @@ public final class KafkaClient {
     private static String brokerUrl;
     private static KafkaClient instance;
 
-    private KafkaClient(){}
+    private KafkaClient(){
+        String kafkaHost = Optional.ofNullable(System.getProperty("kafka.host"))
+                .orElse("localhost");
+        String kafkaPort = Optional.ofNullable(System.getProperty("kafka.mapped.port"))
+                .orElseThrow(() -> new RuntimeException("kafka.mapped.port property not found"));
+        brokerUrl = "http://" + kafkaHost + ":" + kafkaPort;
+        log.info("Kafka broker URL is: " + brokerUrl);
+    }
 
     public synchronized static KafkaClient getInstance() {
         if(instance==null) {
-            String kafkaHost = Optional.ofNullable(System.getProperty("kafka.host"))
-                    .orElse("localhost");
-            String kafkaPort = Optional.ofNullable(System.getProperty("kafka.mapped.port"))
-                    .orElseThrow(() -> new RuntimeException("kafka.mapped.port property not found"));
-            brokerUrl = "http://" + kafkaHost + ":" + kafkaPort;
-            log.info("Kafka broker URL is: " + brokerUrl);
             instance = new KafkaClient();
         }
         return instance;
@@ -66,7 +70,15 @@ public final class KafkaClient {
     }
 
     public void sendMessage(String topic, String key, String payload) throws Exception {
-        final ProducerRecord<Long, String> record = new ProducerRecord(topic, null, key, payload);
+        sendMessage(topic, key, payload, null);
+    }
+
+    public void sendMessage(String topic, String key, String payload, Map<String, String> headers) throws Exception {
+        final List<Header> recordHeaders = new ArrayList<>();
+        if(headers!=null && headers.size()>0) {
+            headers.forEach((headerKey, headerValue) -> recordHeaders.add(new RecordHeader(headerKey, headerValue != null ? headerValue.getBytes() : null)));
+        }
+        final ProducerRecord<Long, String> record = new ProducerRecord(topic, null, key, payload, recordHeaders);
         final RecordMetadata metadata = createProducer().send(record).get();
         log.debug(String.format("Sent record(key=%s value=%s) meta(topic=%s, partition=%d, offset=%d)",
                 record.key(), record.value(), metadata.topic(), metadata.partition(), metadata.offset()));
