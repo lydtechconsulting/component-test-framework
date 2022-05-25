@@ -16,7 +16,7 @@ Add this library as a dependency to the pom of the service under test:
     <dependency>
         <groupId>dev.lydtech</groupId>
         <artifactId>component-test-framework</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <scope>test</scope>
     </dependency>
 ```
@@ -338,7 +338,7 @@ Note that if the application code is changed then it must be rebuilt, and the se
 
 A JSON mapping utility is provided to allow marshalling of PoJOs to/from JSON Strings.  This is a convenient feature for preparing event payloads to be sent in the JSON format to Kafka.
 ```
-dev.lydtech.component.framework.mapper
+dev.lydtech.component.framework.mapper.JsonMapper
 ```
 
 # Wiremock
