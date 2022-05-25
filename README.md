@@ -62,6 +62,12 @@ https://github.com/lydtechconsulting/ctf-example-service
 |wiremock.image.tag|The image tag of the Wiremock Docker container to use.|2.32.0|
 |wiremock.port|The port of the Wiremock Docker container.|8080|
 |wiremock.container.logging.enabled|Whether to output the Wiremock Docker logs to the console.|false|
+|localstack.enabled|Whether a Docker Localstack (AWS) container should be started.|false|
+|localstack.image.tag|The image tag of the Localstack Docker container to use.|0.14.3|
+|localstack.port|The port of the Localstack Docker container.|4566|
+|localstack.services|Comma delimited list of AWS services to start.|dynamodb|
+|localstack.region|The region to use.|eu-west-2|
+|localstack.container.logging.enabled|Whether to output the Localstack Docker logs to the console.|false|
 
 The configuration is logged at test execution time at INFO level.  Enable in `logback-test.xml` with:
 ```
@@ -140,6 +146,12 @@ The following shows how to override the configurable properties:
                             <wiremock.image.tag>2.32.0</wiremock.image.tag>
                             <wiremock.port>8080</wiremock.port>
                             <wiremock.container.logging.enabled>false</wiremock.container.logging.enabled>
+                            <localstack.enabled>true</localstack.enabled>
+                            <localstack.image.tag>0.14.3</localstack.image.tag>
+                            <localstack.port>4566</localstack.port>
+                            <localstack.services>lambda,dynamodb,s3</localstack.services>
+                            <localstack.region>eu-west-2</localstack.region>
+                            <localstack.container.logging.enabled>false</localstack.container.logging.enabled>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
@@ -149,7 +161,7 @@ The following shows how to override the configurable properties:
 </profiles>
 ```
 
-The property overrides are all optional.  There is no need to include them if the default values are required.
+The property overrides are all optional.  There is no need to include them if the default values are required.  The above examples do not indicate defaults.
 
 See `TestContainersConfiguration` for their usage.
 
@@ -161,7 +173,6 @@ Annotate the SpringBoot test with the following extra annotations:
 import dev.lydtech.component.framework.extension.TestContainersSetupExtension;
 
 @ExtendWith(TestContainersSetupExtension.class)
-@ActiveProfiles("component-test")
 public class KafkaStreamsCT {
 ```
 
@@ -177,8 +188,6 @@ The library expects an `application-component-test.yml` properties file in the `
 kafka:
     bootstrap-servers: kafka:9092
 ```
-
-The component test must include the `component-test` active profiles annotation. 
 
 # Service Health
 
@@ -351,7 +360,7 @@ This is used by the component-test-framework to determine whether the Wiremock c
 
 All other mapping files placed in this same directory will also be loaded.
 
-The Wiremock client provides various methods for querying the admin API.  The API is available here:
+The Wiremock client provides various methods for querying the admin API.  The admin API it hooks into is available here:
 https://wiremock.org/docs/api
 
 An example:
@@ -373,6 +382,30 @@ This requires the corresponding mapping file to be located under `src/test/resou
 ```
 src/test/resources/thirdParty/retry_behaviour_success.json
 ```
+
+# Localstack
+
+## DynamoDB
+
+The provided DynamoDB client provides a method to create a table based on a given entity, in the specified region.
+
+e.g. to create a `ProcessedEvent` table:
+
+```
+@DynamoDBTable(tableName="ProcessedEvent")
+public class ProcessedEvent {
+
+    @DynamoDBHashKey(attributeName="Id")
+    private String id;
+[...]
+```
+The call to the client is:
+```
+import dev.lydtech.component.framework.client.localstack.DynamoDbClient;
+
+DynamoDbClient.getInstance().createTable(ProcessedEvent.class, "eu-west-2");
+```
+This method is overloaded to also allow passing in the access key and secret key to use, and the read and write capacity units for the table.
 
 # Docker Commands
 

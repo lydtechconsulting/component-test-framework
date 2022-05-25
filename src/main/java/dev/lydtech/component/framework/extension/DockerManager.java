@@ -24,6 +24,8 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
@@ -98,6 +100,9 @@ public final class DockerManager {
 
         String wiremockContainerName = CONTAINER_NAME_PREFIX + "-wiremock";
         mapPorts("Wiremock", WIREMOCK_ENABLED, listContainersCmd, wiremockContainerName, WIREMOCK_PORT, "wiremock");
+
+        String localstackContainerName = CONTAINER_NAME_PREFIX + "-localstack";
+        mapPorts("Localstack", LOCALSTACK_ENABLED, listContainersCmd, localstackContainerName, LOCALSTACK_PORT, "localstack");
 
         log.info("Docker ports captured.");
     }

@@ -37,6 +37,11 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPICS;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPIC_PARTITION_COUNT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_SERVICES;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_DATABASE_NAME;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
@@ -66,6 +71,7 @@ public final class TestContainersManager {
     private KafkaContainer kafkaContainer;
     private DebeziumContainer debeziumContainer;
     private GenericContainer wiremockContainer;
+    private GenericContainer localstackContainer;
 
     private TestContainersManager(){}
 
@@ -98,6 +104,9 @@ public final class TestContainersManager {
         if (WIREMOCK_ENABLED) {
             wiremockContainer = createWiremockContainer();
         }
+        if (LOCALSTACK_ENABLED) {
+            localstackContainer = createLocalstackContainer();
+        }
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT+1)
                 .mapToObj(this::createServiceContainer)
                 .collect(Collectors.toList());
@@ -117,6 +126,9 @@ public final class TestContainersManager {
             }
             if(WIREMOCK_ENABLED) {
                 wiremockContainer.start();
+            }
+            if(LOCALSTACK_ENABLED) {
+                localstackContainer.start();
             }
             serviceContainers.stream().forEach(container -> container.start());
         } catch (Exception e) {
@@ -214,6 +226,22 @@ public final class TestContainersManager {
                 .withExposedPorts(WIREMOCK_PORT)
                 .waitingFor(Wait.forHttp("/health").forStatusCode(204));
         if(WIREMOCK_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    private GenericContainer createLocalstackContainer() {
+        String containerName = "localstack";
+        GenericContainer container = new GenericContainer<>("localstack/localstack:" + LOCALSTACK_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                })
+                .withEnv("SERVICES", LOCALSTACK_SERVICES)
+                .withExposedPorts(LOCALSTACK_PORT);
+        if(LOCALSTACK_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;

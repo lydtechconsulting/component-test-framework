@@ -68,9 +68,18 @@ public final class TestContainersConfiguration {
 
     private static final String DEFAULT_WIREMOCK_ENABLED = "false";
     private static final String DEFAULT_WIREMOCK_IMAGE_TAG = "2.32.0";
-    private static final String DEFAULT_WIREMOCK_DEFAULT_PORT = "8080";
+    private static final String DEFAULT_WIREMOCK_PORT = "8080";
     private static final String DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED = "false";
 
+    /**
+     * Localstack (AWS) default configuration.
+     */
+
+    private static final String DEFAULT_LOCALSTACK_ENABLED = "false";
+    private static final String DEFAULT_LOCALSTACK_IMAGE_TAG = "0.14.3";
+    private static final String DEFAULT_LOCALSTACK_PORT = "4566";
+    private static final String DEFAULT_LOCALSTACK_SERVICES = "dynamodb";
+    private static final String DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
      * The runtime configuration.
@@ -99,7 +108,7 @@ public final class TestContainersConfiguration {
     public static final boolean KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
     public static final String KAFKA_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.confluent.image.tag", DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG);
     public static final int KAFKA_PORT = Integer.parseInt(System.getProperty("kafka.port", DEFAULT_KAFKA_PORT));
-    public static final List<String> KAFKA_TOPICS = parseTopics();
+    public static final List<String> KAFKA_TOPICS = parseKafkaTopics();
     public static final int KAFKA_TOPIC_PARTITION_COUNT = Integer.parseInt(System.getProperty("kafka.topic.partition.count", DEFAULT_KAFKA_TOPIC_PARTITION_COUNT));
     public static final boolean KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
 
@@ -110,10 +119,16 @@ public final class TestContainersConfiguration {
 
     public static final boolean WIREMOCK_ENABLED = Boolean.valueOf(System.getProperty("wiremock.enabled", DEFAULT_WIREMOCK_ENABLED));
     public static final String WIREMOCK_IMAGE_TAG = System.getProperty("wiremock.image.tag", DEFAULT_WIREMOCK_IMAGE_TAG);
-    public static final int WIREMOCK_PORT = Integer.parseInt(System.getProperty("wiremock.port", DEFAULT_WIREMOCK_DEFAULT_PORT));
+    public static final int WIREMOCK_PORT = Integer.parseInt(System.getProperty("wiremock.port", DEFAULT_WIREMOCK_PORT));
     public static final boolean WIREMOCK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("wiremock.container.logging.enabled", DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED));
 
-    private static List<String> parseTopics() {
+    public static final boolean LOCALSTACK_ENABLED = Boolean.valueOf(System.getProperty("localstack.enabled", DEFAULT_LOCALSTACK_ENABLED));
+    public static final String LOCALSTACK_IMAGE_TAG = System.getProperty("localstack.image.tag", DEFAULT_LOCALSTACK_IMAGE_TAG);
+    public static final int LOCALSTACK_PORT = Integer.parseInt(System.getProperty("localstack.port", DEFAULT_LOCALSTACK_PORT));
+    public static final String LOCALSTACK_SERVICES = System.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
+    public static final boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
+
+    private static List<String> parseKafkaTopics() {
         String topicNamesPropertyValue = System.getProperty("kafka.topics", null);
         List<String> topics = Collections.EMPTY_LIST;
         if(topicNamesPropertyValue!=null) {
@@ -172,6 +187,14 @@ public final class TestContainersConfiguration {
             log.info("wiremock.image.tag: " + WIREMOCK_IMAGE_TAG);
             log.info("wiremock.port: " + WIREMOCK_PORT);
             log.info("wiremock.container.logging.enabled: " + WIREMOCK_CONTAINER_LOGGING_ENABLED);
+        }
+
+        log.info("localstack.enabled: " + LOCALSTACK_ENABLED);
+        if(LOCALSTACK_ENABLED) {
+            log.info("localstack.image.tag: " + LOCALSTACK_IMAGE_TAG);
+            log.info("localstack.port: " + LOCALSTACK_PORT);
+            log.info("localstack.services: " + LOCALSTACK_SERVICES);
+            log.info("localstack.container.logging.enabled: " + LOCALSTACK_CONTAINER_LOGGING_ENABLED);
         }
     }
 }

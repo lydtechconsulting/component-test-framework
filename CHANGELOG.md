@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.0] - 2022-05-25
+### Added
+- Supports Localstack (AWS) - DynamoDB.
+
 ## [1.1.0] - 2022-05-24
 ### Added
 - Supports Wiremock.
