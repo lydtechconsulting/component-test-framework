@@ -62,6 +62,11 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
+import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA;
+import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
+import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
+import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
 
 @Slf4j
 public final class TestContainersManager {
@@ -195,7 +200,7 @@ public final class TestContainersManager {
     }
 
     private GenericContainer createPostgresContainer() {
-        String containerName = "postgres";
+        String containerName = POSTGRES.toString();
 
         // Use of the Debezium / Postgres container. This allows use of Debezium (if enabled).  Without it it fails due
         // to the wal_level property (logical vs replica).
@@ -216,7 +221,7 @@ public final class TestContainersManager {
     }
 
     private KafkaContainer createKafkaContainer() {
-        String containerName = "kafka";
+        String containerName = KAFKA.toString();
         KafkaContainer container = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_CONFLUENT_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
@@ -230,7 +235,7 @@ public final class TestContainersManager {
     }
 
     private DebeziumContainer createDebeziumContainer() {
-        String containerName = "debezium";
+        String containerName = DEBEZIUM.toString();
         DebeziumContainer container = new DebeziumContainer(DockerImageName.parse("debezium/connect").withTag(DEBEZIUM_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
@@ -247,7 +252,7 @@ public final class TestContainersManager {
     }
 
     private GenericContainer createWiremockContainer() {
-        String containerName = "wiremock";
+        String containerName = WIREMOCK.toString();
         GenericContainer container = new GenericContainer<>("wiremock/wiremock:" + WIREMOCK_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
@@ -264,7 +269,7 @@ public final class TestContainersManager {
     }
 
     private GenericContainer createLocalstackContainer() {
-        String containerName = "localstack";
+        String containerName = LOCALSTACK.toString();
         GenericContainer container = new GenericContainer<>("localstack/localstack:" + LOCALSTACK_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
