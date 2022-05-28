@@ -3,6 +3,7 @@ package dev.lydtech.component.framework.extension;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -96,6 +97,8 @@ public final class TestContainersConfiguration {
     public static final String SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
     public static final boolean SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
 
+    public static final List<AdditionalContainer> ADDITIONAL_CONTAINERS = parseAdditionalContainers();
+
     public static final boolean POSTGRES_ENABLED = Boolean.valueOf(System.getProperty("postgres.enabled", DEFAULT_POSTGRES_ENABLED));
     public static final String POSTGRES_IMAGE_TAG = System.getProperty("postgres.image.tag", DEFAULT_POSTGRES_IMAGE_TAG);
     public static final String POSTGRES_HOST_NAME = System.getProperty("postgres.host.name", DEFAULT_POSTGRES_HOST_NAME);
@@ -128,6 +131,35 @@ public final class TestContainersConfiguration {
     public static final String LOCALSTACK_SERVICES = System.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
     public static final boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
 
+    private static List<AdditionalContainer> parseAdditionalContainers() {
+        String additionalContainersPropertyValue = System.getProperty("additional.containers", null);
+        log.debug("Parsing additional containers: {}", additionalContainersPropertyValue);
+        List<AdditionalContainer> additionalContainers = Collections.EMPTY_LIST;
+        if(additionalContainersPropertyValue!=null) {
+            additionalContainersPropertyValue = additionalContainersPropertyValue.replaceAll("\\s+","");
+            if(additionalContainersPropertyValue.length()>0) {
+                List<String> containerDetailStrings = Arrays.asList(additionalContainersPropertyValue.split(":"));
+                additionalContainers = containerDetailStrings.stream().map(containerDetail -> {
+                    log.debug("Parsing individual additional container: {}", containerDetail);
+                    List<String> parsedDetails = Arrays.asList(containerDetail.split(","));
+                    if(parsedDetails.size()!=5) {
+                        String message = "Invalid additional containers details: "+parsedDetails+" -  expecting 5 args, found "+parsedDetails.size()+".";
+                        log.error(message);
+                        throw new RuntimeException(message);
+                    }
+                    return AdditionalContainer.builder()
+                            .name(parsedDetails.get(0))
+                            .port(Integer.parseInt(parsedDetails.get(1)))
+                            .debugPort(Integer.parseInt(parsedDetails.get(2)))
+                            .imageTag(parsedDetails.get(3))
+                            .additionalContainerLoggingEnabled(Boolean.valueOf(parsedDetails.get(4)))
+                            .build();
+                }).collect(Collectors.toList());
+            }
+        }
+        return additionalContainers;
+    }
+
     private static List<String> parseKafkaTopics() {
         String topicNamesPropertyValue = System.getProperty("kafka.topics", null);
         List<String> topics = Collections.EMPTY_LIST;
@@ -154,6 +186,8 @@ public final class TestContainersConfiguration {
         log.info("service.startup.timeout.seconds: " + SERVICE_STARTUP_TIMEOUT_SECONDS);
         log.info("service.image.tag: " + SERVICE_IMAGE_TAG);
         log.info("service.container.logging.enabled: " + SERVICE_CONTAINER_LOGGING_ENABLED);
+
+        log.info("additional.containers: "+System.getProperty("additional.containers", ""));
 
         log.info("postgres.enabled: " + POSTGRES_ENABLED);
         if(POSTGRES_ENABLED) {

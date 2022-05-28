@@ -25,6 +25,7 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ADDITIONAL_CONTAINERS;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_NAME_PREFIX;
@@ -67,6 +68,7 @@ public final class TestContainersManager {
 
     private Network network;
     private List<GenericContainer> serviceContainers;
+    private List<GenericContainer> additionalContainers;
     private GenericContainer postgresContainer;
     private KafkaContainer kafkaContainer;
     private DebeziumContainer debeziumContainer;
@@ -108,8 +110,16 @@ public final class TestContainersManager {
             localstackContainer = createLocalstackContainer();
         }
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT+1)
-                .mapToObj(this::createServiceContainer)
-                .collect(Collectors.toList());
+            .mapToObj(this::createServiceContainer)
+            .collect(Collectors.toList());
+
+        additionalContainers = ADDITIONAL_CONTAINERS.stream().map(additionalContainer -> createAdditionalContainer(
+                additionalContainer.getName(),
+                additionalContainer.getPort(),
+                additionalContainer.getDebugPort(),
+                additionalContainer.getImageTag(),
+                additionalContainer.getAdditionalContainerLoggingEnabled()))
+            .collect(Collectors.toList());
     }
 
     private void startContainers() {
@@ -131,6 +141,7 @@ public final class TestContainersManager {
                 localstackContainer.start();
             }
             serviceContainers.stream().forEach(container -> container.start());
+            additionalContainers.stream().forEach(container -> container.start());
         } catch (Exception e) {
             log.error("Component test containers failed to start", e);
             throw e;
@@ -139,8 +150,7 @@ public final class TestContainersManager {
 
     private GenericContainer createServiceContainer(int instance) {
         String containerName = SERVICE_NAME+"-"+instance;
-        String configFileName = "/application.yml";
-        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:"+configFileName;
+        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
 
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+SERVICE_NAME+":" + SERVICE_IMAGE_TAG)
                 .withEnv("JAVA_OPTS", javaOpts)
@@ -158,6 +168,28 @@ public final class TestContainersManager {
                     .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));
         if(SERVICE_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    private GenericContainer createAdditionalContainer(String name, Integer port, Integer debugPort, String imageTag, boolean containerLoggingEnabled) {
+        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:"+debugPort+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
+
+        GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+name+":" + imageTag)
+                .withEnv("JAVA_OPTS", javaOpts)
+                .withFileSystemBind("./target/test-classes/"+name+"/application-component-test.yml", "/application.yml", BindMode.READ_ONLY)
+                .withExposedPorts(port, debugPort)
+                .withNetwork(network)
+                .withNetworkAliases(name)
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+name);
+                })
+                .waitingFor(Wait.forHttp("/actuator/health")
+                        .forPort(port)
+                        .forStatusCode(200)
+                        .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));
+        if(containerLoggingEnabled) {
+            container.withLogConsumer(getLogConsumer(name));
         }
         return container;
     }

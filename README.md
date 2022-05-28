@@ -4,10 +4,19 @@ A library allowing component testing of a Spring Boot application.
 
 Dockerises the service under test and the required resources.
 
+Uses the TestContainers library to start and manage the Docker containers:
+
+https://www.testcontainers.org/
+
 Currently supported resources:
 
 - Configurable number of instances of the service under test.
-- Kafka broker.
+- Additional containers (simulators/services)
+- Kafka broker
+- Postgres database
+- Debezium Kafka Connect
+- Standalone wiremock
+- Localstack (AWS components - e.g. DynamoDB)
 
 # Dependency
 
@@ -16,16 +25,40 @@ Add this library as a dependency to the pom of the service under test:
     <dependency>
         <groupId>dev.lydtech</groupId>
         <artifactId>component-test-framework</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <scope>test</scope>
     </dependency>
 ```
 
 # Example Usage
 
-A companion service has been implemented to demonstrate usage of this framework.  It is available here:
+Example companion projects have been created to demonstrate usage of this framework.
+
+The `component-test-framework` can be used within a single module project as per:
 
 https://github.com/lydtechconsulting/ctf-example-service
+
+This project demonstrates using:
+- Kafka
+- Postgres
+- Debezium
+- Wiremock
+
+There is an advantage in separating its usage from the service under test to ensure that it does not utilise any of the service's classes, and to ensure there are no dependency clashes with the serivce's dependencies.  The following project demonstrates its usage in a multi module project:
+
+https://github.com/lydtechconsulting/ctf-example-multi-module
+
+This project demonstrates using:
+- A child `component-test` module. 
+- REST calls to the service under test.
+- Multiple additional containers (simulators) - these also benefit from the multi module structure as each is defined in its own child module.
+
+Other reference projects that utilise the framework:
+
+https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb (includes Localstack with DynamoDB and uses multiple instances of the service under test)
+https://github.com/lydtechconsulting/kafka-streams
+https://github.com/lydtechconsulting/kafka-idempotent-consumer (uses multiple instances of the service under test)
+https://github.com/lydtechconsulting/kafka-consumer-retry (uses multiple instances of the service under test)
 
 # Configuration
 
@@ -41,6 +74,7 @@ https://github.com/lydtechconsulting/ctf-example-service
 |service.debug.port|The port for remote debugging the service.|5001|
 |service.startup.timeout.seconds|The number of seconds to wait for the service to start before considered failed.|180|
 |service.container.logging.enabled|Whether to output the service Docker logs to the console.|false|
+|additional.containers|Colon separated list of additional containers to spin up, such as simulators.  Each additional container entry requires a comma separated list of details:  name, port, debugPort, imageTag, containerLoggingEnabled.  Example is: `third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false`||
 |postgres.enabled|Whether a Docker Postgres container should be started.|false|
 |postgres.image.tag|The image tag of the Postgres Docker container to use.|14-alpine|
 |postgres.host.name|The name of the Postgres host.|postgres|
@@ -77,27 +111,29 @@ The configuration is logged at test execution time at INFO level.  Enable in `lo
 For choosing a value for the `kafka.confluent.image.tag` property, the Confluent Platform and Apache Kafka Compatibility matrix is available here:
 https://docs.confluent.io/platform/current/installation/versions-interoperability.html
 
-# Service Pom.xml
+# Maven Configuration
 
-## Properties
+## Pom.xml Properties
 
 To enable leaving the Docker containers running after a test run, in order to run tests again without re-starting the containers, the following property should be included in the `properties` section:
 ```
 <properties>
     <containers.stayup>false</containers.stayup>
-    <httpclient5.version>5.0.4</httpclient5.version>
 </properties>
 ```
 
-The `http.client5.version` override is to ensure that this version of the lib is used for the Docker containers check.
-
 The `containers.stayup` property is then used by the Maven Surefire Plugin in the `environmentVariables`.
+
+The `http.client5.version` override may need to be included to ensure that the correct version of this lib is used for the Docker containers check.  This is not required in a multi module project.
+```
+<httpclient5.version>5.0.4</httpclient5.version>
+```
 
 ## Maven Surefire Plugin
 
 Add the Maven Surefire Plugin to the pom of the service under test with the following profile.
 
-The following shows how to override the configurable properties:
+The following shows how to override the configurable properties in a single module maven project:
 ```
 <profiles>
     <profile>
@@ -124,6 +160,7 @@ The following shows how to override the configurable properties:
                             <service.debug.port>5001</service.debug.port>
                             <service.startup.timeout.seconds>180</service.startup.timeout.seconds>
                             <service.container.logging.enabled>false</service.container.logging.enabled>
+                            <additional.containers>third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false</additional.containers>
                             <postgres.enabled>true</postgres.enabled>
                             <postgres.image.tag>14-alpine</postgres.image.tag>
                             <postgres.host.name>postgres</postgres.host.name>
@@ -163,7 +200,27 @@ The following shows how to override the configurable properties:
 
 The property overrides are all optional.  There is no need to include them if the default values are required.  The above examples do not indicate defaults.
 
-See `TestContainersConfiguration` for their usage.
+In a multi module maven project the surefire plugin should be added to the pom of the component test module.  The `<includes>` section should be excluded, and tests should be named `*Test`.  There is no need to distinguish the component tests from unit and integration tests as when they are housed within their own module within a multi module project.
+
+# Gradle Configuration
+
+Add the following to the `build.gradle` test method:
+```
+test {
+    systemProperties = System.properties
+    environment "TESTCONTAINERS_RYUK_DISABLED", System.getProperty('containers.stayup')
+    useJUnitPlatform()
+}
+```
+
+Define any properties that need their default value to be overridden in the `gradle.properties` file:
+```
+systemProp.service.name=ctf-example-mm-service
+systemProp.additional.containers=third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false
+systemProp.containers.stayup=true
+```
+
+The `containers.stayup` property is added to the environment variables by the Gradle build.
 
 # Component Test Annotations
 
@@ -178,7 +235,9 @@ public class KafkaStreamsCT {
 
 The `TestContainersSetupExtension` is the JUnit5 extension that enables hooking into a test execution run before the tests themselves run, so that the Dockerised containers can be started.
 
-The component test class should be named with the suffix `CT`.  This ensures it is not run via the standard maven-surefire-plugin (if that is in use in the service pom.xml).  Instead it is only run with the `mvn` command when the profile `-Pcomponent` is included.
+The component test class should be named with the suffix `CT` if housed within a single module project.  This ensures it is not run via the standard maven-surefire-plugin (if that is in use in the service pom.xml).  Instead it is only run with the `mvn` command when the profile `-Pcomponent` is included.
+
+When housed in its own child module in a multi module project the tests should have the suffix `Test`. 
 
 # Component Test Application Properties
 
@@ -232,14 +291,38 @@ The name (`my-service`) must match the `service.name` configuration.
 
 # Running The Component Tests
 
+## Maven
+
 Run tests:
 ```
 mvn test -Pcomponent
 ```
 
+Run tests leaving containers up:
+```
+mvn test -Pcomponent -Dcontainers.stayup
+```
+
 Override any of the other configurable properties in the same way, specifying `-D` args.  e.g.
 ```
-mvn test -Pcomponent -Dservice.instance.count=2 -Dkafka.container.logging.enabled
+mvn test -Pcomponent -Dservice.instance.count=2 -Dkafka.enabled
+```
+
+## Gradle
+
+Run tests:
+```
+./gradlew clean build
+```
+
+Run tests leaving the containers up:
+```
+./gradlew clean build -Dcontainers.stayup=false
+```
+
+Override any of the other configurable properties in the same way, specifying `-D` args.  e.g.
+```
+./gradlew clean build -Dservice.instance.count=2 -Dkafka.enabled
 ```
 
 # Keeping Docker Containers Up Between Test Runs
@@ -293,6 +376,44 @@ Querying using RestAssured:
 RestAssured.get("/v1/my-service).then().assertThat().statusCode(202)
 ```
 
+# Remote Debugging The Service
+
+As the service is running in a Docker container, in order to debug a test run then remote debugging is required.
+
+When configuring the service under test, a value for the `service.debug.port` property must be supplied.  This port is mapped to a random port when the Docker container is started (or multiple in the case where multiple instances of the service are configured to run).
+
+Execute a test run, leaving the containers up, with `containers.stayup`.  Now remote debugging can be undertaken, setting breakpoints on the application code in the usual way.
+
+The mapped debug port can be discovered by listing the Docker containers with `docker ps` and viewing the mapping.
+```
+CONTAINER ID   IMAGE                           COMMAND                   CREATED          STATUS          PORTS                                                        NAMES
+19b474ec03e8   ct/ctf-example-service:latest   "sh -c 'java ${JAVA_…"    6 seconds ago    Up 5 seconds    0.0.0.0:57583->5001/tcp, 0.0.0.0:57584->9001/tcp             ct-ctf-example-service-1
+```
+
+As the configured debug port by default is `5001`, then the mapped port can be seen to be `57583`.
+
+This port can then used in the IDE Remote JVM Debug Run/Debug Configurations dialog.  Use `Host: localhost` and `Port: 57583`, and start the debug.
+
+Note that if the application code is changed then it must be rebuilt, and the service Docker container rebuilt and restarted.  This results in a different debug port being mapped.
+
+# Additional Containers
+
+Any number of additional containers can be started as part of the test run, using the `additional.containers` parameter.  This enables spinning up of simulator services that take the place of real world third party services that the service under test calls.
+
+For each additional container to start provide the name, port, debug port, image tag, and whether the Docker container logs should log to the container.
+
+The additional service/simulator must have an `application.yml` with the required properties in its `src/main/resources` directory.  This will include the service port that is specified in the `additional.containers` property.
+
+Within the component test directory/module declare a component test properties file for overriding the default properties.  This must live under a directory with the same name as the container (excluding the container prefix).  e.g. for a `third-party-simulator`, define:
+```
+src/test/resources/third-party-simulator/application-component-test.yml
+```
+A remote debugger can be attached to these containers as per the main service.
+
+Additional containers work well in a multi module project.  They are co-located with the service under test, but defined in their own module for clear separation.  An example of using additional containers can be seen in the accompanying `ctf-example-multi-module` project:
+
+https://github.com/lydtechconsulting/ctf-example-multi-module
+
 # Kafka Client
 
 The Kafka Client enables the component test to send events to topics on the Kafka broker, and likewise consume events that are emitted by the service under test.
@@ -314,32 +435,22 @@ Consume and assert a message:
 KafkaClient.consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM);
 ```
 
-# Remote Debugging The Service
+# Debezium
 
-As the service is running in a Docker container, in order to debug a test run then remote debugging is required. 
+Debezium provides a Kafka Connect source connector, streaming events from the Database changelog to Kafka.
 
-When configuring the service under test, a value for the `service.debug.port` property must be supplied.  This port is mapped to a random port when the Docker container is started (or multiple in the case where multiple instances of the service are configured to run).
+A utility client is provides the ability to create the connector, and subsequently delete it.  The connector should be defined in a `json` file and passed to the client in the component test to create.  It can then be deleted at the end of the test using the connector name.
 
-Execute a test run, leaving the containers up, with `containers.stayup`.  Now remote debugging can be undertaken, setting breakpoints on the application code in the usual way.
-
-The mapped debug port can be discovered by listing the Docker containers with `docker ps` and viewing the mapping.
 ```
-CONTAINER ID   IMAGE                           COMMAND                   CREATED          STATUS          PORTS                                                        NAMES
-19b474ec03e8   ct/ctf-example-service:latest   "sh -c 'java ${JAVA_…"    6 seconds ago    Up 5 seconds    0.0.0.0:57583->5001/tcp, 0.0.0.0:57584->9001/tcp             ct-ctf-example-service-1
+import dev.lydtech.component.framework.client.debezium.DebeziumClient;
+
+
+DebeziumClient.getInstance().createConnector("connector/outbox-connector.json");
+
+DebeziumClient.getInstance().deleteConnector("outbox-connector");
 ```
 
-As the configured debug port by default is `5001`, then the mapped port can be seen to be `57583`.
-
-This port can then used in the IDE Remote JVM Debug Run/Debug Configurations dialog.  Use `Host: localhost` and `Port: 57583`, and start the debug. 
-
-Note that if the application code is changed then it must be rebuilt, and the service Docker container rebuilt and restarted.  This results in a different debug port being mapped.
-
-# JSON Mapping
-
-A JSON mapping utility is provided to allow marshalling of PoJOs to/from JSON Strings.  This is a convenient feature for preparing event payloads to be sent in the JSON format to Kafka.
-```
-dev.lydtech.component.framework.mapper.JsonMapper
-```
+See the `ctf-example-service` project for example usage.
 
 # Wiremock
 
@@ -359,6 +470,8 @@ The Wiremock container requires a `health.json` file to be provided in the `src/
 This is used by the component-test-framework to determine whether the Wiremock container has successfully started.
 
 All other mapping files placed in this same directory will also be loaded.
+
+In a multi module project the `src/test/resources/wiremock/` directory lives in the `component-test` module.
 
 The Wiremock client provides various methods for querying the admin API.  The admin API it hooks into is available here:
 https://wiremock.org/docs/api
@@ -406,6 +519,17 @@ import dev.lydtech.component.framework.client.localstack.DynamoDbClient;
 DynamoDbClient.getInstance().createTable(ProcessedEvent.class, "eu-west-2");
 ```
 This method is overloaded to also allow passing in the access key and secret key to use, and the read and write capacity units for the table.
+
+# JSON Mapping
+
+A JSON mapping utility is provided to allow marshalling of PoJOs to/from JSON Strings.  This is a convenient feature for preparing event payloads to be sent in the JSON format to Kafka and likewise converted to their PoJO version when consumed.
+```
+import dev.lydtech.component.framework.mapper.JsonMapper
+
+public static <T> T readFromJson(String json, Class<T> clazz) throws MappingException
+
+public static String writeToJson(Object obj) throws MappingException
+```
 
 # Docker Commands
 
