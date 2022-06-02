@@ -33,7 +33,7 @@ public final class KafkaClient {
     private static KafkaClient instance;
 
     private KafkaClient(){
-        String kafkaHost = Optional.ofNullable(System.getProperty("kafka.host"))
+        String kafkaHost = Optional.ofNullable(System.getProperty("docker.host"))
                 .orElse("localhost");
         String kafkaPort = Optional.ofNullable(System.getProperty("kafka.mapped.port"))
                 .orElseThrow(() -> new RuntimeException("kafka.mapped.port property not found"));

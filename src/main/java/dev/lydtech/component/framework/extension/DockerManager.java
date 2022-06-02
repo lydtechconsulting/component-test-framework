@@ -16,6 +16,7 @@ import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 import lombok.extern.slf4j.Slf4j;
+import org.testcontainers.DockerClientFactory;
 
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
@@ -31,6 +32,12 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
+import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA;
+import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
+import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
+import static dev.lydtech.component.framework.resource.Resource.SERVICE;
+import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
 import static java.util.Collections.singletonList;
 
 @Slf4j
@@ -74,7 +81,6 @@ public final class DockerManager {
     protected static void captureDockerContainerPorts(DockerClient dockerClient) {
         log.info("Capturing Docker ports...");
         log.info("Container main label: "+CONTAINER_MAIN_LABEL);
-        ListContainersCmd listContainersCmd = dockerClient.listContainersCmd();
         // To locate the service containers use the container prefix and main container label.  This decouples discovery
         // from the service name, so that subsequent runs do not need this overridden if changed each time.
         List<Container> serviceContainers = dockerClient.listContainersCmd()
@@ -82,38 +88,30 @@ public final class DockerManager {
                 .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL))
                 .exec();
         if (serviceContainers.size() > 0) {
-            Integer mappedPort = getMappedPort("Service", SERVICE_PORT, serviceContainers);
-            log.info("Service port " + SERVICE_PORT + " is mapped to " + mappedPort);
-            System.setProperty("service.mapped.port", mappedPort.toString());
+            mapPort(SERVICE.toString(), SERVICE_PORT, serviceContainers.get(0));
         } else {
             throw new RuntimeException("Service container not found");
         }
 
-        String postgresContainerName = CONTAINER_NAME_PREFIX + "-postgres";
-        mapPorts("Postgres", POSTGRES_ENABLED, listContainersCmd, postgresContainerName, POSTGRES_PORT, "postgres");
+        findContainerAndMapPort(dockerClient, POSTGRES.toString(), POSTGRES_ENABLED, POSTGRES_PORT);
+        findContainerAndMapPort(dockerClient, KAFKA.toString(), KAFKA_ENABLED, KAFKA_PORT);
+        findContainerAndMapPort(dockerClient, DEBEZIUM.toString(), DEBEZIUM_ENABLED, DEBEZIUM_PORT);
+        findContainerAndMapPort(dockerClient, WIREMOCK.toString(), WIREMOCK_ENABLED, WIREMOCK_PORT);
+        findContainerAndMapPort(dockerClient, LOCALSTACK.toString(), LOCALSTACK_ENABLED, LOCALSTACK_PORT);
 
-        String kafkaContainerName = CONTAINER_NAME_PREFIX + "-kafka";
-        mapPorts("Kafka", KAFKA_ENABLED, listContainersCmd, kafkaContainerName, KAFKA_PORT, "kafka");
+        captureHost();
 
-        String debeziumContainerName = CONTAINER_NAME_PREFIX + "-debezium";
-        mapPorts("Debezium", DEBEZIUM_ENABLED, listContainersCmd, debeziumContainerName, DEBEZIUM_PORT, "debezium");
-
-        String wiremockContainerName = CONTAINER_NAME_PREFIX + "-wiremock";
-        mapPorts("Wiremock", WIREMOCK_ENABLED, listContainersCmd, wiremockContainerName, WIREMOCK_PORT, "wiremock");
-
-        String localstackContainerName = CONTAINER_NAME_PREFIX + "-localstack";
-        mapPorts("Localstack", LOCALSTACK_ENABLED, listContainersCmd, localstackContainerName, LOCALSTACK_PORT, "localstack");
-
-        log.info("Docker ports captured.");
+        log.info("Docker host and ports captured.");
     }
 
     /**
-     * Only caters for mapping ports when there is a single container for the resource.
-     *
      * Attempts to map the ports for each resource, in case the component test is being run via IDE after containers
      * were left up.  Only throws an exception if the container is not found when it is flagged as enabled.
      */
-    private static void mapPorts(String name, boolean enabled, ListContainersCmd listContainersCmd, String containerName, int port, String portParameterName) {
+    private static void findContainerAndMapPort(DockerClient dockerClient, String resourceName, boolean enabled, int port) {
+        ListContainersCmd listContainersCmd = dockerClient.listContainersCmd();
+        String containerName = CONTAINER_NAME_PREFIX + "-" + resourceName;
+        log.info("Discovering host and mapping port for container {}", containerName);
         List<Container> containers = listContainersCmd.withNameFilter(singletonList(containerName)).exec();
         if(containers.size()>1) {
             // The Name Filter is a pattern search, so need to check for exact name match as more than one found.
@@ -122,23 +120,29 @@ public final class DockerManager {
                     .collect(Collectors.toList());
         }
         if (containers.size() == 1) {
-            Integer mappedPort = getMappedPort(name, port, containers);
-            log.info(name + " port " + port + " is mapped to " + mappedPort);
-            System.setProperty(portParameterName+".mapped.port", mappedPort.toString());
+            mapPort(resourceName, port, containers.get(0));
         } else {
             if(enabled) {
-                log.error(name + " is enabled but single container is not found - containerName: {} - containers.size(): {} - port: {} - portParameterName: {}", containerName, containers.size(), port, portParameterName);
-                throw new RuntimeException(name + " single container is not found.");
+                log.error(resourceName + " is enabled but single container is not found - containerName: {} - containers.size(): {} - port: {}", containerName, containers.size(), port);
+                throw new RuntimeException(resourceName + " container is not found.");
             } else {
-                log.info(name + " container is not enabled");
+                log.info(resourceName + " container is not enabled");
             }
         }
     }
 
-    private static Integer getMappedPort(String name, int port, List<Container> containers) {
-        return Arrays.stream(containers.get(0).getPorts())
+    private static void mapPort(String resourceName, int port, Container container) {
+        Integer mappedPort = Arrays.stream(container.getPorts())
                 .filter(x -> Objects.equals(x.getPrivatePort(), port))
                 .map(ContainerPort::getPublicPort).findFirst()
-                .orElseThrow(() -> new RuntimeException(name + " port not found"));
+                .orElseThrow(() -> new RuntimeException(resourceName + " port not found"));
+        log.info(resourceName + " port " + port + " is mapped to " + mappedPort);
+        System.setProperty(resourceName + ".mapped.port", mappedPort.toString());
+    }
+
+    private static void captureHost() {
+        String host = DockerClientFactory.instance().dockerHostIpAddress();
+        log.info("Docker host is: "+host);
+        System.setProperty("docker.host", host);
     }
 }
