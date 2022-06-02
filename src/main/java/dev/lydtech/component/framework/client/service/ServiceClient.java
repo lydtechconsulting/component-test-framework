@@ -11,7 +11,7 @@ public final class ServiceClient {
     private static ServiceClient instance;
 
     private ServiceClient(){
-        String serviceHost = Optional.ofNullable(System.getProperty("service.host"))
+        String serviceHost = Optional.ofNullable(System.getProperty("docker.host"))
                 .orElse("localhost");
         String servicePort = Optional.ofNullable(System.getProperty("service.mapped.port"))
                 .orElseThrow(() -> new RuntimeException("service.mapped.port property not found"));

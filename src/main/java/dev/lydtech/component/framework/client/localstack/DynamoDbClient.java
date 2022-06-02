@@ -22,7 +22,7 @@ public class DynamoDbClient {
     private String baseUrl;
 
     private DynamoDbClient(){
-        String localstackHost = Optional.ofNullable(System.getProperty("localstack.host"))
+        String localstackHost = Optional.ofNullable(System.getProperty("docker.host"))
                 .orElse("localhost");
         String localstackPort = Optional.ofNullable(System.getProperty("localstack.mapped.port"))
                 .orElseThrow(() -> new RuntimeException("localstack.mapped.port property not found"));

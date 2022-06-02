@@ -19,7 +19,7 @@ public final class DebeziumClient {
     private RequestSpecification requestSpec;
 
     private DebeziumClient(){
-        String debeziumHost = Optional.ofNullable(System.getProperty("debezium.host"))
+        String debeziumHost = Optional.ofNullable(System.getProperty("docker.host"))
                 .orElse("localhost");
         String debeziumPort = Optional.ofNullable(System.getProperty("debezium.mapped.port"))
                 .orElseThrow(() -> new RuntimeException("debezium.mapped.port property not found"));
