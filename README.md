@@ -428,10 +428,29 @@ import dev.lydtech.component.framework.client.kafka.KafkaClient;
 Consumer fooConsumer = KafkaClient.createConsumer(FOO_TOPIC);
 ```
 
-Send a message:
+Send a message synchronously:
 ```
-KafkaClient.sendMessage(FOO_TOPIC, key, payload);
+KafkaClient.sendMessage(FOO_TOPIC, key, payload, headers);
 ```
+
+Send a message asynchronously:
+```
+KafkaClient.sendMessageAsync(FOO_TOPIC, key, payload, headers);
+```
+
+These methods use a default Producer.  The Producer to use can optionally be passed in to both methods as the first arg.  The Producer can be configured for the test by passing in a Properties map of Producer Config values to the createProducer() method.  
+```
+public KafkaProducer<Long, String> createProducer(Properties additionalConfig) {
+```
+
+For example, to set a `linger.ms` value, define the following in the component test:
+```
+Properties additionalConfig = new Properties();
+additionalConfig.put(ProducerConfig.LINGER_MS_CONFIG, 100);
+KafkaProducer producer = KafkaClient.getInstance().createProducer(additionalConfig);
+```
+
+This can then be coupled with the `sendMessageAsync(..)` call to ensure several messages are sent as a batch.
 
 Consume and assert a message:
 ```
@@ -446,7 +465,6 @@ A utility client is provides the ability to create the connector, and subsequent
 
 ```
 import dev.lydtech.component.framework.client.debezium.DebeziumClient;
-
 
 DebeziumClient.getInstance().createConnector("connector/outbox-connector.json");
 
@@ -564,7 +582,12 @@ docker exec -it ct-kafka  /bin/sh /usr/bin/kafka-topics --bootstrap-server local
 
 View messages on topic:
 ```
-docker exec -it ct-kafka  /bin/sh /usr/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic foo-topic --from-beginning`
+docker exec -it ct-kafka  /bin/sh /usr/bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic foo-topic --from-beginning
+```
+
+View messages on __consumer_offsets topic:
+```
+docker exec -it ct-kafka  /bin/sh /usr/bin/kafka-console-consumer  --formatter "kafka.coordinator.group.GroupMetadataManager\$OffsetsMessageFormatter" --bootstrap-server localhost:9092 --topic __consumer_offsets --from-beginning
 ```
 
 ## Clean Up Commands

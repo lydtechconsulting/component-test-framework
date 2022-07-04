@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.0] - 2022-07-05
+### Added
+- Supports asynchronous message send.
+
 ## [1.4.0] - 2022-06-02
 ### Added
 - Supports remote host.

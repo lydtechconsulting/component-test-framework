@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,6 +32,7 @@ import org.awaitility.Awaitility;
 public final class KafkaClient {
     private static String brokerUrl;
     private static KafkaClient instance;
+    private KafkaProducer defaultProducer;
 
     private KafkaClient(){
         String kafkaHost = Optional.ofNullable(System.getProperty("docker.host"))
@@ -39,6 +41,7 @@ public final class KafkaClient {
                 .orElseThrow(() -> new RuntimeException("kafka.mapped.port property not found"));
         brokerUrl = "http://" + kafkaHost + ":" + kafkaPort;
         log.info("Kafka broker URL is: " + brokerUrl);
+        defaultProducer = createProducer();
     }
 
     public synchronized static KafkaClient getInstance() {
@@ -61,27 +64,94 @@ public final class KafkaClient {
         return consumer;
     }
 
-    public Producer<Long, String> createProducer() {
+    /**
+     * Create a standard Producer.
+     */
+    public KafkaProducer<Long, String> createProducer() {
+        return createProducer(null);
+    }
+
+    /**
+     * Create a Producer with additional config.
+     */
+    public KafkaProducer<Long, String> createProducer(Properties additionalConfig) {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        if(additionalConfig!=null && !additionalConfig.isEmpty()) {
+            config.putAll(additionalConfig);
+        }
         return new KafkaProducer<>(config);
     }
 
-    public void sendMessage(String topic, String key, String payload) throws Exception {
-        sendMessage(topic, key, payload, null);
+    /**
+     * Send a message synchronously without headers and with the default Producer.
+     */
+    public RecordMetadata sendMessage(String topic, String key, String payload) throws Exception {
+        return sendMessage(defaultProducer, topic, key, payload, null);
     }
 
-    public void sendMessage(String topic, String key, String payload, Map<String, String> headers) throws Exception {
+    /**
+     * Send a message synchronously without headers and with the provided Producer.
+     */
+    public RecordMetadata sendMessage(Producer producer, String topic, String key, String payload) throws Exception {
+        return sendMessage(producer, topic, key, payload, null);
+    }
+
+    /**
+     * Send a message synchronously with the provided headers and with the default Producer.
+     */
+    public RecordMetadata sendMessage(String topic, String key, String payload, Map<String, String> headers) throws Exception {
+        return sendMessage(defaultProducer, topic, key, payload, headers);
+    }
+
+    /**
+     * Send a message synchronously.  Awaits for the result of the send before returning.
+     */
+    public RecordMetadata sendMessage(Producer producer, String topic, String key, String payload, Map<String, String> headers) throws Exception {
         final List<Header> recordHeaders = new ArrayList<>();
         if(headers!=null && headers.size()>0) {
             headers.forEach((headerKey, headerValue) -> recordHeaders.add(new RecordHeader(headerKey, headerValue != null ? headerValue.getBytes() : null)));
         }
         final ProducerRecord<Long, String> record = new ProducerRecord(topic, null, key, payload, recordHeaders);
-        final RecordMetadata metadata = createProducer().send(record).get();
+        final RecordMetadata metadata = (RecordMetadata)producer.send(record).get();
         log.debug(String.format("Sent record(key=%s value=%s) meta(topic=%s, partition=%d, offset=%d)",
                 record.key(), record.value(), metadata.topic(), metadata.partition(), metadata.offset()));
+        return metadata;
+    }
+
+    /**
+     * Send a message asynchronously without headers and with the default Producer.
+     */
+    public Future<RecordMetadata> sendMessageAsync(String topic, String key, String payload) {
+        return sendMessageAsync(defaultProducer, topic, key, payload, null);
+    }
+
+    /**
+     * Send a message asynchronously without headers and with the provided Producer.
+     */
+    public Future<RecordMetadata> sendMessageAsync(Producer producer, String topic, String key, String payload) {
+        return sendMessageAsync(producer, topic, key, payload, null);
+    }
+
+    /**
+     * Send a message asynchronously with the provided headers and with the default Producer.
+     */
+    public Future<RecordMetadata> sendMessageAsync(String topic, String key, String payload, Map<String, String> headers) {
+        return sendMessageAsync(defaultProducer, topic, key, payload, headers);
+    }
+
+    /**
+     * Send a message asynchronously.  Allows for producing batches of messages, by tuning the producer linger.ms config.
+     */
+    public Future<RecordMetadata> sendMessageAsync(Producer producer, String topic, String key, String payload, Map<String, String> headers) {
+        final List<Header> recordHeaders = new ArrayList<>();
+        if(headers!=null && headers.size()>0) {
+            headers.forEach((headerKey, headerValue) -> recordHeaders.add(new RecordHeader(headerKey, headerValue != null ? headerValue.getBytes() : null)));
+        }
+        final ProducerRecord<Long, String> record = new ProducerRecord(topic, null, key, payload, recordHeaders);
+        return producer.send(record);
     }
 
     /**
