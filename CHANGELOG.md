@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.0] - 2022-07-16
+### Added
+- Distributed under the Apache License 2.0.
+
 ## [1.5.0] - 2022-07-05
 ### Added
 - Supports asynchronous message send.
