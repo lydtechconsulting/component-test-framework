@@ -13,6 +13,7 @@ Currently supported resources:
 - Configurable number of instances of the service under test.
 - Additional containers (simulators/services)
 - Kafka broker
+- Kafka Schema Registry
 - Postgres database
 - Debezium Kafka Connect
 - Standalone wiremock
@@ -25,7 +26,7 @@ Add this library as a dependency to the pom of the service under test:
     <dependency>
         <groupId>dev.lydtech</groupId>
         <artifactId>component-test-framework</artifactId>
-        <version>1.6.0</version>
+        <version>1.7.0</version>
         <scope>test</scope>
     </dependency>
 ```
@@ -63,6 +64,10 @@ https://github.com/lydtechconsulting/kafka-idempotent-consumer (uses multiple in
 
 https://github.com/lydtechconsulting/kafka-consumer-retry (uses multiple instances of the service under test)
 
+https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer with additional configuration for batch send)
+
+https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module maven project using a wiremocked Schema Registry with Avro serialisation)
+
 # Configuration
 
 |Property|Usage|Default|
@@ -91,13 +96,15 @@ https://github.com/lydtechconsulting/kafka-consumer-retry (uses multiple instanc
 |kafka.topics|Comma delimited list of topics to create.  Often topics are auto-created, but for Kafka Streams for example they must be created upfront.|
 |kafka.topic.partition.count|The number of partitions for topics that are created.|5|
 |kafka.container.logging.enabled|Whether to output the Kafka Docker logs to the console.|false|
+|kafkaschemaregistry.enabled|Whether a Docker Schema Registry Wiremock container should be started.|false|
+|kafkaschemaregistry.wiremock.image.tag|The image tag of the Schema Registry Wiremock Docker container to use.|2.32.0|
+|kafkaschemaregistry.container.logging.enabled|Whether to output the Schema Registry Wiremock Docker logs to the console.|false|
 |debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.|false|
 |debezium.image.tag|The image tag of the Debezium Docker container to use.|1.7.0.Final|
 |debezium.port|The port of the Debezium Docker container.|8083|
 |debezium.container.logging.enabled|Whether to output the Debezium Docker logs to the console.|false|
 |wiremock.enabled|Whether a Docker Wiremock container should be started.|false|
 |wiremock.image.tag|The image tag of the Wiremock Docker container to use.|2.32.0|
-|wiremock.port|The port of the Wiremock Docker container.|8080|
 |wiremock.container.logging.enabled|Whether to output the Wiremock Docker logs to the console.|false|
 |localstack.enabled|Whether a Docker Localstack (AWS) container should be started.|false|
 |localstack.image.tag|The image tag of the Localstack Docker container to use.|0.14.3|
@@ -178,13 +185,15 @@ The following shows how to override the configurable properties in a single modu
                             <kafka.topics>inbound-foo-topic,outbound-bar-topic</kafka.topics>
                             <kafka.topic.partition.count>5</kafka.topic.partition.count>
                             <kafka.container.logging.enabled>false</kafka.container.logging.enabled>
+                            <kafkaschemaregistry.enabled>true</kafkaschemaregistry.enabled>
+                            <kafkaschemaregistry.wiremock.image.tag>2.32.0</kafkaschemaregistry.wiremock.image.tag>
+                            <kafkaschemaregistry.container.logging.enabled>true</kafkaschemaregistry.container.logging.enabled>
                             <debezium.enabled>true</debezium.enabled>
                             <debezium.image.tag>1.7.0.Final</debezium.image.tag>
                             <debezium.port>8083</debezium.port>
                             <debezium.container.logging.enabled>false</debezium.container.logging.enabled>
                             <wiremock.enabled>true</wiremock.enabled>
                             <wiremock.image.tag>2.32.0</wiremock.image.tag>
-                            <wiremock.port>8080</wiremock.port>
                             <wiremock.container.logging.enabled>false</wiremock.container.logging.enabled>
                             <localstack.enabled>true</localstack.enabled>
                             <localstack.image.tag>0.14.3</localstack.image.tag>
@@ -419,7 +428,7 @@ https://github.com/lydtechconsulting/ctf-example-multi-module
 
 # Kafka Client
 
-The Kafka Client enables the component test to send events to topics on the Kafka broker, and likewise consume events that are emitted by the service under test.
+The Kafka Client enables the component test to send events to topics on the Kafka broker, and likewise consume events that are emitted by the service under test.  These are JSON events. 
 
 Create a consumer to poll for messages sent by the service under test:
 ```
@@ -456,6 +465,56 @@ Consume and assert a message:
 ```
 KafkaClient.consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM);
 ```
+
+# Kafka Avro Client
+
+The Kafka Avro Client enables the component test to send events to topics on the Kafka broker, and likewise consume events that are emitted by the service under test.  These are Avro events, which are events with a rich data structure that is defined by a schema.
+
+This client defers to the Kafka Client for sending and receiving messages, but uses the KafkaAvroSerializer and KafkaAvroDeserializer for the consumer and producer.
+
+Create a consumer to poll for Avro messages sent by the service under test:
+
+```
+import dev.lydtech.component.framework.client.kafka.KafkaAvroClient;
+
+Consumer fooConsumer = KafkaAvroClient.createConsumer(FOO_TOPIC);
+```
+
+Send a message (the payload is the Avro type):
+```
+KafkaAvroClient.sendMessage(FOO_TOPIC, key, payload, headers);
+```
+
+Consume and assert Avro messages (in this case a FooCompleted record):
+```
+List<ConsumerRecord<String, FooCompleted>> outboundEvents = KafkaAvroClient.getInstance().consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM);
+```
+
+# Schema Registry
+
+The Kafka Schema Registry client enables the component test to interact with the Dockerised wiremock Schema Registry container.
+
+This mocked Schema Registry is designed to be queryable by the Kafka Avro serialiser and deserialiser in order for them to retrieve the required Avro schema for the given payload.
+
+To this end it provides a `registerSchema` method which takes the Avro class, and the Avro schema associated with it.
+
+```
+import dev.lydtech.component.framework.client.kafka.SchemaRegistryClient;
+
+SchemaRegistryClient.getInstance().registerSchema(FooCompleted.class, FooCompleted.getClassSchema().toString());
+```
+
+Internally this `registerSchema` call uses an incrementing schema Id for each Avro schema to register.  It adds a stub mapping to the wiremock that will return a 200 (Success) when the schemaId is posted.  It then adds a stub mapping to return the given schema for the Avro class when queried with this schema Id.  This is all that is required for the Kafka Avro serialiser and deserialiser to perform their serialisation.
+
+The `getClassSchema()` method is a method generated on the Apache Avro generated class, and returns the schema String that is required for registering with the Schema Registry.
+
+The SchemaRegistryClient also provides a reset schema registry method to allow the component test to clear and reset these schema mappings.  
+
+```
+SchemaRegistryClient.getInstance().resetSchemaRegistry();
+```
+
+A recommended pattern is to call both the reset and the register methods in the test `@BeforeAll`.
 
 # Debezium
 

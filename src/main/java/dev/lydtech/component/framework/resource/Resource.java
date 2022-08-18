@@ -6,11 +6,12 @@ public enum Resource {
     KAFKA,
     POSTGRES,
     DEBEZIUM,
+    KAFKA_SCHEMA_REGISTRY,
     WIREMOCK,
     LOCALSTACK;
 
     @Override
     public String toString() {
-        return super.toString().toLowerCase();
+        return super.toString().replace("_", "").toLowerCase();
     }
 }

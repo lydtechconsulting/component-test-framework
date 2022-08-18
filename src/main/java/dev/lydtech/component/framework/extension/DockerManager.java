@@ -25,6 +25,8 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
@@ -34,6 +36,7 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
 import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
 import static dev.lydtech.component.framework.resource.Resource.KAFKA;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
 import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
 import static dev.lydtech.component.framework.resource.Resource.SERVICE;
@@ -96,6 +99,7 @@ public final class DockerManager {
         findContainerAndMapPort(dockerClient, POSTGRES.toString(), POSTGRES_ENABLED, POSTGRES_PORT);
         findContainerAndMapPort(dockerClient, KAFKA.toString(), KAFKA_ENABLED, KAFKA_PORT);
         findContainerAndMapPort(dockerClient, DEBEZIUM.toString(), DEBEZIUM_ENABLED, DEBEZIUM_PORT);
+        findContainerAndMapPort(dockerClient, KAFKA_SCHEMA_REGISTRY.toString(), KAFKA_SCHEMA_REGISTRY_ENABLED, KAFKA_SCHEMA_REGISTRY_PORT);
         findContainerAndMapPort(dockerClient, WIREMOCK.toString(), WIREMOCK_ENABLED, WIREMOCK_PORT);
         findContainerAndMapPort(dockerClient, LOCALSTACK.toString(), LOCALSTACK_ENABLED, LOCALSTACK_PORT);
 

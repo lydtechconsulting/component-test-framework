@@ -36,6 +36,10 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONFLUENT_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_WIREMOCK_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPICS;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPIC_PARTITION_COUNT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_CONTAINER_LOGGING_ENABLED;
@@ -64,6 +68,7 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
 import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
 import static dev.lydtech.component.framework.resource.Resource.KAFKA;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
 import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
 import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
@@ -77,6 +82,7 @@ public final class TestContainersManager {
     private GenericContainer postgresContainer;
     private KafkaContainer kafkaContainer;
     private DebeziumContainer debeziumContainer;
+    private GenericContainer kafkaSchemaRegistryContainer;
     private GenericContainer wiremockContainer;
     private GenericContainer localstackContainer;
 
@@ -108,6 +114,12 @@ public final class TestContainersManager {
             }
             debeziumContainer = createDebeziumContainer();
         }
+        if (KAFKA_SCHEMA_REGISTRY_ENABLED) {
+            if(!KAFKA_ENABLED) {
+                throw new RuntimeException("Kafka must be enabled in order to use Kafka schema registry.");
+            }
+            kafkaSchemaRegistryContainer = createKafkaSchemaRegistryContainer();
+        }
         if (WIREMOCK_ENABLED) {
             wiremockContainer = createWiremockContainer();
         }
@@ -138,6 +150,9 @@ public final class TestContainersManager {
             }
             if(DEBEZIUM_ENABLED) {
                 debeziumContainer.start();
+            }
+            if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
+                kafkaSchemaRegistryContainer.start();
             }
             if(WIREMOCK_ENABLED) {
                 wiremockContainer.start();
@@ -246,6 +261,23 @@ public final class TestContainersManager {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 });
         if(DEBEZIUM_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    private GenericContainer createKafkaSchemaRegistryContainer() {
+        String containerName = KAFKA_SCHEMA_REGISTRY.toString();
+        GenericContainer container = new GenericContainer<>("wiremock/wiremock:" + KAFKA_SCHEMA_REGISTRY_WIREMOCK_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                })
+                .withClasspathResourceMapping("/schemaregistry", "/home/wiremock/mappings", BindMode.READ_WRITE)
+                .withExposedPorts(KAFKA_SCHEMA_REGISTRY_PORT)
+                .waitingFor(Wait.forHttp("/health").forStatusCode(204));
+        if(KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;

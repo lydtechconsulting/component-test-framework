@@ -30,7 +30,7 @@ import org.awaitility.Awaitility;
 
 @Slf4j
 public final class KafkaClient {
-    private static String brokerUrl;
+    protected String brokerUrl;
     private static KafkaClient instance;
     private KafkaProducer defaultProducer;
 
@@ -49,6 +49,10 @@ public final class KafkaClient {
             instance = new KafkaClient();
         }
         return instance;
+    }
+
+    protected String getBrokerUrl() {
+        return brokerUrl;
     }
 
     public Consumer createConsumer(String groupId, String topic) {
@@ -88,28 +92,28 @@ public final class KafkaClient {
     /**
      * Send a message synchronously without headers and with the default Producer.
      */
-    public RecordMetadata sendMessage(String topic, String key, String payload) throws Exception {
+    public RecordMetadata sendMessage(String topic, String key, Object payload) throws Exception {
         return sendMessage(defaultProducer, topic, key, payload, null);
     }
 
     /**
      * Send a message synchronously without headers and with the provided Producer.
      */
-    public RecordMetadata sendMessage(Producer producer, String topic, String key, String payload) throws Exception {
+    public RecordMetadata sendMessage(Producer producer, String topic, String key, Object payload) throws Exception {
         return sendMessage(producer, topic, key, payload, null);
     }
 
     /**
      * Send a message synchronously with the provided headers and with the default Producer.
      */
-    public RecordMetadata sendMessage(String topic, String key, String payload, Map<String, String> headers) throws Exception {
+    public RecordMetadata sendMessage(String topic, String key, Object payload, Map<String, String> headers) throws Exception {
         return sendMessage(defaultProducer, topic, key, payload, headers);
     }
 
     /**
      * Send a message synchronously.  Awaits for the result of the send before returning.
      */
-    public RecordMetadata sendMessage(Producer producer, String topic, String key, String payload, Map<String, String> headers) throws Exception {
+    public RecordMetadata sendMessage(Producer producer, String topic, String key, Object payload, Map<String, String> headers) throws Exception {
         final List<Header> recordHeaders = new ArrayList<>();
         if(headers!=null && headers.size()>0) {
             headers.forEach((headerKey, headerValue) -> recordHeaders.add(new RecordHeader(headerKey, headerValue != null ? headerValue.getBytes() : null)));
@@ -124,28 +128,28 @@ public final class KafkaClient {
     /**
      * Send a message asynchronously without headers and with the default Producer.
      */
-    public Future<RecordMetadata> sendMessageAsync(String topic, String key, String payload) {
+    public Future<RecordMetadata> sendMessageAsync(String topic, String key, Object payload) {
         return sendMessageAsync(defaultProducer, topic, key, payload, null);
     }
 
     /**
      * Send a message asynchronously without headers and with the provided Producer.
      */
-    public Future<RecordMetadata> sendMessageAsync(Producer producer, String topic, String key, String payload) {
+    public Future<RecordMetadata> sendMessageAsync(Producer producer, String topic, String key, Object payload) {
         return sendMessageAsync(producer, topic, key, payload, null);
     }
 
     /**
      * Send a message asynchronously with the provided headers and with the default Producer.
      */
-    public Future<RecordMetadata> sendMessageAsync(String topic, String key, String payload, Map<String, String> headers) {
+    public Future<RecordMetadata> sendMessageAsync(String topic, String key, Object payload, Map<String, String> headers) {
         return sendMessageAsync(defaultProducer, topic, key, payload, headers);
     }
 
     /**
      * Send a message asynchronously.  Allows for producing batches of messages, by tuning the producer linger.ms config.
      */
-    public Future<RecordMetadata> sendMessageAsync(Producer producer, String topic, String key, String payload, Map<String, String> headers) {
+    public Future<RecordMetadata> sendMessageAsync(Producer producer, String topic, String key, Object payload, Map<String, String> headers) {
         final List<Header> recordHeaders = new ArrayList<>();
         if(headers!=null && headers.size()>0) {
             headers.forEach((headerKey, headerValue) -> recordHeaders.add(new RecordHeader(headerKey, headerValue != null ? headerValue.getBytes() : null)));
@@ -160,17 +164,17 @@ public final class KafkaClient {
      * 3. Performs the specified number of extra polls after the expected number received to ensure no further events.
      * 4. Returns the consumed events.
      */
-    public List<ConsumerRecord<String, String>> consumeAndAssert(String testName, Consumer consumer, int expectedEventCount, int furtherPolls) throws Exception {
+    public <T> List<ConsumerRecord<String, T>> consumeAndAssert(String testName, Consumer consumer, int expectedEventCount, int furtherPolls) throws Exception {
         AtomicInteger totalReceivedEvents = new AtomicInteger();
         AtomicInteger totalExtraPolls = new AtomicInteger(-1);
         AtomicInteger pollCount = new AtomicInteger();
-        List<ConsumerRecord<String, String>> events = new ArrayList<>();
+        List<ConsumerRecord<String, T>> events = new ArrayList<>();
 
         Awaitility.await()
             .atMost(30, TimeUnit.SECONDS)
             .pollInterval(1, TimeUnit.SECONDS)
             .until(() -> {
-                final ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100));
+                final ConsumerRecords<String, T> consumerRecords = consumer.poll(Duration.ofMillis(100));
                 consumerRecords.forEach(record -> {
                     log.info(testName + " - received: " + record.value());
                     totalReceivedEvents.incrementAndGet();
