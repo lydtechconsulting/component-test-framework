@@ -516,6 +516,19 @@ SchemaRegistryClient.getInstance().resetSchemaRegistry();
 
 A recommended pattern is to call both the reset and the register methods in the test `@BeforeAll`.
 
+As with the standard Wiremock container, the Schema Registry Wiremock container requires a `health.json` file to be provided in the `src/test/resources/schemaregistry/` directory with the following contents:
+```
+{
+  "request": {
+    "method": "GET",
+    "url": "/health"
+  },
+  "response": {
+    "status": 204
+  }
+}
+```
+
 # Debezium
 
 Debezium provides a Kafka Connect source connector, streaming events from the Database changelog to Kafka.
