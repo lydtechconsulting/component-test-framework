@@ -50,7 +50,7 @@ public class KafkaAvroClient {
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId+"-"+topic);
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
-        config.put(KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, SchemaRegistryClient.getInstance().getSchemaRegistryBaseUrl());
+        config.put(KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, KafkaSchemaRegistryClient.getInstance().getSchemaRegistryBaseUrl());
         config.put(KafkaAvroDeserializerConfig.AUTO_REGISTER_SCHEMAS, false);
         config.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
@@ -75,7 +75,7 @@ public class KafkaAvroClient {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaClient.getInstance().getBrokerUrl());
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-        config.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, SchemaRegistryClient.getInstance().getSchemaRegistryBaseUrl());
+        config.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, KafkaSchemaRegistryClient.getInstance().getSchemaRegistryBaseUrl());
         config.put(KafkaAvroSerializerConfig.AUTO_REGISTER_SCHEMAS, false);
         if(additionalConfig!=null && !additionalConfig.isEmpty()) {
             config.putAll(additionalConfig);

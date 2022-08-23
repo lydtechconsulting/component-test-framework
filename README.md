@@ -96,9 +96,10 @@ https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module 
 |kafka.topics|Comma delimited list of topics to create.  Often topics are auto-created, but for Kafka Streams for example they must be created upfront.|
 |kafka.topic.partition.count|The number of partitions for topics that are created.|5|
 |kafka.container.logging.enabled|Whether to output the Kafka Docker logs to the console.|false|
-|kafkaschemaregistry.enabled|Whether a Docker Schema Registry Wiremock container should be started.|false|
-|kafkaschemaregistry.wiremock.image.tag|The image tag of the Schema Registry Wiremock Docker container to use.|2.32.0|
-|kafkaschemaregistry.container.logging.enabled|Whether to output the Schema Registry Wiremock Docker logs to the console.|false|
+|kafka.schema.registry.enabled|Whether a Docker Schema Registry container should be started.|false|
+|kafka.schema.registry.confluent.image.tag|The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|6.2.4|
+|kafka.schema.registry.port|The port of the Kafka Schema Registry Docker container.|8081|
+|kafka.schema.registry.container.logging.enabled|Whether to output the Kafka Schema Registry Docker logs to the console.|false|
 |debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.|false|
 |debezium.image.tag|The image tag of the Debezium Docker container to use.|1.7.0.Final|
 |debezium.port|The port of the Debezium Docker container.|8083|
@@ -185,9 +186,10 @@ The following shows how to override the configurable properties in a single modu
                             <kafka.topics>inbound-foo-topic,outbound-bar-topic</kafka.topics>
                             <kafka.topic.partition.count>5</kafka.topic.partition.count>
                             <kafka.container.logging.enabled>false</kafka.container.logging.enabled>
-                            <kafkaschemaregistry.enabled>true</kafkaschemaregistry.enabled>
-                            <kafkaschemaregistry.wiremock.image.tag>2.32.0</kafkaschemaregistry.wiremock.image.tag>
-                            <kafkaschemaregistry.container.logging.enabled>true</kafkaschemaregistry.container.logging.enabled>
+                            <kafka.schema.registry.enabled>true</kafka.schema.registry.enabled>
+                            <kafka.schema.registry.confluent.image.tag>6.2.4</kafka.schema.registry.confluent.image.tag>
+                            <kafka.schema.registry.port>8081</kafka.schema.registry.port>
+                            <kafka.schema.registry.container.logging.enabled>true</kafka.schema.registry.container.logging.enabled>
                             <debezium.enabled>true</debezium.enabled>
                             <debezium.image.tag>1.7.0.Final</debezium.image.tag>
                             <debezium.port>8083</debezium.port>
@@ -490,44 +492,31 @@ Consume and assert Avro messages (in this case a FooCompleted record):
 List<ConsumerRecord<String, FooCompleted>> outboundEvents = KafkaAvroClient.getInstance().consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM);
 ```
 
-# Schema Registry
+# Kafka Schema Registry
 
-The Kafka Schema Registry client enables the component test to interact with the Dockerised wiremock Schema Registry container.
+The Kafka Confluent Schema Registry is a registry for holding the schemas of the messages sent to Kafka topics.  
 
-This mocked Schema Registry is designed to be queryable by the Kafka Avro serialiser and deserialiser in order for them to retrieve the required Avro schema for the given payload.
+The provided Kafka Schema Registry client enables the component test to interact with the Dockerised Confluent Schema Registry container in order to register the necessary schemas.
 
-To this end it provides a `registerSchema` method which takes the Avro class, and the Avro schema associated with it.
+At runtime the Schema Registry is hit by the Kafka Avro serialiser and deserialiser in the Kafka Producers and Consumers in order for them to retrieve the required Avro schema for the given payload.
+
+To this end the client provides a `registerSchema` method which takes the subject (which is the topic name) and the Avro schema associated with the messages on this topic.
 
 ```
-import dev.lydtech.component.framework.client.kafka.SchemaRegistryClient;
+import dev.lydtech.component.framework.client.kafka.KafkaSchemaRegistryClient;
 
-SchemaRegistryClient.getInstance().registerSchema(FooCompleted.class, FooCompleted.getClassSchema().toString());
+KafkaSchemaRegistryClient.getInstance().registerSchema(topicName, FooCompleted.getClassSchema().toString());
 ```
-
-Internally this `registerSchema` call uses an incrementing schema Id for each Avro schema to register.  It adds a stub mapping to the wiremock that will return a 200 (Success) when the schemaId is posted.  It then adds a stub mapping to return the given schema for the Avro class when queried with this schema Id.  This is all that is required for the Kafka Avro serialiser and deserialiser to perform their serialisation.
 
 The `getClassSchema()` method is a method generated on the Apache Avro generated class, and returns the schema String that is required for registering with the Schema Registry.
 
-The SchemaRegistryClient also provides a reset schema registry method to allow the component test to clear and reset these schema mappings.  
+The KafkaSchemaRegistryClient also provides a reset schema registry method to allow the component test to clear and reset these schema mappings.  
 
 ```
-SchemaRegistryClient.getInstance().resetSchemaRegistry();
+KafkaSchemaRegistryClient.getInstance().resetSchemaRegistry();
 ```
 
 A recommended pattern is to call both the reset and the register methods in the test `@BeforeAll`.
-
-As with the standard Wiremock container, the Schema Registry Wiremock container requires a `health.json` file to be provided in the `src/test/resources/schemaregistry/` directory with the following contents:
-```
-{
-  "request": {
-    "method": "GET",
-    "url": "/health"
-  },
-  "response": {
-    "status": 204
-  }
-}
-```
 
 # Debezium
 

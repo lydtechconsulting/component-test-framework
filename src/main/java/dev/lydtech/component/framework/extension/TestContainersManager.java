@@ -36,10 +36,10 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONFLUENT_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_WIREMOCK_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPICS;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPIC_PARTITION_COUNT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_CONTAINER_LOGGING_ENABLED;
@@ -267,16 +267,17 @@ public final class TestContainersManager {
     }
 
     private GenericContainer createKafkaSchemaRegistryContainer() {
-        String containerName = KAFKA_SCHEMA_REGISTRY.toString();
-        GenericContainer container = new GenericContainer<>("wiremock/wiremock:" + KAFKA_SCHEMA_REGISTRY_WIREMOCK_IMAGE_TAG)
+        String containerName = KAFKA_SCHEMA_REGISTRY.toString().replace("_", "-");
+        GenericContainer container = new GenericContainer<>("confluentinc/cp-schema-registry:" + KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 })
-                .withClasspathResourceMapping("/schemaregistry", "/home/wiremock/mappings", BindMode.READ_WRITE)
                 .withExposedPorts(KAFKA_SCHEMA_REGISTRY_PORT)
-                .waitingFor(Wait.forHttp("/health").forStatusCode(204));
+                .withEnv("SCHEMA_REGISTRY_HOST_NAME", containerName)
+                .withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .dependsOn(kafkaContainer);
         if(KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }

@@ -12,6 +12,6 @@ public enum Resource {
 
     @Override
     public String toString() {
-        return super.toString().replace("_", "").toLowerCase();
+        return super.toString().toLowerCase();
     }
 }

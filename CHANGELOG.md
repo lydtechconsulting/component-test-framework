@@ -1,8 +1,8 @@
 # Changelog
 
-## [1.7.0] - 2022-08-20
+## [1.7.0] - 2022-08-23
 ### Added
-- Supports Kafka schema registry.
+- Supports Kafka Schema Registry.
 - Supports producing and consuming Avro messages to/from Kafka.
 
 ## [1.6.0] - 2022-07-16

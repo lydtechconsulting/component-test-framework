@@ -68,8 +68,8 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED = "false";
-    private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_WIREMOCK_IMAGE_TAG = "2.32.0";
-    private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT = "8080";
+    private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = "6.2.4";
+    private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT = "8081";
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
@@ -124,10 +124,10 @@ public final class TestContainersConfiguration {
     public static final int KAFKA_TOPIC_PARTITION_COUNT = Integer.parseInt(System.getProperty("kafka.topic.partition.count", DEFAULT_KAFKA_TOPIC_PARTITION_COUNT));
     public static final boolean KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
 
-    public static final boolean KAFKA_SCHEMA_REGISTRY_ENABLED = Boolean.valueOf(System.getProperty("kafkaschemaregistry.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED));
-    public static final String KAFKA_SCHEMA_REGISTRY_WIREMOCK_IMAGE_TAG = System.getProperty("kafkaschemaregistry.wiremock.image.tag", DEFAULT_KAFKA_SCHEMA_REGISTRY_WIREMOCK_IMAGE_TAG);
-    public static final int KAFKA_SCHEMA_REGISTRY_PORT = Integer.parseInt(DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT);
-    public static final boolean KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafkaschemaregistry.container.logging.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED));
+    public static final boolean KAFKA_SCHEMA_REGISTRY_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED));
+    public static final String KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.schema.registry.confluent.image.tag", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
+    public static final int KAFKA_SCHEMA_REGISTRY_PORT = Integer.parseInt(System.getProperty("kafka.schema.registry.port", DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT));
+    public static final boolean KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.container.logging.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED));
 
     public static final boolean DEBEZIUM_ENABLED = Boolean.valueOf(System.getProperty("debezium.enabled", DEFAULT_DEBEZIUM_ENABLED));
     public static final String DEBEZIUM_IMAGE_TAG = System.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
@@ -223,11 +223,11 @@ public final class TestContainersConfiguration {
             log.info("kafka.container.logging.enabled: " + KAFKA_CONTAINER_LOGGING_ENABLED);
         }
 
-        log.info("kafkaschemaregistry.enabled: " + KAFKA_SCHEMA_REGISTRY_ENABLED);
+        log.info("kafka.schema.registry.enabled: " + KAFKA_SCHEMA_REGISTRY_ENABLED);
         if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
-            log.info("kafkaschemaregistry.wiremock.image.tag: " + DEFAULT_KAFKA_SCHEMA_REGISTRY_WIREMOCK_IMAGE_TAG);
-            log.info("kafkaschemaregistry.port: " + KAFKA_SCHEMA_REGISTRY_PORT);
-            log.info("kafkaschemaregistry.container.logging.enabled: " + KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED);
+            log.info("kafka.schema.registry.confluent.image.tag: " + KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
+            log.info("kafka.schema.registry.port: " + KAFKA_SCHEMA_REGISTRY_PORT);
+            log.info("kafka.schema.registry.container.logging.enabled: " + KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED);
         }
 
         log.info("debezium.enabled: " + DEBEZIUM_ENABLED);
