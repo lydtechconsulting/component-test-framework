@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.1] - 2022-08-24
+### Changed
+- Schema Registry Client documentation.
+
 ## [1.7.0] - 2022-08-23
 ### Added
 - Supports Kafka Schema Registry.

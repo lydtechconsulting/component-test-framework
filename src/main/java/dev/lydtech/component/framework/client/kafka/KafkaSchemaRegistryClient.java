@@ -58,16 +58,12 @@ public class KafkaSchemaRegistryClient {
      *
      * e.g. SendPayment.getClassSchema().toString()
      *
-     * The subject is calculated from the Class.  The hyphenated lower case String based on the avro generated class name,
-     * with a "-value" suffix.
-     * e.g. SendPayment is send-payment-value.
-     *
-     * @param subject the subject (topic name) of the schema being registered
+     * @param topic the topic name for the event schema being registered
      * @param schema the schema JSON string
      * @return schemaId the schemaId used to register this Avro schema
      */
-    public int registerSchema(String subject, String schema) throws Exception {
+    public int registerSchema(String topic, String schema) throws Exception {
         ParsedSchema avroSchema = new AvroSchema(schema);
-        return client.register(subject+"-value", avroSchema);
+        return client.register(topic+"-value", avroSchema);
     }
 }
