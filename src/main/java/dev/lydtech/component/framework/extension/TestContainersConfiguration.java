@@ -92,6 +92,12 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
+     * Conduktor configuration.
+     */
+
+    private static final String DEFAULT_CONDUKTOR_ENABLED = "false";
+
+    /**
      * The runtime configuration.
      */
 
@@ -144,6 +150,9 @@ public final class TestContainersConfiguration {
     public static final int LOCALSTACK_PORT = Integer.parseInt(System.getProperty("localstack.port", DEFAULT_LOCALSTACK_PORT));
     public static final String LOCALSTACK_SERVICES = System.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
     public static final boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
+
+    public static final boolean CONDUKTOR_ENABLED = Boolean.valueOf(System.getProperty("conduktor.enabled", DEFAULT_CONDUKTOR_ENABLED));
+    public static final String CONDUKTOR_LICENSE_KEY = System.getProperty("conduktor.license.key");
 
     private static List<AdditionalContainer> parseAdditionalContainers() {
         String additionalContainersPropertyValue = System.getProperty("additional.containers", null);
@@ -250,6 +259,11 @@ public final class TestContainersConfiguration {
             log.info("localstack.port: " + LOCALSTACK_PORT);
             log.info("localstack.services: " + LOCALSTACK_SERVICES);
             log.info("localstack.container.logging.enabled: " + LOCALSTACK_CONTAINER_LOGGING_ENABLED);
+        }
+
+        log.info("conduktor.enabled: " + CONDUKTOR_ENABLED);
+        if(CONDUKTOR_LICENSE_KEY!=null) {
+            log.info("conduktor.license.key: " + CONDUKTOR_LICENSE_KEY);
         }
     }
 }

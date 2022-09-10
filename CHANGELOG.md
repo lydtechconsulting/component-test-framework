@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.1.conduktor] - 2022-09-09
+### Changed
+- Supports Conduktor Platform.
+
 ## [1.7.1] - 2022-08-24
 ### Changed
 - Schema Registry Client documentation.

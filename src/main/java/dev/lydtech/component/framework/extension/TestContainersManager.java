@@ -6,9 +6,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import io.debezium.testing.testcontainers.DebeziumContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
@@ -26,6 +31,8 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ADDITIONAL_CONTAINERS;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_LICENSE_KEY;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_NAME_PREFIX;
@@ -85,6 +92,7 @@ public final class TestContainersManager {
     private GenericContainer kafkaSchemaRegistryContainer;
     private GenericContainer wiremockContainer;
     private GenericContainer localstackContainer;
+    private GenericContainer conduktorContainer;
 
     private TestContainersManager(){}
 
@@ -126,6 +134,15 @@ public final class TestContainersManager {
         if (LOCALSTACK_ENABLED) {
             localstackContainer = createLocalstackContainer();
         }
+        if (CONDUKTOR_ENABLED) {
+            if (!KAFKA_ENABLED) {
+                throw new RuntimeException("Kafka must be enabled in order to use Conduktor.");
+            }
+            if (CONDUKTOR_LICENSE_KEY==null) {
+                throw new RuntimeException("Conduktor license key must be set in order to use Conduktor.");
+            }
+            conduktorContainer = createConduktorContainer();
+        }
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT+1)
             .mapToObj(this::createServiceContainer)
             .collect(Collectors.toList());
@@ -147,6 +164,9 @@ public final class TestContainersManager {
             if(KAFKA_ENABLED) {
                 kafkaContainer.start();
                 createTopics();
+            }
+            if(CONDUKTOR_ENABLED) {
+                conduktorContainer.start();
             }
             if(DEBEZIUM_ENABLED) {
                 debeziumContainer.start();
@@ -314,6 +334,27 @@ public final class TestContainersManager {
         if(LOCALSTACK_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
+        return container;
+    }
+
+    private GenericContainer createConduktorContainer() {
+        String containerName = "conduktor";
+        int hostPort = 80;
+        int containerExposedPort = 80;
+        // Force host port to be 80.
+        Consumer<CreateContainerCmd> cmd = e -> e.withPortBindings(new PortBinding(Ports.Binding.bindPort(hostPort),
+                new ExposedPort(containerExposedPort)))
+                .withName(CONTAINER_NAME_PREFIX+"-"+containerName);;
+
+        GenericContainer container = new GenericContainer<>("conduktor/conduktor-platform:latest")
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd)
+                .withEnv("LICENSE_KEY", CONDUKTOR_LICENSE_KEY)
+                .withEnv("KAFKA_BOOTSTRAP_SERVER", "kafka:9092")
+                .withExposedPorts(containerExposedPort);
+        container.withLogConsumer(getLogConsumer(containerName));
+
         return container;
     }
 

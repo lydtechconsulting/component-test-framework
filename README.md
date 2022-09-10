@@ -113,6 +113,8 @@ https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module 
 |localstack.services|Comma delimited list of AWS services to start.|dynamodb|
 |localstack.region|The region to use.|eu-west-2|
 |localstack.container.logging.enabled|Whether to output the Localstack Docker logs to the console.|false|
+|conduktor.enabled|Whether a Docker Conduktor Platform container should be started.|true|
+|conduktor.license.key|License key for Conduktor Platform.||
 
 The configuration is logged at test execution time at INFO level.  Enable in `logback-test.xml` with:
 ```
@@ -203,6 +205,8 @@ The following shows how to override the configurable properties in a single modu
                             <localstack.services>lambda,dynamodb,s3</localstack.services>
                             <localstack.region>eu-west-2</localstack.region>
                             <localstack.container.logging.enabled>false</localstack.container.logging.enabled>
+                            <conduktor.enabled>true</conduktor.enabled>
+							<conduktor.license.key>my-licesnse-key</conduktor.license.key>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
