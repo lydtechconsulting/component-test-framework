@@ -58,6 +58,8 @@ Other reference projects that utilise the framework:
 
 https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb (includes Localstack with DynamoDB and uses multiple instances of the service under test)
 
+https://github.com/lydtechconsulting/kafka-springboot-consume-produce
+
 https://github.com/lydtechconsulting/kafka-streams
 
 https://github.com/lydtechconsulting/kafka-idempotent-consumer (uses multiple instances of the service under test)
@@ -66,7 +68,7 @@ https://github.com/lydtechconsulting/kafka-consumer-retry (uses multiple instanc
 
 https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer with additional configuration for batch send)
 
-https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module maven project using a wiremocked Schema Registry with Avro serialisation)
+https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module maven project using a wiremocked Schema Registry with Avro serialisation, and demonstrates using Kafka Control Center with Schema Registry integration)
 
 # Configuration
 
