@@ -100,6 +100,10 @@ https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module 
 |kafka.schema.registry.confluent.image.tag|The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|6.2.4|
 |kafka.schema.registry.port|The port of the Kafka Schema Registry Docker container.|8081|
 |kafka.schema.registry.container.logging.enabled|Whether to output the Kafka Schema Registry Docker logs to the console.|false|
+|kafka.control.center.enabled|Whether a Docker Confluent Control Center container should be started.|false|
+|kafka.control.center.confluent.image.tag|The image tag of the Kafka Confluent Control Center Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|6.2.4|
+|kafka.control.center.port|The port of the Kafka Control Center Docker container.|9021|
+|kafka.control.center.container.logging.enabled|Whether to output the Kafka Control Center Docker logs to the console.|false|
 |debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.|false|
 |debezium.image.tag|The image tag of the Debezium Docker container to use.|1.7.0.Final|
 |debezium.port|The port of the Debezium Docker container.|8083|
@@ -190,6 +194,10 @@ The following shows how to override the configurable properties in a single modu
                             <kafka.schema.registry.confluent.image.tag>6.2.4</kafka.schema.registry.confluent.image.tag>
                             <kafka.schema.registry.port>8081</kafka.schema.registry.port>
                             <kafka.schema.registry.container.logging.enabled>true</kafka.schema.registry.container.logging.enabled>
+                            <kafka.control.center.enabled>true</kafka.control.center.enabled>
+                            <kafka.control.center.confluent.image.tag>6.2.4</kafka.control.center.confluent.image.tag>
+                            <kafka.control.center.port>9021</kafka.control.center.port>
+                            <kafka.control.center.container.logging.enabled>true</kafka.control.center.container.logging.enabled>
                             <debezium.enabled>true</debezium.enabled>
                             <debezium.image.tag>1.7.0.Final</debezium.image.tag>
                             <debezium.port>8083</debezium.port>
@@ -517,6 +525,27 @@ KafkaSchemaRegistryClient.getInstance().resetSchemaRegistry();
 ```
 
 A recommended pattern is to call both the reset and the register methods in the test `@BeforeAll`.
+
+# Confluent Control Center
+
+The Confluent Control Center provides a user interface for inspecting the Kafka broker and topics.  Messages on the topics can be viewed, and if the Confluent Schema Registry is enabled the message schemas can be viewed.  Full broker and topic configuration is also available.
+
+In order to access the interface the mapped docker port must be obtained by listing the docker containers:
+```
+docker ps
+```
+
+View the Control Center container information, and look for the port mapped to the configured Control Center port (by default `9021`).
+
+For example, the mapped port in this case is `52853`:
+```
+47140a515c3c confluentinc/cp-enterprise-control-center:6.2.4  [...] 0.0.0.0:52853->9021/tcp ct-kafka-control-center
+```
+
+In this case navigate to the following URL to access the Control Center:
+```
+http://localhost:52853
+```
 
 # Debezium
 

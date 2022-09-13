@@ -7,6 +7,7 @@ public enum Resource {
     POSTGRES,
     DEBEZIUM,
     KAFKA_SCHEMA_REGISTRY,
+    KAFKA_CONTROL_CENTER,
     WIREMOCK,
     LOCALSTACK;
 

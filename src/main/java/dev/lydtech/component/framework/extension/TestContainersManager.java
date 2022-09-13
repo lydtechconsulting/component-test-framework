@@ -35,6 +35,10 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONFLUENT_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
@@ -68,6 +72,7 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
 import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
 import static dev.lydtech.component.framework.resource.Resource.KAFKA;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA_CONTROL_CENTER;
 import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
 import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
@@ -85,6 +90,7 @@ public final class TestContainersManager {
     private GenericContainer kafkaSchemaRegistryContainer;
     private GenericContainer wiremockContainer;
     private GenericContainer localstackContainer;
+    private GenericContainer controlCenterContainer;
 
     private TestContainersManager(){}
 
@@ -126,6 +132,12 @@ public final class TestContainersManager {
         if (LOCALSTACK_ENABLED) {
             localstackContainer = createLocalstackContainer();
         }
+        if (KAFKA_CONTROL_CENTER_ENABLED) {
+            if (!KAFKA_ENABLED) {
+                throw new RuntimeException("Kafka must be enabled in order to use Control Center.");
+            }
+            controlCenterContainer = createControlCenterContainer();
+        }
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT+1)
             .mapToObj(this::createServiceContainer)
             .collect(Collectors.toList());
@@ -153,6 +165,9 @@ public final class TestContainersManager {
             }
             if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
                 kafkaSchemaRegistryContainer.start();
+            }
+            if(KAFKA_CONTROL_CENTER_ENABLED) {
+                controlCenterContainer.start();
             }
             if(WIREMOCK_ENABLED) {
                 wiremockContainer.start();
@@ -277,10 +292,34 @@ public final class TestContainersManager {
                 .withExposedPorts(KAFKA_SCHEMA_REGISTRY_PORT)
                 .withEnv("SCHEMA_REGISTRY_HOST_NAME", containerName)
                 .withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("SCHEMA_REGISTRY_LISTENERS", "http://0.0.0.0:"+KAFKA_SCHEMA_REGISTRY_PORT)
                 .dependsOn(kafkaContainer);
         if(KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
+        return container;
+    }
+
+    private GenericContainer createControlCenterContainer() {
+        String containerName = KAFKA_CONTROL_CENTER.toString().replace("_", "-");
+        GenericContainer container = new GenericContainer<>("confluentinc/cp-enterprise-control-center:" + KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                })
+                .withEnv("CONTROL_CENTER_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("CONTROL_CENTER_REPLICATION_FACTOR", "1")
+                .withEnv("CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS", "1")
+                .withEnv("CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS", "1")
+                .withExposedPorts(KAFKA_CONTROL_CENTER_PORT);
+        if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
+            container.withEnv("CONTROL_CENTER_SCHEMA_REGISTRY_URL", "http://"+KAFKA_SCHEMA_REGISTRY.toString().replace("_", "-")+":"+KAFKA_SCHEMA_REGISTRY_PORT);
+        }
+        if(KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+
         return container;
     }
 

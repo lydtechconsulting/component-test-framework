@@ -171,7 +171,7 @@ public final class KafkaClient {
         List<ConsumerRecord<String, T>> events = new ArrayList<>();
 
         Awaitility.await()
-            .atMost(30, TimeUnit.SECONDS)
+            .atMost(1, TimeUnit.MINUTES)
             .pollInterval(1, TimeUnit.SECONDS)
             .until(() -> {
                 final ConsumerRecords<String, T> consumerRecords = consumer.poll(Duration.ofMillis(100));

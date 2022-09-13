@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.0] - 2022-09-13
+### Added
+- Supports Kafka Control Center including integration with Kafka Schema Registry.
+
 ## [1.7.1] - 2022-08-24
 ### Changed
 - Schema Registry Client documentation.
