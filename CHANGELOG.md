@@ -1,7 +1,7 @@
 # Changelog
 
 ## [1.9.0.conduktor] - 2022-10-01
-### Changed
+### Added
 - Supports Conduktor Platform.
 
 ## [1.8.0] - 2022-09-13
