@@ -58,6 +58,8 @@ Other reference projects that utilise the framework:
 
 https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb (includes Localstack with DynamoDB and uses multiple instances of the service under test)
 
+https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module maven project demonstrating using the Confluent Schema Registry, and demonstrates using Kafka Control Center and Conduktor Platform with Schema Registry integration)
+
 https://github.com/lydtechconsulting/kafka-springboot-consume-produce
 
 https://github.com/lydtechconsulting/kafka-streams
@@ -67,8 +69,6 @@ https://github.com/lydtechconsulting/kafka-idempotent-consumer (uses multiple in
 https://github.com/lydtechconsulting/kafka-consumer-retry (uses multiple instances of the service under test)
 
 https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer with additional configuration for batch send)
-
-https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module maven project using a wiremocked Schema Registry with Avro serialisation, and demonstrates using Kafka Control Center with Schema Registry integration)
 
 # Configuration
 
@@ -104,8 +104,12 @@ https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module 
 |kafka.schema.registry.container.logging.enabled|Whether to output the Kafka Schema Registry Docker logs to the console.|false|
 |kafka.control.center.enabled|Whether a Docker Confluent Control Center container should be started.|false|
 |kafka.control.center.confluent.image.tag|The image tag of the Kafka Confluent Control Center Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|6.2.4|
-|kafka.control.center.port|The port of the Kafka Control Center Docker container.|9021|
+|kafka.control.center.port|The port of the Kafka Control Center Docker container. Navigate to the Docker port mapped to this port to view the console. e.g. localhost:55643|9021|
 |kafka.control.center.container.logging.enabled|Whether to output the Kafka Control Center Docker logs to the console.|false|
+|conduktor.enabled|Whether a Docker Conduktor Platform container should be started.|true|
+|conduktor.license.key|License key for Conduktor Platform.  (Optional)||
+|conduktor.port|The exposed port of the Conduktor Platform container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:8088|8088|
+|conduktor.container.logging.enabled|Whether to output the Conduktor Docker logs to the console.|false|
 |debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.|false|
 |debezium.image.tag|The image tag of the Debezium Docker container to use.|1.7.0.Final|
 |debezium.port|The port of the Debezium Docker container.|8083|
@@ -200,6 +204,11 @@ The following shows how to override the configurable properties in a single modu
                             <kafka.control.center.confluent.image.tag>6.2.4</kafka.control.center.confluent.image.tag>
                             <kafka.control.center.port>9021</kafka.control.center.port>
                             <kafka.control.center.container.logging.enabled>true</kafka.control.center.container.logging.enabled>
+                            <conduktor.enabled>true</conduktor.enabled>
+                            <conduktor.image.tag>1.0.2</conduktor.image.tag>
+                            <conduktor.port>8088</conduktor.port>
+							<conduktor.license.key>my-license-key</conduktor.license.key>
+							<conduktor.container.logging.enabled>true</conduktor.container.logging.enabled>
                             <debezium.enabled>true</debezium.enabled>
                             <debezium.image.tag>1.7.0.Final</debezium.image.tag>
                             <debezium.port>8083</debezium.port>
@@ -548,6 +557,29 @@ In this case navigate to the following URL to access the Control Center:
 ```
 http://localhost:52853
 ```
+
+# Conduktor Platform
+
+The Conduktor Platform is a web application that provides a user interface for inspecting the Kafka broker and topics.  Messages on the topics can be viewed, and if the Confluent Schema Registry is enabled the message schemas can be viewed.  Full broker and topic configuration is also available.
+
+The Platform offers other services such as the ability to create Test flows to send and receive messages from the Kafka broker.  These can be explored through the UI.
+
+A license key can be provided via the `conduktor.license.key` configuration parameter to unlock more features and services.  See `https://conduktor.io` for more.
+
+The web application is configurable via the `conduktor.port` configuration parameter, defaulting to `8088`.  The chosen port must be available on the local machine running the component tests.
+
+Once the containers are running, navigate to:
+```
+http://localhost:8088
+```
+
+Log in with the following credentials:
+```
+username: admin@conduktor.io
+password: admin
+```
+
+Launch the `Console` application in order to view the broker, topics, messages, and schema registry data. 
 
 # Debezium
 

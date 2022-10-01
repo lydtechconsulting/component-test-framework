@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.9.0.conduktor] - 2022-10-01
+### Changed
+- Supports Conduktor Platform.
+
 ## [1.8.0] - 2022-09-13
 ### Added
 - Supports Kafka Control Center including integration with Kafka Schema Registry.

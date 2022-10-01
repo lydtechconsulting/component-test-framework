@@ -8,6 +8,7 @@ public enum Resource {
     DEBEZIUM,
     KAFKA_SCHEMA_REGISTRY,
     KAFKA_CONTROL_CENTER,
+    CONDUKTOR,
     WIREMOCK,
     LOCALSTACK;
 

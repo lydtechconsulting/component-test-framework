@@ -82,6 +82,15 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
+     * Conduktor configuration.
+     */
+
+    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.0.2";
+    private static final String DEFAULT_CONDUKTOR_ENABLED = "false";
+    private static final String DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_CONDUKTOR_PORT = "8088";
+
+    /**
      * Wiremock default configuration.
      */
 
@@ -142,6 +151,12 @@ public final class TestContainersConfiguration {
     public static final String KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.control.center.confluent.image.tag", DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG);
     public static final int KAFKA_CONTROL_CENTER_PORT = Integer.parseInt(System.getProperty("kafka.control.center.port", DEFAULT_KAFKA_CONTROL_CENTER_PORT));
     public static final boolean KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.container.logging.enabled", DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED));
+
+    public static final boolean CONDUKTOR_ENABLED = Boolean.valueOf(System.getProperty("conduktor.enabled", DEFAULT_CONDUKTOR_ENABLED));
+    public static final String CONDUKTOR_IMAGE_TAG = System.getProperty("conduktor.image.tag", DEFAULT_CONDUKTOR_IMAGE_TAG);
+    public static final String CONDUKTOR_LICENSE_KEY = System.getProperty("conduktor.license.key");
+    public static final int CONDUKTOR_PORT = Integer.parseInt(System.getProperty("conduktor.port", DEFAULT_CONDUKTOR_PORT));
+    public static final boolean CONDUKTOR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("conduktor.container.logging.enabled", DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED));
 
     public static final boolean DEBEZIUM_ENABLED = Boolean.valueOf(System.getProperty("debezium.enabled", DEFAULT_DEBEZIUM_ENABLED));
     public static final String DEBEZIUM_IMAGE_TAG = System.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
@@ -251,6 +266,13 @@ public final class TestContainersConfiguration {
             log.info("kafka.control.center.container.logging.enabled: " + KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED);
         }
 
+        log.info("conduktor.enabled: " + CONDUKTOR_ENABLED);
+        if(CONDUKTOR_ENABLED) {
+            log.info("conduktor.image.tag: " + CONDUKTOR_IMAGE_TAG);
+            log.info("conduktor.license.key: " + CONDUKTOR_LICENSE_KEY);
+            log.info("conduktor.port: " + CONDUKTOR_PORT);
+            log.info("conduktor.container.logging.enabled: " + CONDUKTOR_CONTAINER_LOGGING_ENABLED);
+        }
 
         log.info("debezium.enabled: " + DEBEZIUM_ENABLED);
         if(DEBEZIUM_ENABLED) {
