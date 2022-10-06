@@ -18,6 +18,8 @@ Currently supported resources:
 - Debezium Kafka Connect
 - Standalone wiremock
 - Localstack (AWS components - e.g. DynamoDB)
+- Confluent Control Center
+- Conduktor Platform
 
 # Dependency
 
