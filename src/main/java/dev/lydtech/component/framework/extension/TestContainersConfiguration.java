@@ -51,7 +51,7 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_KAFKA_ENABLED = "false";
     private static final String DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG = "7.2.1";
     private static final String DEFAULT_KAFKA_PORT = "9093";
-    private static final String DEFAULT_KAFKA_TOPIC_PARTITION_COUNT = "5";
+    private static final String DEFAULT_KAFKA_TOPIC_PARTITION_COUNT = "1";
     private static final String DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
