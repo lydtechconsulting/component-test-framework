@@ -68,6 +68,13 @@ public class KafkaAvroClient {
     }
 
     /**
+     * Defers to the method in KafkaClient.
+     */
+    public <T> List<ConsumerRecord<String, T>> consumeAndAssert(String testName, Consumer consumer, int expectedEventCount, int furtherPolls, int awaitAtMostSeconds) throws Exception {
+        return KafkaClient.getInstance().consumeAndAssert(testName, consumer, expectedEventCount, furtherPolls, awaitAtMostSeconds);
+    }
+
+    /**
      * Create a Producer with additional config.
      */
     public KafkaProducer<Long, String> createProducer(Properties additionalConfig) {

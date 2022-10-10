@@ -49,7 +49,7 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_KAFKA_ENABLED = "false";
-    private static final String DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG = "6.2.4";
+    private static final String DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG = "7.2.1";
     private static final String DEFAULT_KAFKA_PORT = "9093";
     private static final String DEFAULT_KAFKA_TOPIC_PARTITION_COUNT = "5";
     private static final String DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED = "false";
@@ -68,7 +68,7 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED = "false";
-    private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = "6.2.4";
+    private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = "7.2.1";
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT = "8081";
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = "false";
 
@@ -77,8 +77,11 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_ENABLED = "false";
-    private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = "6.2.4";
+    private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = "7.2.1";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_PORT = "9021";
+    private static final String DEFAULT_KAFKA_CONTROL_CENTER_JMX_PORT = "9101";
+    // If metrics export is enabled the main project must depend on Confluent's kafka-clients community package (e.g. 7.2.1-ccs) and monitoring-interceptors (e.g. 7.2.1) libraries.
+    private static final String DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = "false";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
@@ -149,6 +152,8 @@ public final class TestContainersConfiguration {
 
     public static final boolean KAFKA_CONTROL_CENTER_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.enabled", DEFAULT_KAFKA_CONTROL_CENTER_ENABLED));
     public static final String KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.control.center.confluent.image.tag", DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG);
+    public static final boolean KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.export.metrics.enabled", DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED));
+    public static final String KAFKA_CONTROL_CENTER_JMX_PORT = System.getProperty("kafka.control.center.jmx.port", DEFAULT_KAFKA_CONTROL_CENTER_JMX_PORT);
     public static final int KAFKA_CONTROL_CENTER_PORT = Integer.parseInt(System.getProperty("kafka.control.center.port", DEFAULT_KAFKA_CONTROL_CENTER_PORT));
     public static final boolean KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.container.logging.enabled", DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED));
 
@@ -263,6 +268,11 @@ public final class TestContainersConfiguration {
         if(KAFKA_CONTROL_CENTER_ENABLED) {
             log.info("kafka.control.center.confluent.image.tag: " + KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG);
             log.info("kafka.control.center.port: " + KAFKA_CONTROL_CENTER_PORT);
+            log.info("kafka.control.center.export.metrics.enabled: " + KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED);
+            log.info("kafka.control.center.jmx.port: " + KAFKA_CONTROL_CENTER_JMX_PORT);
+            if(KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED) {
+                log.info("Kafka Control Center metrics require Confluent's community package kafka-clients and monitoring-interceptors libraries.");
+            }
             log.info("kafka.control.center.container.logging.enabled: " + KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED);
         }
 

@@ -55,7 +55,17 @@ public final class KafkaClient {
         return brokerUrl;
     }
 
+    /**
+     * Create a standard Consumer.
+     */
     public Consumer createConsumer(String groupId, String topic) {
+        return createConsumer(groupId, topic, null);
+    }
+
+    /**
+     * Create a Consumer with additional config.
+     */
+    public Consumer createConsumer(String groupId, String topic, Properties additionalConfig) {
         final Properties config = new Properties();
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId+"-"+topic);
@@ -63,6 +73,9 @@ public final class KafkaClient {
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         config.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, 1000);
+        if(additionalConfig!=null && !additionalConfig.isEmpty()) {
+            config.putAll(additionalConfig);
+        }
         Consumer<Integer, String> consumer = new KafkaConsumer<>(config);
         consumer.subscribe(Collections.singletonList(topic));
         return consumer;
@@ -158,20 +171,25 @@ public final class KafkaClient {
         return producer.send(record);
     }
 
+    public <T> List<ConsumerRecord<String, T>> consumeAndAssert(String testName, Consumer consumer, int expectedEventCount, int furtherPolls) throws Exception {
+        int defaultAwaitAtMostSeconds = 60;
+        return consumeAndAssert(testName, consumer, expectedEventCount, furtherPolls, defaultAwaitAtMostSeconds);
+    }
+
     /**
      * 1. Poll for messages on the application’s outbound topic.
-     * 2. Assert the expected number are received.
+     * 2. Assert the expected number are received within the specified number of seconds.
      * 3. Performs the specified number of extra polls after the expected number received to ensure no further events.
      * 4. Returns the consumed events.
      */
-    public <T> List<ConsumerRecord<String, T>> consumeAndAssert(String testName, Consumer consumer, int expectedEventCount, int furtherPolls) throws Exception {
+    public <T> List<ConsumerRecord<String, T>> consumeAndAssert(String testName, Consumer consumer, int expectedEventCount, int furtherPolls, int awaitAtMostSeconds) throws Exception {
         AtomicInteger totalReceivedEvents = new AtomicInteger();
         AtomicInteger totalExtraPolls = new AtomicInteger(-1);
         AtomicInteger pollCount = new AtomicInteger();
         List<ConsumerRecord<String, T>> events = new ArrayList<>();
 
         Awaitility.await()
-            .atMost(1, TimeUnit.MINUTES)
+            .atMost(awaitAtMostSeconds, TimeUnit.SECONDS)
             .pollInterval(1, TimeUnit.SECONDS)
             .until(() -> {
                 final ConsumerRecords<String, T> consumerRecords = consumer.poll(Duration.ofMillis(100));
