@@ -555,7 +555,7 @@ A recommended pattern is to call both the reset and the register methods in the 
 
 The Confluent Control Center is a web application that provides a user interface for inspecting the Kafka broker and topics.  Messages on the topics can be viewed, and if the Confluent Schema Registry is enabled the message schemas can be viewed.  Full broker and topic configuration is also available.
 
-JMX metrics can be exported by enabling `kafka.control.center.export.metrics.enabled`.  This requires the application project to depend on Confluent library dependencies from the Confluent Maven repository.  The default kafka-clients version must be excluded from other dependencies that bring it in.
+JMX metrics can be exported by enabling `kafka.control.center.export.metrics.enabled`.  This requires the application project to depend on Confluent library dependencies from the Confluent Maven repository.  The default `org.apache.kafka:kafka-clients` version must be excluded from other dependencies that bring it in.
 
 ```
 <repositories>
@@ -576,8 +576,8 @@ JMX metrics can be exported by enabling `kafka.control.center.export.metrics.ena
         <artifactId>monitoring-interceptors</artifactId>
         <version>7.2.1</version>
     </dependency>
-	
-	<dependency>
+    
+    <dependency>
         <groupId>org.springframework.kafka</groupId>
         <artifactId>spring-kafka</artifactId>
         <version>2.7.3</version>
@@ -597,11 +597,14 @@ For producers, set `interceptor.classes` to `io.confluent.monitoring.clients.int
 config.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor");
 ```
 
-For consumers, set `interceptor.classes` to `io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor`.  This can be done for component test consumers and producers too, by adding the additional config.  See the example on this above, in the `Kafka Client` section.
+For consumers, set `interceptor.classes` to `io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor`.
 ```
 config.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor");
 ```
-The web application is configurable via the `kafka.control.center.port` configuration parameter, defaulting to `9021`.  The chosen port must be available on the local machine running the component tests.
+
+Interceptors can be added to component test consumers and producers too, by adding the additional config.  See the example on this above, in the `Kafka Client` section.
+
+The web application port is configurable via the `kafka.control.center.port` configuration parameter, defaulting to `9021`.  The chosen port must be available on the local machine running the component tests.
 
 Once the containers are running, navigate to:
 ```

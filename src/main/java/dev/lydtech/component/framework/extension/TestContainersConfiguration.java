@@ -80,7 +80,6 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = "7.2.1";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_PORT = "9021";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_JMX_PORT = "9101";
-    // If metrics export is enabled the main project must depend on Confluent's kafka-clients community package (e.g. 7.2.1-ccs) and monitoring-interceptors (e.g. 7.2.1) libraries.
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = "false";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = "false";
 
