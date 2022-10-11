@@ -95,22 +95,24 @@ https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer
 |postgres.username|The Postgres username.|user|
 |postgres.password|The Postgres password.|password|
 |kafka.enabled|Whether a Docker Kafka container should be started.|false|
-|kafka.confluent.image.tag|The image tag of the Confluent Kafka Docker container to use.|6.2.4|
+|kafka.confluent.image.tag|The image tag of the Confluent Kafka Docker container to use.|7.2.1|
 |kafka.port|The port of the Kafka Docker container.|9093|
 |kafka.topics|Comma delimited list of topics to create.  Often topics are auto-created, but for Kafka Streams for example they must be created upfront.|
 |kafka.topic.partition.count|The number of partitions for topics that are created.|5|
 |kafka.container.logging.enabled|Whether to output the Kafka Docker logs to the console.|false|
 |kafka.schema.registry.enabled|Whether a Docker Schema Registry container should be started.|false|
-|kafka.schema.registry.confluent.image.tag|The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|6.2.4|
+|kafka.schema.registry.confluent.image.tag|The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|7.2.1|
 |kafka.schema.registry.port|The port of the Kafka Schema Registry Docker container.|8081|
 |kafka.schema.registry.container.logging.enabled|Whether to output the Kafka Schema Registry Docker logs to the console.|false|
 |kafka.control.center.enabled|Whether a Docker Confluent Control Center container should be started.|false|
-|kafka.control.center.confluent.image.tag|The image tag of the Kafka Confluent Control Center Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|6.2.4|
-|kafka.control.center.port|The port of the Kafka Control Center Docker container. Navigate to the Docker port mapped to this port to view the console. e.g. localhost:55643|9021|
+|kafka.control.center.confluent.image.tag|The image tag of the Kafka Confluent Control Center Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|7.2.1|
+|kafka.control.center.port|The exposed port of the Kafka Confluent Control Center Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:9021|9021|
+|kafka.control.center.export.metrics.enabled|Whether to export JMX metrics from the broker.  Also means if interceptors are added to consumers and producers that further metrics are exported.  Requires Confluent's community package kafka-clients and monitoring-interceptors libraries.|false|
+|kafka.control.center.jmx.port|The port for accessing the exported JMX metrics.  The port must be available on the local machine.|9101|
 |kafka.control.center.container.logging.enabled|Whether to output the Kafka Control Center Docker logs to the console.|false|
 |conduktor.enabled|Whether a Docker Conduktor Platform container should be started.|true|
 |conduktor.license.key|License key for Conduktor Platform.  (Optional)||
-|conduktor.port|The exposed port of the Conduktor Platform container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:8088|8088|
+|conduktor.port|The exposed port of the Conduktor Platform Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:8088|8088|
 |conduktor.container.logging.enabled|Whether to output the Conduktor Docker logs to the console.|false|
 |debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.|false|
 |debezium.image.tag|The image tag of the Debezium Docker container to use.|1.7.0.Final|
@@ -193,18 +195,20 @@ The following shows how to override the configurable properties in a single modu
                             <postgres.password>password</postgres.password>
                             <postgres.container.logging.enabled>false</postgres.container.logging.enabled>
                             <kafka.enabled>true</kafka.enabled>
-                            <kafka.confluent.image.tag>6.2.4</kafka.confluent.image.tag>
+                            <kafka.confluent.image.tag>7.2.1</kafka.confluent.image.tag>
                             <kafka.port>9093</kafka.port>
                             <kafka.topics>inbound-foo-topic,outbound-bar-topic</kafka.topics>
                             <kafka.topic.partition.count>5</kafka.topic.partition.count>
                             <kafka.container.logging.enabled>false</kafka.container.logging.enabled>
                             <kafka.schema.registry.enabled>true</kafka.schema.registry.enabled>
-                            <kafka.schema.registry.confluent.image.tag>6.2.4</kafka.schema.registry.confluent.image.tag>
+                            <kafka.schema.registry.confluent.image.tag>7.2.1</kafka.schema.registry.confluent.image.tag>
                             <kafka.schema.registry.port>8081</kafka.schema.registry.port>
                             <kafka.schema.registry.container.logging.enabled>true</kafka.schema.registry.container.logging.enabled>
                             <kafka.control.center.enabled>true</kafka.control.center.enabled>
-                            <kafka.control.center.confluent.image.tag>6.2.4</kafka.control.center.confluent.image.tag>
-                            <kafka.control.center.port>9021</kafka.control.center.port>
+                            <kafka.control.center.confluent.image.tag>7.2.1</kafka.control.center.confluent.image.tag>
+                            <kafka.control.center.port>9021</kafka.control.center.port>                            
+                            <kafka.control.center.export.metrics.enabled>true</kafka.control.center.export.metrics.enabled>
+                            <kafka.control.center.jmx.port>9101</kafka.control.center.jmx.port>
                             <kafka.control.center.container.logging.enabled>true</kafka.control.center.container.logging.enabled>
                             <conduktor.enabled>true</conduktor.enabled>
                             <conduktor.image.tag>1.0.2</conduktor.image.tag>
@@ -457,7 +461,14 @@ Create a consumer to poll for messages sent by the service under test:
 ```
 import dev.lydtech.component.framework.client.kafka.KafkaClient;
 
-Consumer fooConsumer = KafkaClient.createConsumer(FOO_TOPIC);
+Consumer fooConsumer = KafkaClient.createConsumer(GROUP_ID, FOO_TOPIC);
+```
+
+The Consumer can be configured for the test by passing in a Properties map of Consumer Config values to the createConsumer() method.
+```
+Properties additionalConfig = new Properties();
+additionalConfig.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor");
+Consumer fooConsumer = KafkaClient.createConsumer(GROUP_ID, FOO_TOPIC);
 ```
 
 Send a message synchronously:
@@ -479,6 +490,7 @@ For example, to set a `linger.ms` value, define the following in the component t
 ```
 Properties additionalConfig = new Properties();
 additionalConfig.put(ProducerConfig.LINGER_MS_CONFIG, 100);
+additionalConfig.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor");
 KafkaProducer producer = KafkaClient.getInstance().createProducer(additionalConfig);
 ```
 
@@ -486,7 +498,7 @@ This can then be coupled with the `sendMessageAsync(..)` call to ensure several 
 
 Consume and assert a message:
 ```
-KafkaClient.consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM);
+KafkaClient.consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM, AWAIT_AT_MOST_SECONDS);
 ```
 
 # Kafka Avro Client
@@ -541,23 +553,62 @@ A recommended pattern is to call both the reset and the register methods in the 
 
 # Confluent Control Center
 
-The Confluent Control Center provides a user interface for inspecting the Kafka broker and topics.  Messages on the topics can be viewed, and if the Confluent Schema Registry is enabled the message schemas can be viewed.  Full broker and topic configuration is also available.
+The Confluent Control Center is a web application that provides a user interface for inspecting the Kafka broker and topics.  Messages on the topics can be viewed, and if the Confluent Schema Registry is enabled the message schemas can be viewed.  Full broker and topic configuration is also available.
 
-In order to access the interface the mapped docker port must be obtained by listing the docker containers:
+JMX metrics can be exported by enabling `kafka.control.center.export.metrics.enabled`.  This requires the application project to depend on Confluent library dependencies from the Confluent Maven repository.  The default `org.apache.kafka:kafka-clients` version must be excluded from other dependencies that bring it in.
+
 ```
-docker ps
+<repositories>
+    <repository>
+        <id>confluent</id>
+        <url>http://packages.confluent.io/maven/</url>
+    </repository>
+</repositories>
+	
+<dependencies>
+    <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>7.2.1-ccs</version>
+    </dependency>
+    <dependency>
+        <groupId>io.confluent</groupId>
+        <artifactId>monitoring-interceptors</artifactId>
+        <version>7.2.1</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+        <version>2.7.3</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
 ```
 
-View the Control Center container information, and look for the port mapped to the configured Control Center port (by default `9021`).
+With `kafka.control.center.export.metrics.enabled` set to `true` Confluent Monitoring Interceptors can to be used for Java producers and consumers.  
 
-For example, the mapped port in this case is `52853`:
+For producers, set `interceptor.classes` to `io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor`.  
 ```
-47140a515c3c confluentinc/cp-enterprise-control-center:6.2.4  [...] 0.0.0.0:52853->9021/tcp ct-kafka-control-center
+config.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor");
 ```
 
-In this case navigate to the following URL to access the Control Center:
+For consumers, set `interceptor.classes` to `io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor`.
 ```
-http://localhost:52853
+config.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor");
+```
+
+Interceptors can be added to component test consumers and producers too, by adding the additional config.  See the example on this above, in the `Kafka Client` section.
+
+The web application port is configurable via the `kafka.control.center.port` configuration parameter, defaulting to `9021`.  The chosen port must be available on the local machine running the component tests.
+
+Once the containers are running, navigate to:
+```
+http://localhost:9021
 ```
 
 # Conduktor Platform

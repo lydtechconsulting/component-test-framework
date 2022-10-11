@@ -1,12 +1,17 @@
 # Changelog
 
+## [1.10.0] - 2022-10-10
+### Updated
+- Supports exporting Kafka broker, consumer and producer JMX metrics to Confluent Control Center.
+- Supports creating a configurable test consumer.
+
 ## [1.9.0] - 2022-10-01
 ### Added
 - Supports Conduktor Platform.
 
 ## [1.8.0] - 2022-09-13
 ### Added
-- Supports Kafka Control Center including integration with Kafka Schema Registry.
+- Supports monitoring Kafka in Confluent Control Center, including integration with Confluent Schema Registry.
 
 ## [1.7.1] - 2022-08-24
 ### Changed

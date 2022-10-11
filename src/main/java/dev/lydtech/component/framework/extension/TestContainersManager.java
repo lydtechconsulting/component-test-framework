@@ -68,7 +68,12 @@ public final class TestContainersManager {
             postgresContainer = createPostgresContainer();
         }
         if (KAFKA_ENABLED) {
-            kafkaContainer = createKafkaContainer();
+            if(KAFKA_CONTROL_CENTER_ENABLED && KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED) {
+                // To support exporting metrics for Confluent Control Center, use the Confluent cp-server container.
+                kafkaContainer = createKafkaServerContainer();
+            } else {
+                kafkaContainer = createKafkaContainer();
+            }
         }
         if (DEBEZIUM_ENABLED) {
             if(!KAFKA_ENABLED || !POSTGRES_ENABLED) {
@@ -215,14 +220,54 @@ public final class TestContainersManager {
         return container;
     }
 
+    /**
+     * Standard Kafka and Zookeeper.
+     */
     private KafkaContainer createKafkaContainer() {
         String containerName = KAFKA.toString();
         KafkaContainer container = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_CONFLUENT_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
+                .withEnv("KAFKA_NUM_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 });
+        if(KAFKA_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    /**
+     * The Confluent cp-server container, with additional support for metrics.
+     *
+     * The main project must depend on Confluent's kafka-clients community package (e.g. 7.2.1-ccs) and monitoring-interceptors (e.g. 7.2.1) libraries.
+     */
+    private KafkaContainer createKafkaServerContainer() {
+        String containerName = KAFKA.toString();
+        DockerImageName cpServerImage = DockerImageName.parse("confluentinc/cp-server").asCompatibleSubstituteFor("confluentinc/cp-kafka");
+        KafkaContainer container = new KafkaContainer(cpServerImage.withTag(KAFKA_CONFLUENT_IMAGE_TAG))
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withEnv("KAFKA_NUM_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
+                .withEnv("KAFKA_DEFAULT_REPLICATION_FACTOR", "1")
+                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
+                .withEnv("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "1")
+                .withEnv("KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR", "1")
+                .withEnv("KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR", "1")
+                .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1")
+                .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
+                .withEnv("KAFKA_JMX_PORT", KAFKA_CONTROL_CENTER_JMX_PORT)
+                .withEnv("KAFKA_JMX_HOSTNAME", "localhost")
+                .withEnv("CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS", "1")
+                .withEnv("KAFKA_METRIC_REPORTERS", "io.confluent.metrics.reporter.ConfluentMetricsReporter")
+                .withEnv("CONFLUENT_METRICS_ENABLE", "true")
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                });
+                container.withEnv("KAFKA_METRIC_REPORTERS", "io.confluent.metrics.reporter.ConfluentMetricsReporter");
+
         if(KAFKA_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
@@ -267,16 +312,21 @@ public final class TestContainersManager {
 
     private GenericContainer createControlCenterContainer() {
         String containerName = KAFKA_CONTROL_CENTER.toString().replace("_", "-");
+        // Force host port to be KAFKA_CONTROL_CENTER_PORT.
+        Consumer<CreateContainerCmd> cmd = e -> e.withHostConfig(e.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(KAFKA_CONTROL_CENTER_PORT),
+                new ExposedPort(KAFKA_CONTROL_CENTER_PORT))))
+                .withName(CONTAINER_NAME_PREFIX+"-"+containerName);
         GenericContainer container = new GenericContainer<>("confluentinc/cp-enterprise-control-center:" + KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
-                .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
-                })
+                .withCreateContainerCmdModifier(cmd)
                 .withEnv("CONTROL_CENTER_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
                 .withEnv("CONTROL_CENTER_REPLICATION_FACTOR", "1")
                 .withEnv("CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS", "1")
                 .withEnv("CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS", "1")
+                .withEnv("CONFLUENT_METRICS_TOPIC_REPLICATION", "1")
+                .withEnv("PORT", String.valueOf(KAFKA_CONTROL_CENTER_PORT))
+                .withEnv("CONTROL_CENTER_REST_LISTENERS", "http://0.0.0.0:"+KAFKA_CONTROL_CENTER_PORT)
                 .withExposedPorts(KAFKA_CONTROL_CENTER_PORT);
         if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
             container.withEnv("CONTROL_CENTER_SCHEMA_REGISTRY_URL", "http://"+KAFKA_SCHEMA_REGISTRY.toString().replace("_", "-")+":"+KAFKA_SCHEMA_REGISTRY_PORT);
