@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.10.0] - 2022-10-10
+## [1.10.0] - 2022-10-11
 ### Updated
 - Supports exporting Kafka broker, consumer and producer JMX metrics to Confluent Control Center.
 - Supports creating a configurable test consumer.
