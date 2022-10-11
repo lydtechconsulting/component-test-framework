@@ -2,12 +2,15 @@ package dev.lydtech.component.framework.client.service;
 
 import java.util.Optional;
 
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class ServiceClient {
 
-    private static String baseUrl;
+    private String baseUrl;
+    private RequestSpecification requestSpec;
     private static ServiceClient instance;
 
     private ServiceClient(){
@@ -17,6 +20,9 @@ public final class ServiceClient {
                 .orElseThrow(() -> new RuntimeException("service.mapped.port property not found"));
         baseUrl = "http://" + serviceHost + ":" + servicePort;
         log.info("Service base URL is: " + baseUrl);
+        requestSpec = new RequestSpecBuilder()
+                .setBaseUri(baseUrl)
+                .build();
     }
 
     public synchronized static ServiceClient getInstance() {
@@ -28,5 +34,9 @@ public final class ServiceClient {
 
     public String getBaseUrl() {
         return baseUrl;
+    }
+
+    public RequestSpecification getRequestSpecification() {
+        return requestSpec;
     }
 }
