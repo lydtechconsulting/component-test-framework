@@ -37,10 +37,11 @@ import static dev.lydtech.component.framework.resource.Resource.*;
 public final class TestContainersManager {
 
     private Network network;
-    private List<GenericContainer> serviceContainers;
+    private List<GenericContainer> serviceContainers = new ArrayList<>(1);
     private List<GenericContainer> additionalContainers;
     private GenericContainer postgresContainer;
-    private KafkaContainer kafkaContainer;
+    private List<KafkaContainer> kafkaContainers;
+    private GenericContainer zookeeperContainer;
     private DebeziumContainer debeziumContainer;
     private GenericContainer kafkaSchemaRegistryContainer;
     private GenericContainer wiremockContainer;
@@ -68,11 +69,30 @@ public final class TestContainersManager {
             postgresContainer = createPostgresContainer();
         }
         if (KAFKA_ENABLED) {
+            if(KAFKA_TOPIC_REPLICATION_FACTOR > KAFKA_BROKER_COUNT) {
+                throw new RuntimeException("kafka.topic.replication.factor: "+KAFKA_TOPIC_REPLICATION_FACTOR+" - must not be greater than kafka.broker.count: "+KAFKA_BROKER_COUNT);
+            }
+            if(KAFKA_MIN_INSYNC_REPLICAS > KAFKA_BROKER_COUNT) {
+                throw new RuntimeException("kafka.min.insync.replicas: "+KAFKA_MIN_INSYNC_REPLICAS+" - must not be greater than kafka.broker.count: "+KAFKA_BROKER_COUNT);
+            }
+            if(KAFKA_MIN_INSYNC_REPLICAS > KAFKA_TOPIC_REPLICATION_FACTOR) {
+                throw new RuntimeException("kafka.min.insync.replicas: "+KAFKA_MIN_INSYNC_REPLICAS+" - must not be greater than kafka.topic.replication.factor: "+KAFKA_TOPIC_REPLICATION_FACTOR);
+            }
+            if(KAFKA_BROKER_COUNT>1) {
+                // As there are multiple Kafka instances they need to use the same external Zookeeper.
+                zookeeperContainer = createZookeeperContainer();
+            }
+
             if(KAFKA_CONTROL_CENTER_ENABLED && KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED) {
                 // To support exporting metrics for Confluent Control Center, use the Confluent cp-server container.
-                kafkaContainer = createKafkaServerContainer();
+                kafkaContainers = IntStream.range(1, KAFKA_BROKER_COUNT +1)
+                    .mapToObj(this::createKafkaServerContainer)
+                    .collect(Collectors.toList());
+
             } else {
-                kafkaContainer = createKafkaContainer();
+                kafkaContainers = IntStream.range(1, KAFKA_BROKER_COUNT +1)
+                    .mapToObj(this::createKafkaContainer)
+                    .collect(Collectors.toList());
             }
         }
         if (DEBEZIUM_ENABLED) {
@@ -105,9 +125,9 @@ public final class TestContainersManager {
             }
             conduktorContainer = createConduktorContainer();
         }
-        serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT+1)
-            .mapToObj(this::createServiceContainer)
-            .collect(Collectors.toList());
+        serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT + 1)
+                .mapToObj(this::createServiceContainer)
+                .collect(Collectors.toList());
 
         additionalContainers = ADDITIONAL_CONTAINERS.stream().map(additionalContainer -> createAdditionalContainer(
                 additionalContainer.getName(),
@@ -124,7 +144,11 @@ public final class TestContainersManager {
                 postgresContainer.start();
             }
             if(KAFKA_ENABLED) {
-                kafkaContainer.start();
+                if(KAFKA_BROKER_COUNT>1) {
+                    // As there are multiple Kafka instances they need to use the same external Zookeeper.
+                    zookeeperContainer.start();
+                }
+                kafkaContainers.stream().forEach(container -> container.start());
                 createTopics();
             }
             if(DEBEZIUM_ENABLED) {
@@ -223,15 +247,15 @@ public final class TestContainersManager {
     /**
      * Standard Kafka and Zookeeper.
      */
-    private KafkaContainer createKafkaContainer() {
-        String containerName = KAFKA.toString();
+    private KafkaContainer createKafkaContainer(int instance) {
+        final String containerName = instance==1?KAFKA.toString():KAFKA.toString()+"-"+instance;
         KafkaContainer container = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_CONFLUENT_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
-                .withEnv("KAFKA_NUM_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 });
+        container = configureCommonKafkaContainerEnv(container, instance);
         if(KAFKA_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
@@ -243,23 +267,17 @@ public final class TestContainersManager {
      *
      * The main project must depend on Confluent's kafka-clients community package (e.g. 7.2.1-ccs) and monitoring-interceptors (e.g. 7.2.1) libraries.
      */
-    private KafkaContainer createKafkaServerContainer() {
-        String containerName = KAFKA.toString();
+    private KafkaContainer createKafkaServerContainer(int instance) {
+        final String containerName = instance==1?KAFKA.toString():KAFKA.toString()+"-"+instance;
         DockerImageName cpServerImage = DockerImageName.parse("confluentinc/cp-server").asCompatibleSubstituteFor("confluentinc/cp-kafka");
         KafkaContainer container = new KafkaContainer(cpServerImage.withTag(KAFKA_CONFLUENT_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
-                .withEnv("KAFKA_NUM_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
-                .withEnv("KAFKA_DEFAULT_REPLICATION_FACTOR", "1")
-                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1")
-                .withEnv("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "1")
                 .withEnv("KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR", "1")
                 .withEnv("KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR", "1")
-                .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1")
-                .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
                 .withEnv("KAFKA_JMX_PORT", KAFKA_CONTROL_CENTER_JMX_PORT)
                 .withEnv("KAFKA_JMX_HOSTNAME", "localhost")
-                .withEnv("CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS", containerName+":9092")
                 .withEnv("CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS", "1")
                 .withEnv("KAFKA_METRIC_REPORTERS", "io.confluent.metrics.reporter.ConfluentMetricsReporter")
                 .withEnv("CONFLUENT_METRICS_ENABLE", "true")
@@ -267,11 +285,41 @@ public final class TestContainersManager {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 });
                 container.withEnv("KAFKA_METRIC_REPORTERS", "io.confluent.metrics.reporter.ConfluentMetricsReporter");
-
+        container = configureCommonKafkaContainerEnv(container, instance);
         if(KAFKA_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;
+    }
+
+    /**
+     * Set up the Env that is the same for both the Confluent cp-kafka and cp-server container types.
+     */
+    private KafkaContainer configureCommonKafkaContainerEnv(KafkaContainer kafkaContainer, int instance) {
+        if(KAFKA_BROKER_COUNT>1) {
+            // As there are multiple Kafka instances they need to use the same external Zookeeper.
+            kafkaContainer.withExternalZookeeper("zookeeper:2181");
+        }
+        return kafkaContainer
+                .withEnv("KAFKA_BROKER_ID", String.valueOf(instance))
+                .withEnv("KAFKA_NUM_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
+                .withEnv("KAFKA_DEFAULT_REPLICATION_FACTOR", String.valueOf(KAFKA_TOPIC_REPLICATION_FACTOR))
+                .withEnv("KAFKA_MIN_INSYNC_REPLICAS", String.valueOf(KAFKA_MIN_INSYNC_REPLICAS))
+                .withEnv("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", String.valueOf(KAFKA_TOPIC_REPLICATION_FACTOR))
+                .withEnv("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "0")
+                .withEnv("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", String.valueOf(KAFKA_MIN_INSYNC_REPLICAS))
+                .withEnv("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", String.valueOf(KAFKA_TOPIC_REPLICATION_FACTOR));
+    }
+
+
+    private GenericContainer createZookeeperContainer() {
+        return new GenericContainer<>("confluentinc/cp-zookeeper:4.0.0")
+                .withNetwork(network)
+                .withNetworkAliases("zookeeper")
+                .withEnv("ZOOKEEPER_CLIENT_PORT", "2181")
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-zookeeper");
+                });
     }
 
     private DebeziumContainer createDebeziumContainer() {
@@ -279,9 +327,9 @@ public final class TestContainersManager {
         DebeziumContainer container = new DebeziumContainer(DockerImageName.parse("debezium/connect").withTag(DEBEZIUM_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
-                .withKafka(kafkaContainer)
+                .withKafka(kafkaContainers.get(0))
                 .withExposedPorts(DEBEZIUM_PORT)
-                .dependsOn(kafkaContainer)
+                .dependsOn(kafkaContainers.get(0))
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 });
@@ -303,7 +351,7 @@ public final class TestContainersManager {
                 .withEnv("SCHEMA_REGISTRY_HOST_NAME", containerName)
                 .withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
                 .withEnv("SCHEMA_REGISTRY_LISTENERS", "http://0.0.0.0:"+KAFKA_SCHEMA_REGISTRY_PORT)
-                .dependsOn(kafkaContainer);
+                .dependsOn(kafkaContainers.get(0));
         if(KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
@@ -322,8 +370,8 @@ public final class TestContainersManager {
                 .withCreateContainerCmdModifier(cmd)
                 .withEnv("CONTROL_CENTER_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
                 .withEnv("CONTROL_CENTER_REPLICATION_FACTOR", "1")
-                .withEnv("CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS", "1")
-                .withEnv("CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS", "1")
+                .withEnv("CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
+                .withEnv("CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
                 .withEnv("CONFLUENT_METRICS_TOPIC_REPLICATION", "1")
                 .withEnv("PORT", String.valueOf(KAFKA_CONTROL_CENTER_PORT))
                 .withEnv("CONTROL_CENTER_REST_LISTENERS", "http://0.0.0.0:"+KAFKA_CONTROL_CENTER_PORT)
@@ -400,7 +448,7 @@ public final class TestContainersManager {
         if(!KAFKA_TOPICS.isEmpty()) {
             Properties properties = new Properties();
             properties.put(
-                    AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.getBootstrapServers()
+                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainers.get(0).getBootstrapServers()
             );
             Admin admin = Admin.create(properties);
             Collection<NewTopic> newTopics = new ArrayList<>(KAFKA_TOPICS.size());

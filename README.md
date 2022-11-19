@@ -12,7 +12,7 @@ Currently supported resources:
 
 - Configurable number of instances of the service under test.
 - Additional containers (simulators/services)
-- Kafka broker
+- Kafka broker (configurable number of nodes in the cluster)
 - Kafka Schema Registry
 - Postgres database
 - Debezium Kafka Connect
@@ -60,7 +60,9 @@ Other reference projects that utilise the framework:
 
 https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb (includes Localstack with DynamoDB and uses multiple instances of the service under test)
 
-https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module maven project demonstrating using the Confluent Schema Registry, and demonstrates using Kafka Control Center and Conduktor Platform with Schema Registry integration)
+https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module maven project demonstrating using the Confluent Schema Registry, and demonstrates using Confluent Control Center and Conduktor Platform with Confluent Schema Registry integration)
+
+https://github.com/lydtechconsulting/kafka-metrics (demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform)
 
 https://github.com/lydtechconsulting/kafka-springboot-consume-produce
 
@@ -95,10 +97,13 @@ https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer
 |postgres.username|The Postgres username.|user|
 |postgres.password|The Postgres password.|password|
 |kafka.enabled|Whether a Docker Kafka container should be started.|false|
+|kafka.broker.count|The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be 'kafka', then subsequent will have an instance suffix, e.g. 'kafka-2'.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).|1|
 |kafka.confluent.image.tag|The image tag of the Confluent Kafka Docker container to use.|7.2.1|
 |kafka.port|The port of the Kafka Docker container.|9093|
 |kafka.topics|Comma delimited list of topics to create.  Often topics are auto-created, but for Kafka Streams for example they must be created upfront.|
 |kafka.topic.partition.count|The number of partitions for topics that are created.|5|
+|kafka.topic.replication.factor|The replication factor to use for topics.  Must not be greater than the configured `kafka.broker.count`.|1|
+|kafka.min.insync.replicas|The minimum in-sync number of replicas required for successful writes to topics.  Must not be greater than the configured `kafka.broker.count` nor the `kafka.topic.replication.factor`.|1|
 |kafka.container.logging.enabled|Whether to output the Kafka Docker logs to the console.|false|
 |kafka.schema.registry.enabled|Whether a Docker Schema Registry container should be started.|false|
 |kafka.schema.registry.confluent.image.tag|The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|7.2.1|
@@ -111,6 +116,7 @@ https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer
 |kafka.control.center.jmx.port|The port for accessing the exported JMX metrics.  The port must be available on the local machine.|9101|
 |kafka.control.center.container.logging.enabled|Whether to output the Kafka Control Center Docker logs to the console.|false|
 |conduktor.enabled|Whether a Docker Conduktor Platform container should be started.|true|
+|conduktor.image.tag|The image tag of the Conduktor Platform Docker container to use.|1.4.0|
 |conduktor.license.key|License key for Conduktor Platform.  (Optional)||
 |conduktor.port|The exposed port of the Conduktor Platform Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:8088|8088|
 |conduktor.container.logging.enabled|Whether to output the Conduktor Docker logs to the console.|false|
@@ -195,10 +201,13 @@ The following shows how to override the configurable properties in a single modu
                             <postgres.password>password</postgres.password>
                             <postgres.container.logging.enabled>false</postgres.container.logging.enabled>
                             <kafka.enabled>true</kafka.enabled>
+                            <kafka.broker.count>1</kafka.broker.count>
                             <kafka.confluent.image.tag>7.2.1</kafka.confluent.image.tag>
                             <kafka.port>9093</kafka.port>
                             <kafka.topics>inbound-foo-topic,outbound-bar-topic</kafka.topics>
                             <kafka.topic.partition.count>5</kafka.topic.partition.count>
+                            <kafka.topic.replication.factor>1</kafka.topic.replication.factor>
+                            <kafka.min.insync.replicas>1</kafka.min.insync.replicas>
                             <kafka.container.logging.enabled>false</kafka.container.logging.enabled>
                             <kafka.schema.registry.enabled>true</kafka.schema.registry.enabled>
                             <kafka.schema.registry.confluent.image.tag>7.2.1</kafka.schema.registry.confluent.image.tag>
@@ -211,7 +220,7 @@ The following shows how to override the configurable properties in a single modu
                             <kafka.control.center.jmx.port>9101</kafka.control.center.jmx.port>
                             <kafka.control.center.container.logging.enabled>true</kafka.control.center.container.logging.enabled>
                             <conduktor.enabled>true</conduktor.enabled>
-                            <conduktor.image.tag>1.0.2</conduktor.image.tag>
+                            <conduktor.image.tag>1.4.0</conduktor.image.tag>
                             <conduktor.port>8088</conduktor.port>
 							<conduktor.license.key>my-license-key</conduktor.license.key>
 							<conduktor.container.logging.enabled>true</conduktor.container.logging.enabled>
@@ -286,6 +295,8 @@ The library expects an `application-component-test.yml` properties file in the `
 kafka:
     bootstrap-servers: kafka:9092
 ```
+
+This one Kafka instance is sufficient to declare even if more Kafka instances are started via `kafka.broker.count`, as the bootstrap servers list is used to find the cluster, which itself has the details of the other instances.
 
 # Service Health
 
@@ -402,7 +413,7 @@ e.g. add the following to the Configuration dialog to start up Postgres and Kafk
 -postgres.enabled=true -Dkafka.enabled=true
 ```
 
-# Discovering the Service URL
+# Discovering The Service URL
 
 The `dev.lydtech.component.framework.client.service.ServiceClient` provides a static `getBaseUrl` method to get the base URL, enabling REST calls to be made.
 e.g. if using RestAssured as the HTTP client in the test:
@@ -452,6 +463,10 @@ A remote debugger can be attached to these containers as per the main service.
 Additional containers work well in a multi module project.  They are co-located with the service under test, but defined in their own module for clear separation.  An example of using additional containers can be seen in the accompanying `ctf-example-multi-module` project:
 
 https://github.com/lydtechconsulting/ctf-example-multi-module
+
+# Kafka
+
+If the Kafka messaging broker is enabled via `kafka.enabled`, a number of broker and topic configurations can be applied.  These include setting the number of broker nodes in the cluster (`kafka.broker.count`), the topic replication factor (`kafka.topic.replication.factor`), and the minimum number of brokers that must be in-sync to accept a producer write (`kafka.min.insync.replicas`).  Any topics that should be created upfront can be declared in a comma separated list (`kafka.topics`), and the default topic partition count can be configured (`kafka.topic.partition.count`).
 
 # Kafka Client
 

@@ -18,32 +18,8 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.DockerClientFactory;
 
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_NAME_PREFIX;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
-import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
-import static dev.lydtech.component.framework.resource.Resource.KAFKA;
-import static dev.lydtech.component.framework.resource.Resource.KAFKA_CONTROL_CENTER;
-import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
-import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
-import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
-import static dev.lydtech.component.framework.resource.Resource.SERVICE;
-import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.*;
+import static dev.lydtech.component.framework.resource.Resource.*;
 import static java.util.Collections.singletonList;
 
 @Slf4j
@@ -70,13 +46,13 @@ public final class DockerManager {
     protected static boolean shouldPerformSetup(DockerClient dockerClient) {
         List<Container> containers = dockerClient.listContainersCmd().exec();
         boolean mainContainerPresent = containers.stream()
-                .filter(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/"+CONTAINER_NAME_PREFIX+"-")))
-                .anyMatch(container -> container.getLabels()
-                    .entrySet()
-                    .stream()
-                    .anyMatch(entry ->
-                        entry.getKey().equals(CONTAINER_MAIN_LABEL_KEY) && entry.getValue().equals(CONTAINER_MAIN_LABEL)
-                    ));
+                    .filter(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/" + CONTAINER_NAME_PREFIX + "-")))
+                    .anyMatch(container -> container.getLabels()
+                            .entrySet()
+                            .stream()
+                            .anyMatch(entry ->
+                                    entry.getKey().equals(CONTAINER_MAIN_LABEL_KEY) && entry.getValue().equals(CONTAINER_MAIN_LABEL)
+                            ));
         boolean testContainersPresent = containers.stream().anyMatch(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/testcontainers-ryuk")));
 
         log.info("Current container status: main service with prefix ({}) and label ({}) running: {}, testcontainers running: {}",  CONTAINER_NAME_PREFIX, CONTAINER_MAIN_LABEL, mainContainerPresent, testContainersPresent);
@@ -89,17 +65,18 @@ public final class DockerManager {
         log.info("Container main label: "+CONTAINER_MAIN_LABEL);
         // To locate the service containers use the container prefix and main container label.  This decouples discovery
         // from the service name, so that subsequent runs do not need this overridden if changed each time.
-        List<Container> serviceContainers = dockerClient.listContainersCmd()
-                .withNameFilter(singletonList(CONTAINER_NAME_PREFIX+"-"))
-                .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL))
-                .exec();
-        if (serviceContainers.size() > 0) {
-            mapPort(SERVICE.toString(), SERVICE_PORT, serviceContainers.get(0));
-        } else {
-            throw new RuntimeException("Service container not found");
-        }
+            List<Container> serviceContainers = dockerClient.listContainersCmd()
+                    .withNameFilter(singletonList(CONTAINER_NAME_PREFIX + "-"))
+                    .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL))
+                    .exec();
+            if (serviceContainers.size() > 0) {
+                mapPort(SERVICE.toString(), SERVICE_PORT, serviceContainers.get(0));
+            } else {
+                throw new RuntimeException("Service container not found");
+            }
 
         findContainerAndMapPort(dockerClient, POSTGRES.toString(), POSTGRES_ENABLED, POSTGRES_PORT);
+        // Just need to map the port of one of the Kafka servers.
         findContainerAndMapPort(dockerClient, KAFKA.toString(), KAFKA_ENABLED, KAFKA_PORT);
         findContainerAndMapPort(dockerClient, DEBEZIUM.toString(), DEBEZIUM_ENABLED, DEBEZIUM_PORT);
         findContainerAndMapPort(dockerClient, KAFKA_SCHEMA_REGISTRY.toString().replace("_", "."), KAFKA_SCHEMA_REGISTRY_ENABLED, KAFKA_SCHEMA_REGISTRY_PORT);

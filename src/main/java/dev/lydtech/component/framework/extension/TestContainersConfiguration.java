@@ -49,10 +49,13 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_KAFKA_ENABLED = "false";
+    private static final String DEFAULT_KAFKA_BROKER_COUNT = "1";
     private static final String DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG = "7.2.1";
     private static final String DEFAULT_KAFKA_PORT = "9093";
     private static final String DEFAULT_KAFKA_TOPIC_PARTITION_COUNT = "1";
     private static final String DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR = "1";
+    private static final String DEFAULT_KAFKA_MIN_INSYNC_REPLICAS = "1";
 
     /**
      * Debezium (Kafka Connect) default configuration.
@@ -87,7 +90,7 @@ public final class TestContainersConfiguration {
      * Conduktor configuration.
      */
 
-    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.0.2";
+    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.4.0";
     private static final String DEFAULT_CONDUKTOR_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_PORT = "8088";
@@ -138,11 +141,14 @@ public final class TestContainersConfiguration {
     public static final boolean POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
 
     public static final boolean KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
+    public static final int KAFKA_BROKER_COUNT = Integer.parseInt(System.getProperty("kafka.broker.count", DEFAULT_KAFKA_BROKER_COUNT));
     public static final String KAFKA_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.confluent.image.tag", DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG);
     public static final int KAFKA_PORT = Integer.parseInt(System.getProperty("kafka.port", DEFAULT_KAFKA_PORT));
     public static final List<String> KAFKA_TOPICS = parseKafkaTopics();
     public static final int KAFKA_TOPIC_PARTITION_COUNT = Integer.parseInt(System.getProperty("kafka.topic.partition.count", DEFAULT_KAFKA_TOPIC_PARTITION_COUNT));
     public static final boolean KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
+    public static final int KAFKA_TOPIC_REPLICATION_FACTOR = Integer.parseInt(System.getProperty("kafka.topic.replication.factor", DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR));
+    public static final int KAFKA_MIN_INSYNC_REPLICAS = Integer.parseInt(System.getProperty("kafka.min.insync.replicas", DEFAULT_KAFKA_MIN_INSYNC_REPLICAS));
 
     public static final boolean KAFKA_SCHEMA_REGISTRY_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED));
     public static final String KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.schema.registry.confluent.image.tag", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
@@ -250,9 +256,12 @@ public final class TestContainersConfiguration {
         log.info("kafka.enabled: " + KAFKA_ENABLED);
         if(KAFKA_ENABLED) {
             log.info("kafka.confluent.image.tag: " + KAFKA_CONFLUENT_IMAGE_TAG);
+            log.info("kafka.broker.count: " + KAFKA_BROKER_COUNT);
             log.info("kafka.port: " + KAFKA_PORT);
             log.info("kafka.topics: " + KAFKA_TOPICS);
             log.info("kafka.topic.partition.count: " + KAFKA_TOPIC_PARTITION_COUNT);
+            log.info("kafka.topic.replication.factor: " + KAFKA_TOPIC_REPLICATION_FACTOR);
+            log.info("kafka.min.insync.replicas: " + KAFKA_MIN_INSYNC_REPLICAS);
             log.info("kafka.container.logging.enabled: " + KAFKA_CONTAINER_LOGGING_ENABLED);
         }
 

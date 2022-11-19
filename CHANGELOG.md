@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.11.0] - 2022-11-19
+### Added
+- Supports multiple Kafka broker nodes.
+- Supports configurable topic replication factor.
+- Supports configurable min insync replicas.
+
 ## [1.10.0] - 2022-10-11
 ### Added
 - Supports exporting Kafka broker, consumer and producer JMX metrics to Confluent Control Center.
