@@ -76,22 +76,39 @@ public final class KafkaClient {
         if(additionalConfig!=null && !additionalConfig.isEmpty()) {
             config.putAll(additionalConfig);
         }
-        Consumer<Integer, String> consumer = new KafkaConsumer<>(config);
+        Consumer consumer = new KafkaConsumer(config);
         consumer.subscribe(Collections.singletonList(topic));
+        return consumer;
+    }
+
+    /**
+     * Create a consumer and perform an initial long poll for the given number of seconds in order to clear the topic.
+     */
+    public Consumer initConsumer(String groupId, String topic, Long initialPollSeconds) {
+        return initConsumer(groupId, topic, null, initialPollSeconds);
+    }
+
+    /**
+     * Create a Consumer with additional config, and perform an initial long poll for the given number of seconds in order to
+     * clear the topic.
+     */
+    public Consumer initConsumer(String groupId, String topic, Properties additionalConfig, Long initialPollSeconds) {
+        Consumer consumer = createConsumer(groupId, topic, additionalConfig);
+        consumer.poll(Duration.ofSeconds(initialPollSeconds));
         return consumer;
     }
 
     /**
      * Create a standard Producer.
      */
-    public KafkaProducer<Long, String> createProducer() {
+    public KafkaProducer<String, String> createProducer() {
         return createProducer(null);
     }
 
     /**
      * Create a Producer with additional config.
      */
-    public KafkaProducer<Long, String> createProducer(Properties additionalConfig) {
+    public KafkaProducer<String, String> createProducer(Properties additionalConfig) {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

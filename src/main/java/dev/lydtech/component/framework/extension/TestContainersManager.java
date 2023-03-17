@@ -265,7 +265,7 @@ public final class TestContainersManager {
     /**
      * The Confluent cp-server container, with additional support for metrics.
      *
-     * The main project must depend on Confluent's kafka-clients community package (e.g. 7.2.1-ccs) and monitoring-interceptors (e.g. 7.2.1) libraries.
+     * The main project must depend on Confluent's kafka-clients community package (e.g. 7.3.2-ccs) and monitoring-interceptors (e.g. 7.3.2) libraries.
      */
     private KafkaContainer createKafkaServerContainer(int instance) {
         final String containerName = instance==1?KAFKA.toString():KAFKA.toString()+"-"+instance;
@@ -375,7 +375,8 @@ public final class TestContainersManager {
                 .withEnv("CONFLUENT_METRICS_TOPIC_REPLICATION", "1")
                 .withEnv("PORT", String.valueOf(KAFKA_CONTROL_CENTER_PORT))
                 .withEnv("CONTROL_CENTER_REST_LISTENERS", "http://0.0.0.0:"+KAFKA_CONTROL_CENTER_PORT)
-                .withExposedPorts(KAFKA_CONTROL_CENTER_PORT);
+                .withExposedPorts(KAFKA_CONTROL_CENTER_PORT)
+                .withStartupTimeout(Duration.ofMinutes(3));
         if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
             container.withEnv("CONTROL_CENTER_SCHEMA_REGISTRY_URL", "http://"+KAFKA_SCHEMA_REGISTRY.toString().replace("_", "-")+":"+KAFKA_SCHEMA_REGISTRY_PORT);
         }

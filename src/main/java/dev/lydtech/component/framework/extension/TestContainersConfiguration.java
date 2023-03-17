@@ -50,7 +50,7 @@ public final class TestContainersConfiguration {
 
     private static final String DEFAULT_KAFKA_ENABLED = "false";
     private static final String DEFAULT_KAFKA_BROKER_COUNT = "1";
-    private static final String DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG = "7.2.1";
+    private static final String DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG = "7.3.2";
     private static final String DEFAULT_KAFKA_PORT = "9093";
     private static final String DEFAULT_KAFKA_TOPIC_PARTITION_COUNT = "1";
     private static final String DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED = "false";
@@ -71,7 +71,7 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED = "false";
-    private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = "7.2.1";
+    private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = "7.3.2";
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT = "8081";
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = "false";
 
@@ -80,7 +80,7 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_ENABLED = "false";
-    private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = "7.2.1";
+    private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = "7.3.2";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_PORT = "9021";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_JMX_PORT = "9101";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = "false";

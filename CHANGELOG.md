@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.0] - 2023-03-17
+### Added
+- Supports Spring Boot 3.x.
+- Supports Kafka 3.x.
+- Supports Java 17.
+
 ## [1.11.0] - 2022-11-19
 ### Added
 - Supports multiple Kafka broker nodes.

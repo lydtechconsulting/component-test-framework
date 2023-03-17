@@ -21,6 +21,19 @@ Currently supported resources:
 - Confluent Control Center
 - Conduktor Platform
 
+# Supported Versions
+
+`component-test-framework` version `2.x` supports:
+- Spring Boot 3.x
+- Kafka 3.x
+- Java 17
+
+`component-test-framework` version `1.x` supports:
+- Spring Boot 2.x
+- Kafka 2.x
+- Java 11
+
+
 # Dependency
 
 Add this library as a dependency to the pom of the service under test:
@@ -98,7 +111,7 @@ https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer
 |postgres.password|The Postgres password.|password|
 |kafka.enabled|Whether a Docker Kafka container should be started.|false|
 |kafka.broker.count|The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be 'kafka', then subsequent will have an instance suffix, e.g. 'kafka-2'.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).|1|
-|kafka.confluent.image.tag|The image tag of the Confluent Kafka Docker container to use.|7.2.1|
+|kafka.confluent.image.tag|The image tag of the Confluent Kafka Docker container to use.|7.3.2|
 |kafka.port|The port of the Kafka Docker container.|9093|
 |kafka.topics|Comma delimited list of topics to create.  Often topics are auto-created, but for Kafka Streams for example they must be created upfront.|
 |kafka.topic.partition.count|The number of partitions for topics that are created.|5|
@@ -106,11 +119,11 @@ https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer
 |kafka.min.insync.replicas|The minimum in-sync number of replicas required for successful writes to topics.  Must not be greater than the configured `kafka.broker.count` nor the `kafka.topic.replication.factor`.|1|
 |kafka.container.logging.enabled|Whether to output the Kafka Docker logs to the console.|false|
 |kafka.schema.registry.enabled|Whether a Docker Schema Registry container should be started.|false|
-|kafka.schema.registry.confluent.image.tag|The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|7.2.1|
+|kafka.schema.registry.confluent.image.tag|The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|7.3.2|
 |kafka.schema.registry.port|The port of the Kafka Schema Registry Docker container.|8081|
 |kafka.schema.registry.container.logging.enabled|Whether to output the Kafka Schema Registry Docker logs to the console.|false|
 |kafka.control.center.enabled|Whether a Docker Confluent Control Center container should be started.|false|
-|kafka.control.center.confluent.image.tag|The image tag of the Kafka Confluent Control Center Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|7.2.1|
+|kafka.control.center.confluent.image.tag|The image tag of the Kafka Confluent Control Center Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.|7.3.2|
 |kafka.control.center.port|The exposed port of the Kafka Confluent Control Center Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:9021|9021|
 |kafka.control.center.export.metrics.enabled|Whether to export JMX metrics from the broker.  Also means if interceptors are added to consumers and producers that further metrics are exported.  Requires Confluent's community package kafka-clients and monitoring-interceptors libraries.|false|
 |kafka.control.center.jmx.port|The port for accessing the exported JMX metrics.  The port must be available on the local machine.|9101|
@@ -202,7 +215,7 @@ The following shows how to override the configurable properties in a single modu
                             <postgres.container.logging.enabled>false</postgres.container.logging.enabled>
                             <kafka.enabled>true</kafka.enabled>
                             <kafka.broker.count>1</kafka.broker.count>
-                            <kafka.confluent.image.tag>7.2.1</kafka.confluent.image.tag>
+                            <kafka.confluent.image.tag>7.3.2</kafka.confluent.image.tag>
                             <kafka.port>9093</kafka.port>
                             <kafka.topics>inbound-foo-topic,outbound-bar-topic</kafka.topics>
                             <kafka.topic.partition.count>5</kafka.topic.partition.count>
@@ -210,11 +223,11 @@ The following shows how to override the configurable properties in a single modu
                             <kafka.min.insync.replicas>1</kafka.min.insync.replicas>
                             <kafka.container.logging.enabled>false</kafka.container.logging.enabled>
                             <kafka.schema.registry.enabled>true</kafka.schema.registry.enabled>
-                            <kafka.schema.registry.confluent.image.tag>7.2.1</kafka.schema.registry.confluent.image.tag>
+                            <kafka.schema.registry.confluent.image.tag>7.3.2</kafka.schema.registry.confluent.image.tag>
                             <kafka.schema.registry.port>8081</kafka.schema.registry.port>
                             <kafka.schema.registry.container.logging.enabled>true</kafka.schema.registry.container.logging.enabled>
                             <kafka.control.center.enabled>true</kafka.control.center.enabled>
-                            <kafka.control.center.confluent.image.tag>7.2.1</kafka.control.center.confluent.image.tag>
+                            <kafka.control.center.confluent.image.tag>7.3.2</kafka.control.center.confluent.image.tag>
                             <kafka.control.center.port>9021</kafka.control.center.port>                            
                             <kafka.control.center.export.metrics.enabled>true</kafka.control.center.export.metrics.enabled>
                             <kafka.control.center.jmx.port>9101</kafka.control.center.jmx.port>
@@ -304,8 +317,13 @@ The service under test must expose its health endpoint for the test set up to kn
 ```
 /actuator/health
 ```
-Include the Spring Boot Actuator module in the service pom for this to auto-enable:
+Include the Spring Boot Actuator module (along with the Spring Boot Starter Web module) in the service pom for this to auto-enable:
 ```
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <version>${spring.boot.version}</version>
+</dependency>
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-actuator</artifactId>
@@ -319,7 +337,7 @@ Build a Docker container with the service under test.
 
 e.g. use a `Dockerfile` with contents:
 ```
-FROM openjdk:11.0.10-slim
+FROM openjdk:17.0.2-jdk-slim
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
 ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar /app.jar"]
@@ -486,6 +504,13 @@ additionalConfig.put(ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG, "io.confluent.mo
 Consumer fooConsumer = KafkaClient.createConsumer(GROUP_ID, FOO_TOPIC);
 ```
 
+Alternatively use one of the overloaded `initConsumer` methods, which take an extra argument, `initialPollSeconds`.  In addition to creating the consumer it performs an initial long poll up to the given number of seconds.  This is useful in order to clear the topic of any messages that it would otherwise consume during the test.
+
+```
+Consumer fooConsumer = KafkaClient.initConsumer(GROUP_ID, FOO_TOPIC, 3);
+Consumer fooConsumer = KafkaClient.intConsumer(GROUP_ID, FOO_TOPIC, additionalConfig, 3);
+```
+
 Send a message synchronously:
 ```
 KafkaClient.sendMessage(FOO_TOPIC, key, payload, headers);
@@ -584,18 +609,18 @@ JMX metrics can be exported by enabling `kafka.control.center.export.metrics.ena
     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
-        <version>7.2.1-ccs</version>
+        <version>7.3.2-ccs</version>
     </dependency>
     <dependency>
         <groupId>io.confluent</groupId>
         <artifactId>monitoring-interceptors</artifactId>
-        <version>7.2.1</version>
+        <version>7.3.2</version>
     </dependency>
     
     <dependency>
         <groupId>org.springframework.kafka</groupId>
         <artifactId>spring-kafka</artifactId>
-        <version>2.7.3</version>
+        <version>3.0.4</version>
         <exclusions>
             <exclusion>
                 <groupId>org.apache.kafka</groupId>
