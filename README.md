@@ -25,12 +25,12 @@ Currently supported resources:
 
 `component-test-framework` version `2.x` supports:
 - Spring Boot 3.x
-- Kafka 3.x
+- Kafka Clients 3.x
 - Java 17
 
 `component-test-framework` version `1.x` supports:
 - Spring Boot 2.x
-- Kafka 2.x
+- Kafka Clients 2.x
 - Java 11
 
 

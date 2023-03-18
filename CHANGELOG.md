@@ -3,8 +3,8 @@
 ## [2.0.0] - 2023-03-17
 ### Added
 - Supports Spring Boot 3.x.
-- Supports Kafka 3.x.
-- Supports Java 17.
+- Supports Kafka Clients 3.x.
+- Requires Java 17 or above.
 
 ## [1.11.0] - 2022-11-19
 ### Added
