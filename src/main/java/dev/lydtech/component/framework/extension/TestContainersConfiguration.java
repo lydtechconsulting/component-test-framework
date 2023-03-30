@@ -62,7 +62,7 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_DEBEZIUM_ENABLED = "false";
-    private static final String DEFAULT_DEBEZIUM_IMAGE_TAG = "1.7.0.Final";
+    private static final String DEFAULT_DEBEZIUM_IMAGE_TAG = "2.2";
     private static final String DEFAULT_DEBEZIUM_PORT = "8083";
     private static final String DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED = "false";
 
@@ -100,7 +100,7 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_WIREMOCK_ENABLED = "false";
-    private static final String DEFAULT_WIREMOCK_IMAGE_TAG = "2.32.0";
+    private static final String DEFAULT_WIREMOCK_IMAGE_TAG = "2.35.0";
     private static final String DEFAULT_WIREMOCK_PORT = "8080";
     private static final String DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED = "false";
 

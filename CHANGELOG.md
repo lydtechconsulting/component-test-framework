@@ -1,7 +1,12 @@
 # Changelog
 
+## [2.1.0] - 2023-03-30
+### Changed
+- Updated default Debezium version to 2.2
+- Updated default Wiremock version to 2.35.0
+
 ## [2.0.0] - 2023-03-17
-### Added
+### Changed
 - Supports Spring Boot 3.x.
 - Supports Kafka Clients 3.x.
 - Requires Java 17 or above.

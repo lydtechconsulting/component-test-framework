@@ -134,11 +134,11 @@ https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer
 |conduktor.port|The exposed port of the Conduktor Platform Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:8088|8088|
 |conduktor.container.logging.enabled|Whether to output the Conduktor Docker logs to the console.|false|
 |debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.|false|
-|debezium.image.tag|The image tag of the Debezium Docker container to use.|1.7.0.Final|
+|debezium.image.tag|The image tag of the Debezium Docker container to use.|2.2|
 |debezium.port|The port of the Debezium Docker container.|8083|
 |debezium.container.logging.enabled|Whether to output the Debezium Docker logs to the console.|false|
 |wiremock.enabled|Whether a Docker Wiremock container should be started.|false|
-|wiremock.image.tag|The image tag of the Wiremock Docker container to use.|2.32.0|
+|wiremock.image.tag|The image tag of the Wiremock Docker container to use.|2.35.0|
 |wiremock.container.logging.enabled|Whether to output the Wiremock Docker logs to the console.|false|
 |localstack.enabled|Whether a Docker Localstack (AWS) container should be started.|false|
 |localstack.image.tag|The image tag of the Localstack Docker container to use.|0.14.3|
@@ -238,11 +238,11 @@ The following shows how to override the configurable properties in a single modu
 							<conduktor.license.key>my-license-key</conduktor.license.key>
 							<conduktor.container.logging.enabled>true</conduktor.container.logging.enabled>
                             <debezium.enabled>true</debezium.enabled>
-                            <debezium.image.tag>1.7.0.Final</debezium.image.tag>
+                            <debezium.image.tag>2.2</debezium.image.tag>
                             <debezium.port>8083</debezium.port>
                             <debezium.container.logging.enabled>false</debezium.container.logging.enabled>
                             <wiremock.enabled>true</wiremock.enabled>
-                            <wiremock.image.tag>2.32.0</wiremock.image.tag>
+                            <wiremock.image.tag>2.35.0</wiremock.image.tag>
                             <wiremock.container.logging.enabled>false</wiremock.container.logging.enabled>
                             <localstack.enabled>true</localstack.enabled>
                             <localstack.image.tag>0.14.3</localstack.image.tag>

@@ -1,5 +1,6 @@
 package dev.lydtech.component.framework.client.debezium;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Optional;
 
@@ -37,8 +38,11 @@ public final class DebeziumClient {
         return instance;
     }
 
+    /**
+     * Pass in file location relative to root of project.
+     */
     public String createConnector(String jsonFile) {
-        try (InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(jsonFile)) {
+        try(InputStream in = new FileInputStream(jsonFile)) {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readValue(in, JsonNode.class);
             String jsonString = mapper.writeValueAsString(jsonNode);
