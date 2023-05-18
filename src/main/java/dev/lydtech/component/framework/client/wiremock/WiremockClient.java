@@ -12,7 +12,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.equalTo;
 
 @Slf4j
 public class WiremockClient {
@@ -101,7 +101,7 @@ public class WiremockClient {
             .then()
             .statusCode(200)
             .assertThat()
-            .body("count", is(expectedCount));
+            .body("count", equalTo(expectedCount));
     }
 
     public Response findMatchingRequests(RequestCriteria request) {

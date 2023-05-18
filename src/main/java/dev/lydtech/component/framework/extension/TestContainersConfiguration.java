@@ -118,73 +118,145 @@ public final class TestContainersConfiguration {
      * The runtime configuration.
      */
 
-    public static final String CONTAINER_NAME_PREFIX = System.getProperty("container.name.prefix", DEFAULT_CONTAINER_NAME_PREFIX);
-    public static final String CONTAINER_MAIN_LABEL = System.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL);
+    public static String CONTAINER_NAME_PREFIX;
+    public static String CONTAINER_MAIN_LABEL;
 
-    public static final String SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME);
-    public static final int SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
-    public static final int SERVICE_PORT = Integer.parseInt(System.getProperty("service.port", DEFAULT_SERVICE_PORT));
-    public static final int SERVICE_DEBUG_PORT = Integer.parseInt(System.getProperty("service.debug.port", DEFAULT_SERVICE_DEBUG_PORT));
-    public static final int SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(System.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
-    public static final String SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
-    public static final boolean SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
+    public static String SERVICE_NAME;
+    public static int SERVICE_INSTANCE_COUNT;
+    public static int SERVICE_PORT;
+    public static int SERVICE_DEBUG_PORT;
+    public static int SERVICE_STARTUP_TIMEOUT_SECONDS;
+    public static String SERVICE_IMAGE_TAG;
+    public static boolean SERVICE_CONTAINER_LOGGING_ENABLED;
 
-    public static final List<AdditionalContainer> ADDITIONAL_CONTAINERS = parseAdditionalContainers();
+    public static List<AdditionalContainer> ADDITIONAL_CONTAINERS;
 
-    public static final boolean POSTGRES_ENABLED = Boolean.valueOf(System.getProperty("postgres.enabled", DEFAULT_POSTGRES_ENABLED));
-    public static final String POSTGRES_IMAGE_TAG = System.getProperty("postgres.image.tag", DEFAULT_POSTGRES_IMAGE_TAG);
-    public static final String POSTGRES_HOST_NAME = System.getProperty("postgres.host.name", DEFAULT_POSTGRES_HOST_NAME);
-    public static final int POSTGRES_PORT = Integer.parseInt(System.getProperty("postgres.port", DEFAULT_POSTGRES_PORT));
-    public static final String POSTGRES_DATABASE_NAME = System.getProperty("postgres.database.name", DEFAULT_POSTGRES_DATABASE_NAME);
-    public static final String POSTGRES_USERNAME = System.getProperty("postgres.username", DEFAULT_POSTGRES_USERNAME);
-    public static final String POSTGRES_PASSWORD = System.getProperty("postgres.password", DEFAULT_POSTGRES_PASSWORD);
-    public static final boolean POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
+    public static boolean POSTGRES_ENABLED;
+    public static String POSTGRES_IMAGE_TAG;
+    public static String POSTGRES_HOST_NAME;
+    public static int POSTGRES_PORT;
+    public static String POSTGRES_DATABASE_NAME;
+    public static String POSTGRES_USERNAME;
+    public static String POSTGRES_PASSWORD;
+    public static boolean POSTGRES_CONTAINER_LOGGING_ENABLED;
 
-    public static final boolean KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
-    public static final int KAFKA_BROKER_COUNT = Integer.parseInt(System.getProperty("kafka.broker.count", DEFAULT_KAFKA_BROKER_COUNT));
-    public static final String KAFKA_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.confluent.image.tag", DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG);
-    public static final int KAFKA_PORT = Integer.parseInt(System.getProperty("kafka.port", DEFAULT_KAFKA_PORT));
-    public static final List<String> KAFKA_TOPICS = parseKafkaTopics();
-    public static final int KAFKA_TOPIC_PARTITION_COUNT = Integer.parseInt(System.getProperty("kafka.topic.partition.count", DEFAULT_KAFKA_TOPIC_PARTITION_COUNT));
-    public static final boolean KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
-    public static final int KAFKA_TOPIC_REPLICATION_FACTOR = Integer.parseInt(System.getProperty("kafka.topic.replication.factor", DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR));
-    public static final int KAFKA_MIN_INSYNC_REPLICAS = Integer.parseInt(System.getProperty("kafka.min.insync.replicas", DEFAULT_KAFKA_MIN_INSYNC_REPLICAS));
+    public static boolean KAFKA_ENABLED;
+    public static int KAFKA_BROKER_COUNT;
+    public static String KAFKA_CONFLUENT_IMAGE_TAG;
+    public static int KAFKA_PORT;
+    public static List<String> KAFKA_TOPICS;
+    public static int KAFKA_TOPIC_PARTITION_COUNT;
+    public static boolean KAFKA_CONTAINER_LOGGING_ENABLED;
+    public static int KAFKA_TOPIC_REPLICATION_FACTOR;
+    public static int KAFKA_MIN_INSYNC_REPLICAS;
 
-    public static final boolean KAFKA_SCHEMA_REGISTRY_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED));
-    public static final String KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.schema.registry.confluent.image.tag", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
-    public static final int KAFKA_SCHEMA_REGISTRY_PORT = Integer.parseInt(System.getProperty("kafka.schema.registry.port", DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT));
-    public static final boolean KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.container.logging.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED));
+    public static boolean KAFKA_SCHEMA_REGISTRY_ENABLED;
+    public static String KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
+    public static int KAFKA_SCHEMA_REGISTRY_PORT;
+    public static boolean KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
 
-    public static final boolean KAFKA_CONTROL_CENTER_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.enabled", DEFAULT_KAFKA_CONTROL_CENTER_ENABLED));
-    public static final String KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.control.center.confluent.image.tag", DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG);
-    public static final boolean KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.export.metrics.enabled", DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED));
-    public static final String KAFKA_CONTROL_CENTER_JMX_PORT = System.getProperty("kafka.control.center.jmx.port", DEFAULT_KAFKA_CONTROL_CENTER_JMX_PORT);
-    public static final int KAFKA_CONTROL_CENTER_PORT = Integer.parseInt(System.getProperty("kafka.control.center.port", DEFAULT_KAFKA_CONTROL_CENTER_PORT));
-    public static final boolean KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.container.logging.enabled", DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED));
+    public static boolean KAFKA_CONTROL_CENTER_ENABLED;
+    public static String KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG;
+    public static boolean KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED;
+    public static String KAFKA_CONTROL_CENTER_JMX_PORT;
+    public static int KAFKA_CONTROL_CENTER_PORT;
+    public static boolean KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED;
 
-    public static final boolean CONDUKTOR_ENABLED = Boolean.valueOf(System.getProperty("conduktor.enabled", DEFAULT_CONDUKTOR_ENABLED));
-    public static final String CONDUKTOR_IMAGE_TAG = System.getProperty("conduktor.image.tag", DEFAULT_CONDUKTOR_IMAGE_TAG);
-    public static final String CONDUKTOR_LICENSE_KEY = System.getProperty("conduktor.license.key");
-    public static final int CONDUKTOR_PORT = Integer.parseInt(System.getProperty("conduktor.port", DEFAULT_CONDUKTOR_PORT));
-    public static final boolean CONDUKTOR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("conduktor.container.logging.enabled", DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED));
+    public static boolean CONDUKTOR_ENABLED;
+    public static String CONDUKTOR_IMAGE_TAG;
+    public static String CONDUKTOR_LICENSE_KEY;
+    public static int CONDUKTOR_PORT;
+    public static boolean CONDUKTOR_CONTAINER_LOGGING_ENABLED;
 
-    public static final boolean DEBEZIUM_ENABLED = Boolean.valueOf(System.getProperty("debezium.enabled", DEFAULT_DEBEZIUM_ENABLED));
-    public static final String DEBEZIUM_IMAGE_TAG = System.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
-    public static final int DEBEZIUM_PORT = Integer.parseInt(System.getProperty("debezium.port", DEFAULT_DEBEZIUM_PORT));
-    public static final boolean DEBEZIUM_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("debezium.container.logging.enabled", DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED));
+    public static boolean DEBEZIUM_ENABLED;
+    public static String DEBEZIUM_IMAGE_TAG;
+    public static int DEBEZIUM_PORT;
+    public static boolean DEBEZIUM_CONTAINER_LOGGING_ENABLED;
 
-    public static final boolean WIREMOCK_ENABLED = Boolean.valueOf(System.getProperty("wiremock.enabled", DEFAULT_WIREMOCK_ENABLED));
-    public static final String WIREMOCK_IMAGE_TAG = System.getProperty("wiremock.image.tag", DEFAULT_WIREMOCK_IMAGE_TAG);
-    public static final int WIREMOCK_PORT = Integer.parseInt(DEFAULT_WIREMOCK_PORT);
-    public static final boolean WIREMOCK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("wiremock.container.logging.enabled", DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED));
+    public static boolean WIREMOCK_ENABLED;
+    public static String WIREMOCK_IMAGE_TAG;
+    public static int WIREMOCK_PORT;
+    public static boolean WIREMOCK_CONTAINER_LOGGING_ENABLED;
 
-    public static final boolean LOCALSTACK_ENABLED = Boolean.valueOf(System.getProperty("localstack.enabled", DEFAULT_LOCALSTACK_ENABLED));
-    public static final String LOCALSTACK_IMAGE_TAG = System.getProperty("localstack.image.tag", DEFAULT_LOCALSTACK_IMAGE_TAG);
-    public static final int LOCALSTACK_PORT = Integer.parseInt(System.getProperty("localstack.port", DEFAULT_LOCALSTACK_PORT));
-    public static final String LOCALSTACK_SERVICES = System.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
-    public static final boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
+    public static boolean LOCALSTACK_ENABLED;
+    public static String LOCALSTACK_IMAGE_TAG;
+    public static int LOCALSTACK_PORT;
+    public static String LOCALSTACK_SERVICES;
+    public static boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED;
 
-    private static List<AdditionalContainer> parseAdditionalContainers() {
+
+    static {
+        configure();
+    }
+
+    protected static void configure() {
+        CONTAINER_NAME_PREFIX = System.getProperty("container.name.prefix", DEFAULT_CONTAINER_NAME_PREFIX);
+        CONTAINER_MAIN_LABEL = System.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL);
+        SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME);
+        SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
+        SERVICE_PORT = Integer.parseInt(System.getProperty("service.port", DEFAULT_SERVICE_PORT));
+        SERVICE_DEBUG_PORT = Integer.parseInt(System.getProperty("service.debug.port", DEFAULT_SERVICE_DEBUG_PORT));
+        SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(System.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
+        SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
+        SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
+
+        ADDITIONAL_CONTAINERS = parseAdditionalContainers();
+
+        POSTGRES_ENABLED = Boolean.valueOf(System.getProperty("postgres.enabled", DEFAULT_POSTGRES_ENABLED));
+        POSTGRES_IMAGE_TAG = System.getProperty("postgres.image.tag", DEFAULT_POSTGRES_IMAGE_TAG);
+        POSTGRES_HOST_NAME = System.getProperty("postgres.host.name", DEFAULT_POSTGRES_HOST_NAME);
+        POSTGRES_PORT = Integer.parseInt(System.getProperty("postgres.port", DEFAULT_POSTGRES_PORT));
+        POSTGRES_DATABASE_NAME = System.getProperty("postgres.database.name", DEFAULT_POSTGRES_DATABASE_NAME);
+        POSTGRES_USERNAME = System.getProperty("postgres.username", DEFAULT_POSTGRES_USERNAME);
+        POSTGRES_PASSWORD = System.getProperty("postgres.password", DEFAULT_POSTGRES_PASSWORD);
+        POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
+
+        KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
+        KAFKA_BROKER_COUNT = Integer.parseInt(System.getProperty("kafka.broker.count", DEFAULT_KAFKA_BROKER_COUNT));
+        KAFKA_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.confluent.image.tag", DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG);
+        KAFKA_PORT = Integer.parseInt(System.getProperty("kafka.port", DEFAULT_KAFKA_PORT));
+        KAFKA_TOPICS = parseKafkaTopics();
+        KAFKA_TOPIC_PARTITION_COUNT = Integer.parseInt(System.getProperty("kafka.topic.partition.count", DEFAULT_KAFKA_TOPIC_PARTITION_COUNT));
+        KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
+        KAFKA_TOPIC_REPLICATION_FACTOR = Integer.parseInt(System.getProperty("kafka.topic.replication.factor", DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR));
+        KAFKA_MIN_INSYNC_REPLICAS = Integer.parseInt(System.getProperty("kafka.min.insync.replicas", DEFAULT_KAFKA_MIN_INSYNC_REPLICAS));
+
+        KAFKA_SCHEMA_REGISTRY_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED));
+        KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.schema.registry.confluent.image.tag", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
+        KAFKA_SCHEMA_REGISTRY_PORT = Integer.parseInt(System.getProperty("kafka.schema.registry.port", DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT));
+        KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.container.logging.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED));
+
+        KAFKA_CONTROL_CENTER_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.enabled", DEFAULT_KAFKA_CONTROL_CENTER_ENABLED));
+        KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.control.center.confluent.image.tag", DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG);
+        KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.export.metrics.enabled", DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED));
+        KAFKA_CONTROL_CENTER_JMX_PORT = System.getProperty("kafka.control.center.jmx.port", DEFAULT_KAFKA_CONTROL_CENTER_JMX_PORT);
+        KAFKA_CONTROL_CENTER_PORT = Integer.parseInt(System.getProperty("kafka.control.center.port", DEFAULT_KAFKA_CONTROL_CENTER_PORT));
+        KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.container.logging.enabled", DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED));
+
+        CONDUKTOR_ENABLED = Boolean.valueOf(System.getProperty("conduktor.enabled", DEFAULT_CONDUKTOR_ENABLED));
+        CONDUKTOR_IMAGE_TAG = System.getProperty("conduktor.image.tag", DEFAULT_CONDUKTOR_IMAGE_TAG);
+        CONDUKTOR_LICENSE_KEY = System.getProperty("conduktor.license.key");
+        CONDUKTOR_PORT = Integer.parseInt(System.getProperty("conduktor.port", DEFAULT_CONDUKTOR_PORT));
+        CONDUKTOR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("conduktor.container.logging.enabled", DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED));
+
+        DEBEZIUM_ENABLED = Boolean.valueOf(System.getProperty("debezium.enabled", DEFAULT_DEBEZIUM_ENABLED));
+        DEBEZIUM_IMAGE_TAG = System.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
+        DEBEZIUM_PORT = Integer.parseInt(System.getProperty("debezium.port", DEFAULT_DEBEZIUM_PORT));
+        DEBEZIUM_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("debezium.container.logging.enabled", DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED));
+
+        WIREMOCK_ENABLED = Boolean.valueOf(System.getProperty("wiremock.enabled", DEFAULT_WIREMOCK_ENABLED));
+        WIREMOCK_IMAGE_TAG = System.getProperty("wiremock.image.tag", DEFAULT_WIREMOCK_IMAGE_TAG);
+        WIREMOCK_PORT = Integer.parseInt(System.getProperty("wiremock.port", DEFAULT_WIREMOCK_PORT));
+        WIREMOCK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("wiremock.container.logging.enabled", DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED));
+
+        LOCALSTACK_ENABLED = Boolean.valueOf(System.getProperty("localstack.enabled", DEFAULT_LOCALSTACK_ENABLED));
+        LOCALSTACK_IMAGE_TAG = System.getProperty("localstack.image.tag", DEFAULT_LOCALSTACK_IMAGE_TAG);
+        LOCALSTACK_PORT = Integer.parseInt(System.getProperty("localstack.port", DEFAULT_LOCALSTACK_PORT));
+        LOCALSTACK_SERVICES = System.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
+        LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
+    }
+
+    protected static List<AdditionalContainer> parseAdditionalContainers() {
         String additionalContainersPropertyValue = System.getProperty("additional.containers", null);
         log.debug("Parsing additional containers: {}", additionalContainersPropertyValue);
         List<AdditionalContainer> additionalContainers = Collections.EMPTY_LIST;
@@ -213,7 +285,7 @@ public final class TestContainersConfiguration {
         return additionalContainers;
     }
 
-    private static List<String> parseKafkaTopics() {
+    protected static List<String> parseKafkaTopics() {
         String topicNamesPropertyValue = System.getProperty("kafka.topics", null);
         List<String> topics = Collections.EMPTY_LIST;
         if(topicNamesPropertyValue!=null) {

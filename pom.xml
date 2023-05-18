@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dev.lydtech</groupId>
 	<artifactId>component-test-framework</artifactId>
-	<version>2.1.0</version>
+	<version>2.1.1</version>
 	<name>component-test-framework</name>
 	<description>Component Test Framework</description>
 	<url>https://github.com/lydtechconsulting/component-test-framework</url>
@@ -23,7 +23,7 @@
 	<repositories>
 		<repository>
 			<id>confluent</id>
-			<url>http://packages.confluent.io/maven/</url>
+			<url>https://packages.confluent.io/maven/</url>
 		</repository>
 	</repositories>
 
@@ -172,7 +172,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 	</dependencies>
 
 	<profiles>
@@ -220,7 +219,6 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-<!--						<version>2.22.2</version>-->
 						<version>3.0.0-M9</version>
 					</plugin>
 					<plugin>
