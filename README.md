@@ -177,7 +177,7 @@ The `http.client5.version` override may need to be included to ensure that the c
 
 Add the Maven Surefire Plugin to the pom of the service under test with the following profile.
 
-The following shows how to override the configurable properties in a single module maven project:
+The following shows how to override the configurable properties in a maven project:
 ```
 <profiles>
     <profile>
@@ -261,7 +261,7 @@ The following shows how to override the configurable properties in a single modu
 
 The property overrides are all optional.  There is no need to include them if the default values are required.  The above examples do not indicate defaults.
 
-In a multi module maven project the surefire plugin should be added to the pom of the component test module.  The `<includes>` section should be excluded, and tests should be named `*Test`.  There is no need to distinguish the component tests from unit and integration tests as when they are housed within their own module within a multi module project.
+In a multi module maven project the surefire plugin should be added to the pom of the component test module.
 
 # Gradle Configuration
 
@@ -296,9 +296,7 @@ public class KafkaStreamsCT {
 
 The `TestContainersSetupExtension` is the JUnit5 extension that enables hooking into a test execution run before the tests themselves run, so that the Dockerised containers can be started.
 
-The component test class should be named with the suffix `CT` if housed within a single module project.  This ensures it is not run via the standard maven-surefire-plugin (if that is in use in the service pom.xml).  Instead it is only run with the `mvn` command when the profile `-Pcomponent` is included.
-
-When housed in its own child module in a multi module project the tests should have the suffix `Test`. 
+The component test class should be named with the suffix `CT`.  This ensures it is not run via the standard maven-surefire-plugin (if that is in use in the service pom.xml).  Instead it is only run with the `mvn` command when the profile `-Pcomponent` is included.
 
 # Component Test Application Properties
 
