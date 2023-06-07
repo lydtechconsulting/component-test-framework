@@ -599,7 +599,7 @@ JMX metrics can be exported by enabling `kafka.control.center.export.metrics.ena
 <repositories>
     <repository>
         <id>confluent</id>
-        <url>http://packages.confluent.io/maven/</url>
+        <url>https://packages.confluent.io/maven/</url>
     </repository>
 </repositories>
 	
