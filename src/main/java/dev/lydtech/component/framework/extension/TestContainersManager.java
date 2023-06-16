@@ -388,7 +388,7 @@ public final class TestContainersManager {
 
     private GenericContainer createConduktorContainer() {
         String containerName = CONDUKTOR.toString();
-        int containerExposedPort = 80;
+        int containerExposedPort = 8080;
         // Force host port to be CONDUKTOR_PORT.
         Consumer<CreateContainerCmd> cmd = e -> e.withHostConfig(e.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(CONDUKTOR_PORT),
                 new ExposedPort(containerExposedPort))))
@@ -398,7 +398,12 @@ public final class TestContainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd)
-                .withEnv("KAFKA_BOOTSTRAP_SERVER", KAFKA.toString()+":9092")
+                .withEnv("CDK_ORGANIZATION_NAME", "component-test-framework")
+                .withEnv("CDK_ADMIN_EMAIL", "admin@conduktor.io")
+                .withEnv("CDK_ADMIN_PASSWORD", "admin")
+                .withEnv("CDK_CLUSTERS_0_ID", "CTF")
+                .withEnv("CDK_CLUSTERS_0_NAME", "Local Cluster")
+                .withEnv("CDK_CLUSTERS_0_BOOTSTRAPSERVERS", KAFKA.toString()+":9092")
                 .withExposedPorts(containerExposedPort);
         if(CONDUKTOR_LICENSE_KEY != null) {
             container.withEnv("LICENSE_KEY", CONDUKTOR_LICENSE_KEY);

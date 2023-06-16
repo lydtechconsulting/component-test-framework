@@ -90,7 +90,7 @@ public final class TestContainersConfiguration {
      * Conduktor configuration.
      */
 
-    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.4.0";
+    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.15.0";
     private static final String DEFAULT_CONDUKTOR_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_PORT = "8088";

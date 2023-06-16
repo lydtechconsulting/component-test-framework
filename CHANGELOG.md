@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.0] - 2023-06-16
+### Changed
+- Updated default Conduktor Platform version to 1.15.0
+- 
 ## [2.1.0] - 2023-03-30
 ### Changed
 - Updated default Debezium version to 2.2
