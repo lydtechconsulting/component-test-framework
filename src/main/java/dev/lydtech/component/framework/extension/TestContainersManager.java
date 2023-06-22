@@ -48,6 +48,7 @@ public final class TestContainersManager {
     private GenericContainer localstackContainer;
     private GenericContainer controlCenterContainer;
     private GenericContainer conduktorContainer;
+    private GenericContainer conduktorGatewayContainer;
 
     private TestContainersManager(){}
 
@@ -125,6 +126,8 @@ public final class TestContainersManager {
             }
             conduktorContainer = createConduktorContainer();
         }
+        conduktorGatewayContainer = createConduktorGatewayContainer();
+
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT + 1)
                 .mapToObj(this::createServiceContainer)
                 .collect(Collectors.toList());
@@ -169,6 +172,7 @@ public final class TestContainersManager {
             if(LOCALSTACK_ENABLED) {
                 localstackContainer.start();
             }
+            conduktorGatewayContainer.start();
             serviceContainers.stream().forEach(container -> container.start());
             additionalContainers.stream().forEach(container -> container.start());
         } catch (Exception e) {
@@ -414,6 +418,29 @@ public final class TestContainersManager {
         if(CONDUKTOR_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
+        return container;
+    }
+
+    private GenericContainer createConduktorGatewayContainer() {
+        String containerName = CONDUKTOR_GATEWAY.toString();
+
+        GenericContainer container = new GenericContainer<>("conduktor/conduktor-gateway:" + "local")
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                })
+                .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("CONFIGURATION_FILE_PATH", "/interceptors.yml")
+                .withEnv("CLASSPATH", "lib/logger-interceptor-0.5.0-SNAPSHOT.jar")
+                .withEnv("GATEWAY_HOST", CONDUKTOR_GATEWAY.toString())
+                .withEnv("GATEWAY_PORT_RANGE", "6969:6969")
+                .withFileSystemBind("./target/test-classes/interceptors.yml", "/interceptors.yml", BindMode.READ_ONLY)
+                .withExposedPorts(6969)
+                .waitingFor(Wait.forListeningPort());
+
+        container.withLogConsumer(getLogConsumer(containerName));
+
         return container;
     }
 
