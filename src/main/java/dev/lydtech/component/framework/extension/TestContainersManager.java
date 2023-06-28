@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -172,7 +173,21 @@ public final class TestContainersManager {
             if(LOCALSTACK_ENABLED) {
                 localstackContainer.start();
             }
+
+            // TODO TEMP
+            try {
+                TimeUnit.SECONDS.sleep(30);
+            } catch(Exception e) {};
+
             conduktorGatewayContainer.start();
+
+
+            // TODO TEMP
+            try {
+                TimeUnit.SECONDS.sleep(30);
+            } catch(Exception e) {};
+
+
             serviceContainers.stream().forEach(container -> container.start());
             additionalContainers.stream().forEach(container -> container.start());
         } catch (Exception e) {
@@ -421,22 +436,54 @@ public final class TestContainersManager {
         return container;
     }
 
-    private GenericContainer createConduktorGatewayContainer() {
-        String containerName = CONDUKTOR_GATEWAY.toString();
+    /**
+     * Open source GATEWAY.
+     */
+//    private GenericContainer createConduktorGatewayContainer() {
+//        String containerName = CONDUKTOR_GATEWAY.toString();
+//
+//        GenericContainer container = new GenericContainer<>("conduktor/conduktor-gateway:" + "local")
+//                .withNetwork(network)
+//                .withNetworkAliases(containerName)
+//                .withCreateContainerCmdModifier(cmd -> {
+//                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+//                })
+//                .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+//                .withEnv("CONFIGURATION_FILE_PATH", "/interceptors.yml")
+//                .withEnv("CLASSPATH", "lib/logger-interceptor-0.5.0-SNAPSHOT.jar")
+//                .withEnv("GATEWAY_HOST", CONDUKTOR_GATEWAY.toString())
+//                .withEnv("GATEWAY_PORT_RANGE", "6969:6969")
+//                .withFileSystemBind("./target/test-classes/interceptors.yml", "/interceptors.yml", BindMode.READ_ONLY)
+//                .withExposedPorts(6969)
+//                .waitingFor(Wait.forListeningPort());
+//
+//        container.withLogConsumer(getLogConsumer(containerName));
+//
+//        return container;
+//    }
 
-        GenericContainer container = new GenericContainer<>("conduktor/conduktor-gateway:" + "local")
+    /**
+     * Enterprise PROXY.
+     */
+    private GenericContainer createConduktorGatewayContainer() {
+        String containerName = CONDUKTORGATEWAY.toString();
+
+        GenericContainer container = new GenericContainer<>("conduktor/conduktor-proxy:" + "1.8.2.1-amd64")
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 })
                 .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
-                .withEnv("CONFIGURATION_FILE_PATH", "/interceptors.yml")
-                .withEnv("CLASSPATH", "lib/logger-interceptor-0.5.0-SNAPSHOT.jar")
-                .withEnv("GATEWAY_HOST", CONDUKTOR_GATEWAY.toString())
-                .withEnv("GATEWAY_PORT_RANGE", "6969:6969")
-                .withFileSystemBind("./target/test-classes/interceptors.yml", "/interceptors.yml", BindMode.READ_ONLY)
-                .withExposedPorts(6969)
+//                .withEnv("CONFIGURATION_FILE_PATH", "/interceptors.yml")
+//                .withEnv("CLASSPATH", "lib/logger-interceptor-0.5.0-SNAPSHOT.jar")
+                .withEnv("PROXY_HOST", CONDUKTORGATEWAY.toString())
+                .withEnv("PROXY_PORT_RANGE", "6969:6969")
+                .withEnv("HTTP_PORT", "8888")
+                .withEnv("LICENCE_KEY", "[SNIP]")
+                .withEnv("FEATURE_FLAGS_SINGLE_TENANT", "true")
+//                .withFileSystemBind("./target/test-classes/interceptors.yml", "/interceptors.yml", BindMode.READ_ONLY)
+                .withExposedPorts(6969, 8888)
                 .waitingFor(Wait.forListeningPort());
 
         container.withLogConsumer(getLogConsumer(containerName));

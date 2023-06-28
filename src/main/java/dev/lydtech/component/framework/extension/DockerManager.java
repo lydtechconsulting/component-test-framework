@@ -82,6 +82,7 @@ public final class DockerManager {
         findContainerAndMapPort(dockerClient, KAFKA_SCHEMA_REGISTRY.toString().replace("_", "."), KAFKA_SCHEMA_REGISTRY_ENABLED, KAFKA_SCHEMA_REGISTRY_PORT);
         findContainerAndMapPort(dockerClient, WIREMOCK.toString(), WIREMOCK_ENABLED, WIREMOCK_PORT);
         findContainerAndMapPort(dockerClient, LOCALSTACK.toString(), LOCALSTACK_ENABLED, LOCALSTACK_PORT);
+        findContainerAndMapPort(dockerClient, CONDUKTORGATEWAY.toString(), KAFKA_ENABLED/* TODO */, 8888);
 
         captureHost();
 
