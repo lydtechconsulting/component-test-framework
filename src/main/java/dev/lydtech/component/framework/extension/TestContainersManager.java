@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -127,7 +126,12 @@ public final class TestContainersManager {
             }
             conduktorContainer = createConduktorContainer();
         }
-        conduktorGatewayContainer = createConduktorGatewayContainer();
+        if (CONDUKTOR_GATEWAY_ENABLED) {
+            if (!KAFKA_ENABLED) {
+                throw new RuntimeException("Kafka must be enabled in order to use Conduktor Gateway.");
+            }
+            conduktorGatewayContainer = createConduktorGatewayContainer();
+        }
 
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT + 1)
                 .mapToObj(this::createServiceContainer)
@@ -167,27 +171,15 @@ public final class TestContainersManager {
             if(CONDUKTOR_ENABLED) {
                 conduktorContainer.start();
             }
+            if(CONDUKTOR_GATEWAY_ENABLED) {
+                conduktorGatewayContainer.start();
+            }
             if(WIREMOCK_ENABLED) {
                 wiremockContainer.start();
             }
             if(LOCALSTACK_ENABLED) {
                 localstackContainer.start();
             }
-
-            // TODO TEMP
-            try {
-                TimeUnit.SECONDS.sleep(30);
-            } catch(Exception e) {};
-
-            conduktorGatewayContainer.start();
-
-
-            // TODO TEMP
-            try {
-                TimeUnit.SECONDS.sleep(30);
-            } catch(Exception e) {};
-
-
             serviceContainers.stream().forEach(container -> container.start());
             additionalContainers.stream().forEach(container -> container.start());
         } catch (Exception e) {
@@ -437,56 +429,32 @@ public final class TestContainersManager {
     }
 
     /**
-     * Open source GATEWAY.
-     */
-//    private GenericContainer createConduktorGatewayContainer() {
-//        String containerName = CONDUKTOR_GATEWAY.toString();
-//
-//        GenericContainer container = new GenericContainer<>("conduktor/conduktor-gateway:" + "local")
-//                .withNetwork(network)
-//                .withNetworkAliases(containerName)
-//                .withCreateContainerCmdModifier(cmd -> {
-//                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
-//                })
-//                .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
-//                .withEnv("CONFIGURATION_FILE_PATH", "/interceptors.yml")
-//                .withEnv("CLASSPATH", "lib/logger-interceptor-0.5.0-SNAPSHOT.jar")
-//                .withEnv("GATEWAY_HOST", CONDUKTOR_GATEWAY.toString())
-//                .withEnv("GATEWAY_PORT_RANGE", "6969:6969")
-//                .withFileSystemBind("./target/test-classes/interceptors.yml", "/interceptors.yml", BindMode.READ_ONLY)
-//                .withExposedPorts(6969)
-//                .waitingFor(Wait.forListeningPort());
-//
-//        container.withLogConsumer(getLogConsumer(containerName));
-//
-//        return container;
-//    }
-
-    /**
-     * Enterprise PROXY.
+     * Conduktor Gateway Enterprise PROXY.
      */
     private GenericContainer createConduktorGatewayContainer() {
         String containerName = CONDUKTORGATEWAY.toString();
 
-        GenericContainer container = new GenericContainer<>("conduktor/conduktor-proxy:" + "1.8.2.1-amd64")
+        GenericContainer container = new GenericContainer<>("conduktor/conduktor-proxy:" + CONDUKTOR_GATEWAY_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 })
                 .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
-//                .withEnv("CONFIGURATION_FILE_PATH", "/interceptors.yml")
-//                .withEnv("CLASSPATH", "lib/logger-interceptor-0.5.0-SNAPSHOT.jar")
                 .withEnv("PROXY_HOST", CONDUKTORGATEWAY.toString())
-                .withEnv("PROXY_PORT_RANGE", "6969:6969")
-                .withEnv("HTTP_PORT", "8888")
-                .withEnv("LICENCE_KEY", "[SNIP]")
+                .withEnv("PROXY_PORT_RANGE", CONDUKTOR_GATEWAY_PROXY_PORT+":"+CONDUKTOR_GATEWAY_PROXY_PORT)
+                .withEnv("HTTP_PORT", String.valueOf(CONDUKTOR_GATEWAY_HTTP_PORT))
                 .withEnv("FEATURE_FLAGS_SINGLE_TENANT", "true")
-//                .withFileSystemBind("./target/test-classes/interceptors.yml", "/interceptors.yml", BindMode.READ_ONLY)
-                .withExposedPorts(6969, 8888)
+                .withEnv("AUTHENTICATION_AUTHENTICATOR_TYPE", "NONE")
+                .withEnv("USER_POOL_TYPE", "JWT")
+                .withEnv("USER_POOL_SECRET_KEY", "SECRET")
+                .withEnv("ADMIN_API_USERS", "[{username: superUser, password: superUser}]")
+                .withEnv("ADMIN_API_SECRET", "OaM4lG+xO5Gz10GB1apZ2XDUuWw/sK1H+XXcgExpYm2YEHgnvEf63q9TJraebD3SQb/JzefcZkUEKz/8V5V+Fg==")
+                .withExposedPorts(CONDUKTOR_GATEWAY_PROXY_PORT, CONDUKTOR_GATEWAY_HTTP_PORT)
                 .waitingFor(Wait.forListeningPort());
-
-        container.withLogConsumer(getLogConsumer(containerName));
+        if(CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
 
         return container;
     }

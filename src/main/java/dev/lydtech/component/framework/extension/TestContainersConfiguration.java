@@ -96,6 +96,16 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_CONDUKTOR_PORT = "8088";
 
     /**
+     * Conduktor Gateway configuration.
+     */
+
+    private static final String DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG = "1.8.2.1-amd64";
+    private static final String DEFAULT_CONDUKTOR_GATEWAY_ENABLED = "false";
+    private static final String DEFAULT_CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_CONDUKTOR_GATEWAY_PROXY_PORT = "6969";
+    private static final String DEFAULT_CONDUKTOR_GATEWAY_HTTP_PORT = "8888";
+
+    /**
      * Wiremock default configuration.
      */
 
@@ -168,6 +178,12 @@ public final class TestContainersConfiguration {
     public static int CONDUKTOR_PORT;
     public static boolean CONDUKTOR_CONTAINER_LOGGING_ENABLED;
 
+    public static boolean CONDUKTOR_GATEWAY_ENABLED;
+    public static String CONDUKTOR_GATEWAY_IMAGE_TAG;
+    public static int CONDUKTOR_GATEWAY_PROXY_PORT;
+    public static int CONDUKTOR_GATEWAY_HTTP_PORT;
+    public static boolean CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED;
+
     public static boolean DEBEZIUM_ENABLED;
     public static String DEBEZIUM_IMAGE_TAG;
     public static int DEBEZIUM_PORT;
@@ -238,6 +254,12 @@ public final class TestContainersConfiguration {
         CONDUKTOR_LICENSE_KEY = System.getProperty("conduktor.license.key");
         CONDUKTOR_PORT = Integer.parseInt(System.getProperty("conduktor.port", DEFAULT_CONDUKTOR_PORT));
         CONDUKTOR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("conduktor.container.logging.enabled", DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED));
+
+        CONDUKTOR_GATEWAY_ENABLED = Boolean.valueOf(System.getProperty("conduktor.gateway.enabled", DEFAULT_CONDUKTOR_GATEWAY_ENABLED));
+        CONDUKTOR_GATEWAY_IMAGE_TAG = System.getProperty("conduktor.gateway.image.tag", DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG);
+        CONDUKTOR_GATEWAY_PROXY_PORT = Integer.parseInt(System.getProperty("conduktor.gateway.proxy.port", DEFAULT_CONDUKTOR_GATEWAY_PROXY_PORT));
+        CONDUKTOR_GATEWAY_HTTP_PORT = Integer.parseInt(System.getProperty("conduktor.gateway.http.port", DEFAULT_CONDUKTOR_GATEWAY_HTTP_PORT));
+        CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("conduktor.gateway.container.logging.enabled", DEFAULT_CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED));
 
         DEBEZIUM_ENABLED = Boolean.valueOf(System.getProperty("debezium.enabled", DEFAULT_DEBEZIUM_ENABLED));
         DEBEZIUM_IMAGE_TAG = System.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
@@ -362,6 +384,14 @@ public final class TestContainersConfiguration {
             log.info("conduktor.license.key: " + CONDUKTOR_LICENSE_KEY);
             log.info("conduktor.port: " + CONDUKTOR_PORT);
             log.info("conduktor.container.logging.enabled: " + CONDUKTOR_CONTAINER_LOGGING_ENABLED);
+        }
+
+        log.info("conduktor.gateway.enabled: " + CONDUKTOR_GATEWAY_ENABLED);
+        if(CONDUKTOR_GATEWAY_ENABLED) {
+            log.info("conduktor.gateway.image.tag: " + CONDUKTOR_GATEWAY_IMAGE_TAG);
+            log.info("conduktor.gateway.proxy.port: " + CONDUKTOR_GATEWAY_PROXY_PORT);
+            log.info("conduktor.gateway.http.port: " + CONDUKTOR_GATEWAY_HTTP_PORT);
+            log.info("conduktor.gateway.container.logging.enabled: " + CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED);
         }
 
         log.info("debezium.enabled: " + DEBEZIUM_ENABLED);

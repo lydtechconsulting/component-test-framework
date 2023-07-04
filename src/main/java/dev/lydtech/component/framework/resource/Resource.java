@@ -10,7 +10,6 @@ public enum Resource {
     KAFKA_CONTROL_CENTER,
     CONDUKTOR,
     CONDUKTORGATEWAY,
-//    CONDUKTOR_PROXY,
     WIREMOCK,
     LOCALSTACK;
 

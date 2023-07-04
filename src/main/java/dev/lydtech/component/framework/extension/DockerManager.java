@@ -18,8 +18,30 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.DockerClientFactory;
 
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.*;
-import static dev.lydtech.component.framework.resource.Resource.*;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_NAME_PREFIX;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
+import static dev.lydtech.component.framework.resource.Resource.CONDUKTORGATEWAY;
+import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
+import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
+import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
+import static dev.lydtech.component.framework.resource.Resource.SERVICE;
+import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
 import static java.util.Collections.singletonList;
 
 @Slf4j

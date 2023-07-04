@@ -1,10 +1,11 @@
 package dev.lydtech.component.framework.client.conduktor;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,24 +34,36 @@ public class ConduktorGatewayClient {
         return instance;
     }
 
-    public void postMapping() {
-        String request = "{\"config\": {\"brokerIds\": [],\"duration\": 6000,\"durationUnit\": \"MILLISECONDS\",\"quietPeriod\": 20000,\"quietPeriodUnit\": \"MILLISECONDS\",\"minLatencyToAddInMilliseconds\": 6000,\"maxLatencyToAddInMilliseconds\": 7000,\"errors\": [\"REQUEST_TIMED_OUT\", \"BROKER_NOT_AVAILABLE\", \"OFFSET_OUT_OF_RANGE\", \"NOT_ENOUGH_REPLICAS\", \"INVALID_REQUIRED_ACKS\"]},\"direction\": \"REQUEST\",\"apiKeys\": \"PRODUCE\"}";
-log.info("*************** RG: Posting Conduktor Gateway mapping: "+request);
-        Response response = RestAssured.given()
+    public void injectChaos(BrokerErrorType... brokerErrorTypes) {
+        String brokerErrorTypeJson = Arrays.stream(brokerErrorTypes)
+                .map(BrokerErrorType::name)
+                .collect(Collectors.joining("\", \""));
+        String request = "{\"config\": {\"brokerIds\": [],\"duration\": 10000,\"durationUnit\": \"MILLISECONDS\",\"quietPeriod\": 1000,\"quietPeriodUnit\": \"MILLISECONDS\",\"minLatencyToAddInMilliseconds\": 6000,\"maxLatencyToAddInMilliseconds\": 7000,\"errors\": [\""+brokerErrorTypeJson+"\"]},\"direction\": \"REQUEST\",\"apiKeys\": \"PRODUCE\"}";
+
+        log.info("Injecting chaos with request: "+request);
+        RestAssured.given()
                 .spec(requestSpec)
                 .body(request)
+                .auth()
+                .basic("superUser", "superUser")
                 .post("/tenant/passThroughTenant/feature/broken-broker")
                 .then()
                 .extract()
-                .response();
-
-        log.info("*************** RG: statuscode: "+response.statusCode());
-        log.info("*************** RG: response: "+response.asPrettyString());
-        log.info("*************** RG: response body: "+response.body().prettyPrint());
-
-
-//                .then()
-//                .statusCode(200);
+                .response()
+                .then()
+                .statusCode(200);
     }
 
+    public void reset() {
+        RestAssured.given()
+                .spec(requestSpec)
+                .auth()
+                .basic("superUser", "superUser")
+                .delete("/tenant/passThroughTenant/feature/broken-broker/apiKeys/PRODUCE/direction/REQUEST")
+                .then()
+                .extract()
+                .response()
+                .then()
+                .statusCode(200);
+    }
 }
