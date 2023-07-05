@@ -2,8 +2,8 @@ package dev.lydtech.component.framework.client.conduktor;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import dev.lydtech.component.framework.mapper.JsonMapper;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -35,12 +35,25 @@ public class ConduktorGatewayClient {
     }
 
     public void injectChaos(BrokerErrorType... brokerErrorTypes) {
-        String brokerErrorTypeJson = Arrays.stream(brokerErrorTypes)
+        String[] brokerErrorTypeStrings = Arrays.stream(brokerErrorTypes)
                 .map(BrokerErrorType::name)
-                .collect(Collectors.joining("\", \""));
-        String request = "{\"config\": {\"brokerIds\": [],\"duration\": 10000,\"durationUnit\": \"MILLISECONDS\",\"quietPeriod\": 1000,\"quietPeriodUnit\": \"MILLISECONDS\",\"minLatencyToAddInMilliseconds\": 6000,\"maxLatencyToAddInMilliseconds\": 7000,\"errors\": [\""+brokerErrorTypeJson+"\"]},\"direction\": \"REQUEST\",\"apiKeys\": \"PRODUCE\"}";
-
+                .toArray(String[]::new);
+        GatewayBrokenBrokerRequest gatewayBrokenBrokerRequest = GatewayBrokenBrokerRequest.builder()
+                .config(GatewayBrokenBrokerRequest.Config.builder()
+                        .duration(10000L)
+                        .durationUnit("MILLISECONDS")
+                        .quietPeriod(1000L)
+                        .quietPeriodUnit("MILLISECONDS")
+                        .minLatencyToAddInMilliseconds(6000L)
+                        .maxLatencyToAddInMilliseconds(7000L)
+                        .errors(brokerErrorTypeStrings)
+                        .build())
+                .direction("REQUEST")
+                .apiKeys("PRODUCE")
+                .build();
+        String request = JsonMapper.writeToJson(gatewayBrokenBrokerRequest);
         log.info("Injecting chaos with request: "+request);
+
         RestAssured.given()
                 .spec(requestSpec)
                 .body(request)
@@ -55,6 +68,7 @@ public class ConduktorGatewayClient {
     }
 
     public void reset() {
+        log.info("Resetting Conduktor Gateway.");
         RestAssured.given()
                 .spec(requestSpec)
                 .auth()

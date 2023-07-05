@@ -137,7 +137,7 @@ public class TestContainersConfigurationTest {
         assertThat(CONDUKTOR_PORT, equalTo(8088));
         assertThat(CONDUKTOR_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(CONDUKTOR_GATEWAY_ENABLED, equalTo(false));
-        assertThat(CONDUKTOR_GATEWAY_IMAGE_TAG, equalTo("1.8.2.1-amd64"));
+        assertThat(CONDUKTOR_GATEWAY_IMAGE_TAG, equalTo("1.8.2.6-amd64"));
         assertThat(CONDUKTOR_GATEWAY_PROXY_PORT, equalTo(6969));
         assertThat(CONDUKTOR_GATEWAY_HTTP_PORT, equalTo(8888));
         assertThat(CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED, equalTo(false));
