@@ -434,7 +434,7 @@ public final class TestContainersManager {
     private GenericContainer createConduktorGatewayContainer() {
         String containerName = CONDUKTORGATEWAY.toString();
 
-        GenericContainer container = new GenericContainer<>("conduktor/conduktor-proxy:" + CONDUKTOR_GATEWAY_IMAGE_TAG)
+        GenericContainer container = new GenericContainer<>("conduktor/conduktor-gateway:" + CONDUKTOR_GATEWAY_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {

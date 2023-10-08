@@ -99,7 +99,8 @@ public final class TestContainersConfiguration {
      * Conduktor Gateway configuration.
      */
 
-    private static final String DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG = "1.8.2.6-amd64";
+    private static final String DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG = "2.1.5";
+
     private static final String DEFAULT_CONDUKTOR_GATEWAY_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_GATEWAY_PROXY_PORT = "6969";

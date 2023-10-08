@@ -16,7 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<testcontainers.version>1.16.3</testcontainers.version>
-		<com.github.docker-java.version>3.3.0</com.github.docker-java.version>
+		<com.github.docker-java.version>3.3.2</com.github.docker-java.version>
 		<kafka.clients.version>3.3.2</kafka.clients.version>
 	</properties>
 
