@@ -20,6 +20,7 @@ Currently supported resources:
 - Localstack (AWS components - e.g. DynamoDB)
 - Confluent Control Center
 - Conduktor Platform
+- Conduktor Gateway
 
 # Supported Versions
 
@@ -87,52 +88,59 @@ https://github.com/lydtechconsulting/kafka-consumer-retry (uses multiple instanc
 
 https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer with additional configuration for batch send)
 
+https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Conduktor Gateway for chaos testing the service under test)
+
 # Configuration
 
-|Property|Usage| Default |
-|---|---|---|
-|containers.stayup|Whether the Docker containers should remain up after a test run.| false          |
-|container.name.prefix|The Docker container prefix name to use.  A namespace for the component test containers.| ct             |
-|container.main.label|The Docker containers housing the service instances has this label applied.  This is used as part of the `containers.stayup` check, along with the `container.name.prefix`, to determine if the containers are already running.  It is recommended to leave this as the default value, so that subsequent test runs from an IDE do not need to set a system parameter override.| main-container | 
-|service.name|The name of the service, used in the service Docker container name.| app            |
-|service.instance.count|The number of instances of the service under test to start.| 1              |
-|service.image.tag|The tagged image of the service Docker container to use.| latest         |
-|service.port|The service port number.| 9001           |
-|service.debug.port|The port for remote debugging the service.| 5001           |
-|service.startup.timeout.seconds|The number of seconds to wait for the service to start before considered failed.| 180            |
-|service.container.logging.enabled|Whether to output the service Docker logs to the console.| false          |
-|additional.containers|Colon separated list of additional containers to spin up, such as simulators.  Each additional container entry requires a comma separated list of details:  name, port, debugPort, imageTag, containerLoggingEnabled.  Example is: `third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false`|                |
-|postgres.enabled|Whether a Docker Postgres container should be started.| false          |
-|postgres.image.tag|The image tag of the Postgres Docker container to use.| 14-alpine      |
-|postgres.host.name|The name of the Postgres host.| postgres       |
-|postgres.port|The port of the Postgres Docker container.| 5432           |
-|postgres.database.name|The name of the Postgres database.| postgres-db    |
-|postgres.username|The Postgres username.| user           |
-|postgres.password|The Postgres password.| password       |
-|kafka.enabled|Whether a Docker Kafka container should be started.| false          |
-|kafka.broker.count|The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be 'kafka', then subsequent will have an instance suffix, e.g. 'kafka-2'.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).| 1              |
-|kafka.confluent.image.tag|The image tag of the Confluent Kafka Docker container to use.| 7.3.2          |
-|kafka.port|The port of the Kafka Docker container.| 9093           |
-|kafka.topics|Comma delimited list of topics to create.  Often topics are auto-created, but for Kafka Streams for example they must be created upfront.|
-|kafka.topic.partition.count|The number of partitions for topics that are created.| 5              |
-|kafka.topic.replication.factor|The replication factor to use for topics.  Must not be greater than the configured `kafka.broker.count`.| 1              |
-|kafka.min.insync.replicas|The minimum in-sync number of replicas required for successful writes to topics.  Must not be greater than the configured `kafka.broker.count` nor the `kafka.topic.replication.factor`.| 1              |
-|kafka.container.logging.enabled|Whether to output the Kafka Docker logs to the console.| false          |
-|kafka.schema.registry.enabled|Whether a Docker Schema Registry container should be started.| false          |
-|kafka.schema.registry.confluent.image.tag|The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.| 7.3.2          |
-|kafka.schema.registry.port|The port of the Kafka Schema Registry Docker container.| 8081           |
-|kafka.schema.registry.container.logging.enabled|Whether to output the Kafka Schema Registry Docker logs to the console.| false          |
-|kafka.control.center.enabled|Whether a Docker Confluent Control Center container should be started.| false          |
-|kafka.control.center.confluent.image.tag|The image tag of the Kafka Confluent Control Center Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.| 7.3.2          |
-|kafka.control.center.port|The exposed port of the Kafka Confluent Control Center Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:9021| 9021           |
-|kafka.control.center.export.metrics.enabled|Whether to export JMX metrics from the broker.  Also means if interceptors are added to consumers and producers that further metrics are exported.  Requires Confluent's community package kafka-clients and monitoring-interceptors libraries.| false          |
-|kafka.control.center.jmx.port|The port for accessing the exported JMX metrics.  The port must be available on the local machine.| 9101           |
-|kafka.control.center.container.logging.enabled|Whether to output the Kafka Control Center Docker logs to the console.| false          |
-|conduktor.enabled|Whether a Docker Conduktor Platform container should be started.| true           |
-|conduktor.image.tag|The image tag of the Conduktor Platform Docker container to use.| 1.15.0         |
-|conduktor.license.key|License key for Conduktor Platform.  (Optional)|                |
-|conduktor.port|The exposed port of the Conduktor Platform Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:8088| 8088           |
-|conduktor.container.logging.enabled|Whether to output the Conduktor Docker logs to the console.| false          |
+| Property                                        | Usage                                                                                                                                                                                                                                                                                                                                                                           | Default        |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| containers.stayup                               | Whether the Docker containers should remain up after a test run.                                                                                                                                                                                                                                                                                                                | false          |
+| container.name.prefix                           | The Docker container prefix name to use.  A namespace for the component test containers.                                                                                                                                                                                                                                                                                        | ct             |
+| container.main.label                            | The Docker containers housing the service instances has this label applied.  This is used as part of the `containers.stayup` check, along with the `container.name.prefix`, to determine if the containers are already running.  It is recommended to leave this as the default value, so that subsequent test runs from an IDE do not need to set a system parameter override. | main-container | 
+| service.name                                    | The name of the service, used in the service Docker container name.                                                                                                                                                                                                                                                                                                             | app            |
+| service.instance.count                          | The number of instances of the service under test to start.                                                                                                                                                                                                                                                                                                                     | 1              |
+| service.image.tag                               | The tagged image of the service Docker container to use.                                                                                                                                                                                                                                                                                                                        | latest         |
+| service.port                                    | The service port number.                                                                                                                                                                                                                                                                                                                                                        | 9001           |
+| service.debug.port                              | The port for remote debugging the service.                                                                                                                                                                                                                                                                                                                                      | 5001           |
+| service.startup.timeout.seconds                 | The number of seconds to wait for the service to start before considered failed.                                                                                                                                                                                                                                                                                                | 180            |
+| service.container.logging.enabled               | Whether to output the service Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | false          |
+| additional.containers                           | Colon separated list of additional containers to spin up, such as simulators.  Each additional container entry requires a comma separated list of details:  name, port, debugPort, imageTag, containerLoggingEnabled.  Example is: `third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false`                                             |                |
+| postgres.enabled                                | Whether a Docker Postgres container should be started.                                                                                                                                                                                                                                                                                                                          | false          |
+| postgres.image.tag                              | The image tag of the Postgres Docker container to use.                                                                                                                                                                                                                                                                                                                          | 14-alpine      |
+| postgres.host.name                              | The name of the Postgres host.                                                                                                                                                                                                                                                                                                                                                  | postgres       |
+| postgres.port                                   | The port of the Postgres Docker container.                                                                                                                                                                                                                                                                                                                                      | 5432           |
+| postgres.database.name                          | The name of the Postgres database.                                                                                                                                                                                                                                                                                                                                              | postgres-db    |
+| postgres.username                               | The Postgres username.                                                                                                                                                                                                                                                                                                                                                          | user           |
+| postgres.password                               | The Postgres password.                                                                                                                                                                                                                                                                                                                                                          | password       |
+| kafka.enabled                                   | Whether a Docker Kafka container should be started.                                                                                                                                                                                                                                                                                                                             | false          |
+| kafka.broker.count                              | The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be 'kafka', then subsequent will have an instance suffix, e.g. 'kafka-2'.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).                                       | 1              |
+| kafka.confluent.image.tag                       | The image tag of the Confluent Kafka Docker container to use.                                                                                                                                                                                                                                                                                                                   | 7.3.2          |
+| kafka.port                                      | The port of the Kafka Docker container.                                                                                                                                                                                                                                                                                                                                         | 9093           |
+| kafka.topics                                    | Comma delimited list of topics to create.  Often topics are auto-created, but for Kafka Streams for example they must be created upfront.                                                                                                                                                                                                                                       |
+| kafka.topic.partition.count                     | The number of partitions for topics that are created.                                                                                                                                                                                                                                                                                                                           | 5              |
+| kafka.topic.replication.factor                  | The replication factor to use for topics.  Must not be greater than the configured `kafka.broker.count`.                                                                                                                                                                                                                                                                        | 1              |
+| kafka.min.insync.replicas                       | The minimum in-sync number of replicas required for successful writes to topics.  Must not be greater than the configured `kafka.broker.count` nor the `kafka.topic.replication.factor`.                                                                                                                                                                                        | 1              |
+| kafka.container.logging.enabled                 | Whether to output the Kafka Docker logs to the console.                                                                                                                                                                                                                                                                                                                         | false          |
+| kafka.schema.registry.enabled                   | Whether a Docker Schema Registry container should be started.                                                                                                                                                                                                                                                                                                                   | false          |
+| kafka.schema.registry.confluent.image.tag       | The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.                                                                                                                                                                                                                          | 7.3.2          |
+| kafka.schema.registry.port                      | The port of the Kafka Schema Registry Docker container.                                                                                                                                                                                                                                                                                                                         | 8081           |
+| kafka.schema.registry.container.logging.enabled | Whether to output the Kafka Schema Registry Docker logs to the console.                                                                                                                                                                                                                                                                                                         | false          |
+| kafka.control.center.enabled                    | Whether a Docker Confluent Control Center container should be started.                                                                                                                                                                                                                                                                                                          | false          |
+| kafka.control.center.confluent.image.tag        | The image tag of the Kafka Confluent Control Center Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.                                                                                                                                                                                                                           | 7.3.2          |
+| kafka.control.center.port                       | The exposed port of the Kafka Confluent Control Center Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:9021                                                                                                                                                                                    | 9021           |
+| kafka.control.center.export.metrics.enabled     | Whether to export JMX metrics from the broker.  Also means if interceptors are added to consumers and producers that further metrics are exported.  Requires Confluent's community package kafka-clients and monitoring-interceptors libraries.                                                                                                                                 | false          |
+| kafka.control.center.jmx.port                   | The port for accessing the exported JMX metrics.  The port must be available on the local machine.                                                                                                                                                                                                                                                                              | 9101           |
+| kafka.control.center.container.logging.enabled  | Whether to output the Kafka Control Center Docker logs to the console.                                                                                                                                                                                                                                                                                                          | false          |
+| conduktor.enabled                               | Whether a Docker Conduktor Platform container should be started.                                                                                                                                                                                                                                                                                                                | false          |
+| conduktor.image.tag                             | The image tag of the Conduktor Platform Docker container to use.                                                                                                                                                                                                                                                                                                                | 1.15.0         |
+| conduktor.license.key                           | License key for Conduktor Platform.  (Optional)                                                                                                                                                                                                                                                                                                                                 |                |
+| conduktor.port                                  | The exposed port of the Conduktor Platform Docker container.  This port must be available locally.  Navigate to this port on localhost to view the console.  e.g. localhost:8088                                                                                                                                                                                                | 8088           |
+| conduktor.container.logging.enabled             | Whether to output the Conduktor Docker logs to the console.                                                                                                                                                                                                                                                                                                                     | false          |
+| conduktor.gateway.enabled                       | Whether a Docker Conduktor Gateway container should be started.                                                                                                                                                                                                                                                                                                                 | false          |
+| conduktor.gateway.image.tag                     | The image tag of the Conduktor Platform Docker container to use.                                                                                                                                                                                                                                                                                                                | 2.1.5          |
+| conduktor.gateway.proxy.port                    | The exposed port of the Conduktor Gateway container.  This port must be available locally.  The port is used to connect to the proxy rather than the Kafka instance directly.  e.g. bootstrap-servers: conduktorgateway:6969                                                                                                                                                    | 6969           |
+| conduktor.gateway.http.port                     | The exposed port of the Conduktor Gateway container HTTP management API.  The port is used to connect to the proxy rather than the Kafka instance directly.  e.g. bootstrap-servers: conduktorgateway:6969                                                                                                                                                                      | 8888           |
+| conduktor.gateway.container.logging.enabled     | Whether to output the Conduktor Gateway Docker logs to the console.                                                                                                                                                                                                                                                                                                             | false          |
 |debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.| false          |
 |debezium.image.tag|The image tag of the Debezium Docker container to use.| 2.2            |
 |debezium.port|The port of the Debezium Docker container.| 8083           |
@@ -237,6 +245,11 @@ The following shows how to override the configurable properties in a maven proje
                             <conduktor.port>8088</conduktor.port>
 							<conduktor.license.key>my-license-key</conduktor.license.key>
 							<conduktor.container.logging.enabled>true</conduktor.container.logging.enabled>
+							<conduktor.gateway.enabled>true</conduktor.gateway.enabled>
+                            <conduktor.gateway.image.tag>2.1.5</conduktor.gateway.image.tag>
+                            <conduktor.gateway.proxy.port>6969</conduktor.gateway.proxy.port>
+                            <conduktor.gateway.http.port>8888</conduktor.gateway.http.port>
+                            <conduktor.gateway.logging.enabled>false</conduktor.gateway.logging.enabled>
                             <debezium.enabled>true</debezium.enabled>
                             <debezium.image.tag>2.2</debezium.image.tag>
                             <debezium.port>8083</debezium.port>
@@ -655,7 +668,7 @@ The Conduktor Platform is a web application that provides a user interface for i
 
 The Platform offers other services such as the ability to create Test flows to send and receive messages from the Kafka broker.  These can be explored through the UI.
 
-A license key can be provided via the `conduktor.license.key` configuration parameter to unlock more features and services.  See `https://conduktor.io` for more.
+A license key can be provided via the `conduktor.license.key` configuration parameter to unlock more features and services.  See https://conduktor.io for more.
 
 The web application is configurable via the `conduktor.port` configuration parameter, defaulting to `8088`.  The chosen port must be available on the local machine running the component tests.
 
@@ -671,6 +684,47 @@ password: admin
 ```
 
 Launch the `Console` application in order to view the broker, topics, messages, and schema registry data. 
+
+# Conduktor Gateway
+
+Conduktor Gateway is a proxy between an application and Kafka that facilitates chaos testing.  It achieves this by intercepting requests made by the application to Kafka and returning a percentag of these with errors.
+
+See https://www.conduktor.io/gateway/ for more.
+
+A utility client provides the ability to simulate a number of different errors.  For example, to simulate `INVALID_REQUIRED_ACKS` for 20% of producer requests:
+
+```
+import dev.lydtech.component.framework.client.conduktor.ConduktorGatewayClient;
+
+conduktorGatewayClient.simulateBrokenBroker(20, BrokenBrokerErrorType.INVALID_REQUIRED_ACKS);
+```
+The following are the supported `BrokerBrokerErrorType` types for simulating a broken broker by the component test framework, and whether each results in a Kafka retryable exception that the producer should be able to retry:
+
+| Error Type | Exception Type |
+|------------|----------------|
+| NOT_ENOUGH_REPLICAS | Retryable      |
+| INVALID_REQUIRED_ACKS | Retryable      |
+| CORRUPT_MESSAGE | Not retryable  |
+| UNKNOWN_SERVER_ERROR | Not retryable  |
+
+To simulate a partition leader election at the time the request is made for 20% of requests (resulting in a Kafka retryable exception):
+
+```
+conduktorGatewayClient.simulateLeaderElection(20);
+```
+
+To simulate a slow broker, for 100% of requests, adding a latency of between 50 milliseconds and 150 milliseconds for each request:
+```
+conduktorGatewayClient.simulateSlowBroker(100, 50, 150)
+```
+
+To clear existing interceptors, call:
+
+```
+conduktorGatewayClient.reset();
+```
+
+When no interceptors are registered, the Gateway will pass requests through directly to Kafka.
 
 # Debezium
 

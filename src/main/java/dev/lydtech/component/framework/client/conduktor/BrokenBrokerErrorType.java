@@ -8,8 +8,8 @@ import lombok.Getter;
 public enum BrokenBrokerErrorType {
 
     NOT_ENOUGH_REPLICAS("PRODUCE"), // Retryable
-    INVALID_REQUIRED_ACKS("PRODUCE"), // Not retryable
     CORRUPT_MESSAGE("PRODUCE"), // Retryable
+    INVALID_REQUIRED_ACKS("PRODUCE"), // Not retryable
     UNKNOWN_SERVER_ERROR("FETCH"); // Not retryable
 
     private final String errorMapType;
