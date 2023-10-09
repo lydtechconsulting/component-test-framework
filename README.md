@@ -687,7 +687,7 @@ Launch the `Console` application in order to view the broker, topics, messages, 
 
 # Conduktor Gateway
 
-Conduktor Gateway is a proxy between an application and Kafka that facilitates chaos testing.  It achieves this by intercepting requests made by the application to Kafka and returning a percentag of these with errors.
+Conduktor Gateway is a proxy that sits between an application and Kafka that facilitates chaos testing.  It achieves this by intercepting requests made by the application to Kafka and returning a percentage of these with errors, based on registering interceptors with the Gateway.
 
 See https://www.conduktor.io/gateway/ for more.
 
