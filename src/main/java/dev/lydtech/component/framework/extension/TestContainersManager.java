@@ -429,7 +429,7 @@ public final class TestContainersManager {
     }
 
     /**
-     * Conduktor Gateway Enterprise PROXY.
+     * Conduktor Gateway.
      */
     private GenericContainer createConduktorGatewayContainer() {
         String containerName = CONDUKTORGATEWAY.toString();
@@ -446,10 +446,6 @@ public final class TestContainersManager {
                 .withEnv("HTTP_PORT", String.valueOf(CONDUKTOR_GATEWAY_HTTP_PORT))
                 .withEnv("FEATURE_FLAGS_SINGLE_TENANT", "true")
                 .withEnv("AUTHENTICATION_AUTHENTICATOR_TYPE", "NONE")
-                .withEnv("USER_POOL_TYPE", "JWT")
-                .withEnv("USER_POOL_SECRET_KEY", "SECRET")
-                .withEnv("ADMIN_API_USERS", "[{username: superUser, password: superUser}]")
-                .withEnv("ADMIN_API_SECRET", "OaM4lG+xO5Gz10GB1apZ2XDUuWw/sK1H+XXcgExpYm2YEHgnvEf63q9TJraebD3SQb/JzefcZkUEKz/8V5V+Fg==")
                 .withExposedPorts(CONDUKTOR_GATEWAY_PROXY_PORT, CONDUKTOR_GATEWAY_HTTP_PORT)
                 .waitingFor(Wait.forListeningPort());
         if(CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED) {
