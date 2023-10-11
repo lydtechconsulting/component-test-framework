@@ -34,7 +34,6 @@ Currently supported resources:
 - Kafka Clients 2.x
 - Java 11
 
-
 # Dependency
 
 Add this library as a dependency to the pom of the service under test:
@@ -139,21 +138,21 @@ https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Con
 | conduktor.gateway.enabled                       | Whether a Docker Conduktor Gateway container should be started.                                                                                                                                                                                                                                                                                                                 | false          |
 | conduktor.gateway.image.tag                     | The image tag of the Conduktor Platform Docker container to use.                                                                                                                                                                                                                                                                                                                | 2.1.5          |
 | conduktor.gateway.proxy.port                    | The exposed port of the Conduktor Gateway container.  This port must be available locally.  The port is used to connect to the proxy rather than the Kafka instance directly.  e.g. bootstrap-servers: conduktorgateway:6969                                                                                                                                                    | 6969           |
-| conduktor.gateway.http.port                     | The exposed port of the Conduktor Gateway container HTTP management API.  The port is used to connect to the proxy rather than the Kafka instance directly.  e.g. bootstrap-servers: conduktorgateway:6969                                                                                                                                                                      | 8888           |
+| conduktor.gateway.http.port                     | The exposed port of the Conduktor Gateway container HTTP management API.  This port must be available locally.  The port is used to connect to the proxy rather than the Kafka instance directly.  e.g. bootstrap-servers: conduktorgateway:6969                                                                                                                                | 8888           |
 | conduktor.gateway.container.logging.enabled     | Whether to output the Conduktor Gateway Docker logs to the console.                                                                                                                                                                                                                                                                                                             | false          |
-|debezium.enabled|Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.| false          |
-|debezium.image.tag|The image tag of the Debezium Docker container to use.| 2.2            |
-|debezium.port|The port of the Debezium Docker container.| 8083           |
-|debezium.container.logging.enabled|Whether to output the Debezium Docker logs to the console.| false          |
-|wiremock.enabled|Whether a Docker Wiremock container should be started.| false          |
-|wiremock.image.tag|The image tag of the Wiremock Docker container to use.| 2.35.0         |
-|wiremock.container.logging.enabled|Whether to output the Wiremock Docker logs to the console.| false          |
-|localstack.enabled|Whether a Docker Localstack (AWS) container should be started.| false          |
-|localstack.image.tag|The image tag of the Localstack Docker container to use.| 0.14.3         |
-|localstack.port|The port of the Localstack Docker container.| 4566           |
-|localstack.services|Comma delimited list of AWS services to start.| dynamodb       |
-|localstack.region|The region to use.| eu-west-2      |
-|localstack.container.logging.enabled|Whether to output the Localstack Docker logs to the console.| false          |
+|debezium.enabled| Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.                                                                                                                                                                                                                                             | false          |
+|debezium.image.tag| The image tag of the Debezium Docker container to use.                                                                                                                                                                                                                                                                                                                          | 2.2            |
+|debezium.port| The port of the Debezium Docker container.                                                                                                                                                                                                                                                                                                                                      | 8083           |
+|debezium.container.logging.enabled| Whether to output the Debezium Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
+|wiremock.enabled| Whether a Docker Wiremock container should be started.                                                                                                                                                                                                                                                                                                                          | false          |
+|wiremock.image.tag| The image tag of the Wiremock Docker container to use.                                                                                                                                                                                                                                                                                                                          | 2.35.0         |
+|wiremock.container.logging.enabled| Whether to output the Wiremock Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
+|localstack.enabled| Whether a Docker Localstack (AWS) container should be started.                                                                                                                                                                                                                                                                                                                  | false          |
+|localstack.image.tag| The image tag of the Localstack Docker container to use.                                                                                                                                                                                                                                                                                                                        | 0.14.3         |
+|localstack.port| The port of the Localstack Docker container.                                                                                                                                                                                                                                                                                                                                    | 4566           |
+|localstack.services| Comma delimited list of AWS services to start.                                                                                                                                                                                                                                                                                                                                  | dynamodb       |
+|localstack.region| The region to use.                                                                                                                                                                                                                                                                                                                                                              | eu-west-2      |
+|localstack.container.logging.enabled| Whether to output the Localstack Docker logs to the console.                                                                                                                                                                                                                                                                                                                    | false          |
 
 The configuration is logged at test execution time at INFO level.  Enable in `logback-test.xml` with:
 ```
@@ -700,14 +699,14 @@ conduktorGatewayClient.simulateBrokenBroker(20, BrokenBrokerErrorType.INVALID_RE
 ```
 The following are the supported `BrokerBrokerErrorType` types for simulating a broken broker by the component test framework, and whether each results in a Kafka retryable exception that the producer should be able to retry:
 
-| Error Type | Exception Type |
-|------------|----------------|
-| NOT_ENOUGH_REPLICAS | Retryable      |
-| INVALID_REQUIRED_ACKS | Retryable      |
-| CORRUPT_MESSAGE | Not retryable  |
-| UNKNOWN_SERVER_ERROR | Not retryable  |
+| Error Type | Exception Thrown             | Exception Type |
+|------------|------------------------------|----------------|
+| NOT_ENOUGH_REPLICAS | NotEnoughReplicasException   | Retryable      |
+| CORRUPT_MESSAGE | CorruptRecordException | Retryable      |
+| INVALID_REQUIRED_ACKS | InvalidRequiredAcksException | Not retryable  |
+| UNKNOWN_SERVER_ERROR | UnknownServerException | Not retryable  |
 
-To simulate a partition leader election at the time the request is made for 20% of requests (resulting in a Kafka retryable exception):
+To simulate a partition leader election at the time the request is made for 20% of requests (resulting in the Kafka retryable exception `NotLeaderOrFollowerException`):
 
 ```
 conduktorGatewayClient.simulateLeaderElection(20);

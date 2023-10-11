@@ -441,8 +441,8 @@ public final class TestContainersManager {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 })
                 .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
-                .withEnv("PROXY_HOST", CONDUKTORGATEWAY.toString())
-                .withEnv("PROXY_PORT_RANGE", CONDUKTOR_GATEWAY_PROXY_PORT+":"+CONDUKTOR_GATEWAY_PROXY_PORT)
+                .withEnv("GATEWAY_HOST", CONDUKTORGATEWAY.toString())
+                .withEnv("GATEWAY_PORT_RANGE", CONDUKTOR_GATEWAY_PROXY_PORT+":"+CONDUKTOR_GATEWAY_PROXY_PORT)
                 .withEnv("HTTP_PORT", String.valueOf(CONDUKTOR_GATEWAY_HTTP_PORT))
                 .withEnv("FEATURE_FLAGS_SINGLE_TENANT", "true")
                 .withEnv("AUTHENTICATION_AUTHENTICATOR_TYPE", "NONE")
