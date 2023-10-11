@@ -48,6 +48,7 @@ public final class TestContainersManager {
     private GenericContainer localstackContainer;
     private GenericContainer controlCenterContainer;
     private GenericContainer conduktorContainer;
+    private GenericContainer conduktorGatewayContainer;
 
     private TestContainersManager(){}
 
@@ -125,6 +126,13 @@ public final class TestContainersManager {
             }
             conduktorContainer = createConduktorContainer();
         }
+        if (CONDUKTOR_GATEWAY_ENABLED) {
+            if (!KAFKA_ENABLED) {
+                throw new RuntimeException("Kafka must be enabled in order to use Conduktor Gateway.");
+            }
+            conduktorGatewayContainer = createConduktorGatewayContainer();
+        }
+
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT + 1)
                 .mapToObj(this::createServiceContainer)
                 .collect(Collectors.toList());
@@ -162,6 +170,9 @@ public final class TestContainersManager {
             }
             if(CONDUKTOR_ENABLED) {
                 conduktorContainer.start();
+            }
+            if(CONDUKTOR_GATEWAY_ENABLED) {
+                conduktorGatewayContainer.start();
             }
             if(WIREMOCK_ENABLED) {
                 wiremockContainer.start();
@@ -414,6 +425,33 @@ public final class TestContainersManager {
         if(CONDUKTOR_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
+        return container;
+    }
+
+    /**
+     * Conduktor Gateway.
+     */
+    private GenericContainer createConduktorGatewayContainer() {
+        String containerName = CONDUKTORGATEWAY.toString();
+
+        GenericContainer container = new GenericContainer<>("conduktor/conduktor-gateway:" + CONDUKTOR_GATEWAY_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                })
+                .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("GATEWAY_HOST", CONDUKTORGATEWAY.toString())
+                .withEnv("GATEWAY_PORT_RANGE", CONDUKTOR_GATEWAY_PROXY_PORT+":"+CONDUKTOR_GATEWAY_PROXY_PORT)
+                .withEnv("HTTP_PORT", String.valueOf(CONDUKTOR_GATEWAY_HTTP_PORT))
+                .withEnv("FEATURE_FLAGS_SINGLE_TENANT", "true")
+                .withEnv("AUTHENTICATION_AUTHENTICATOR_TYPE", "NONE")
+                .withExposedPorts(CONDUKTOR_GATEWAY_PROXY_PORT, CONDUKTOR_GATEWAY_HTTP_PORT)
+                .waitingFor(Wait.forListeningPort());
+        if(CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+
         return container;
     }
 

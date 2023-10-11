@@ -66,6 +66,12 @@ public class TestContainersConfigurationTest {
         System.clearProperty("conduktor.port");
         System.clearProperty("conduktor.container.logging.enabled");
 
+        System.clearProperty("conduktor.gateway.enabled");
+        System.clearProperty("conduktor.gateway.image.tag");
+        System.clearProperty("conduktor.gateway.proxy.port");
+        System.clearProperty("conduktor.gateway.http.port");
+        System.clearProperty("conduktor.gateway.container.logging.enabled");
+
         System.clearProperty("debezium.enabled");
         System.clearProperty("debezium.image.tag");
         System.clearProperty("debezium.port");
@@ -130,6 +136,11 @@ public class TestContainersConfigurationTest {
         assertThat(CONDUKTOR_LICENSE_KEY, nullValue());
         assertThat(CONDUKTOR_PORT, equalTo(8088));
         assertThat(CONDUKTOR_CONTAINER_LOGGING_ENABLED, equalTo(false));
+        assertThat(CONDUKTOR_GATEWAY_ENABLED, equalTo(false));
+        assertThat(CONDUKTOR_GATEWAY_IMAGE_TAG, equalTo("2.1.5"));
+        assertThat(CONDUKTOR_GATEWAY_PROXY_PORT, equalTo(6969));
+        assertThat(CONDUKTOR_GATEWAY_HTTP_PORT, equalTo(8888));
+        assertThat(CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(DEBEZIUM_ENABLED, equalTo(false));
         assertThat(DEBEZIUM_IMAGE_TAG, equalTo("2.2"));
         assertThat(DEBEZIUM_PORT, equalTo(8083));
@@ -197,6 +208,12 @@ public class TestContainersConfigurationTest {
         System.setProperty("conduktor.port", "8089");
         System.setProperty("conduktor.container.logging.enabled", "true");
 
+        System.setProperty("conduktor.gateway.enabled", "true");
+        System.setProperty("conduktor.gateway.image.tag", "conduktor-gateway-override");
+        System.setProperty("conduktor.gateway.proxy.port", "6970");
+        System.setProperty("conduktor.gateway.http.port", "8889");
+        System.setProperty("conduktor.gateway.container.logging.enabled", "true");
+
         System.setProperty("debezium.enabled", "true");
         System.setProperty("debezium.image.tag", "debezium-override");
         System.setProperty("debezium.port", "8084");
@@ -257,6 +274,11 @@ public class TestContainersConfigurationTest {
         assertThat(CONDUKTOR_LICENSE_KEY, equalTo("conduktor-license-override"));
         assertThat(CONDUKTOR_PORT, equalTo(8089));
         assertThat(CONDUKTOR_CONTAINER_LOGGING_ENABLED, equalTo(true));
+        assertThat(CONDUKTOR_GATEWAY_ENABLED, equalTo(true));
+        assertThat(CONDUKTOR_GATEWAY_IMAGE_TAG, equalTo("conduktor-gateway-override"));
+        assertThat(CONDUKTOR_GATEWAY_PROXY_PORT, equalTo(6970));
+        assertThat(CONDUKTOR_GATEWAY_HTTP_PORT, equalTo(8889));
+        assertThat(CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(DEBEZIUM_ENABLED, equalTo(true));
         assertThat(DEBEZIUM_IMAGE_TAG, equalTo("debezium-override"));
         assertThat(DEBEZIUM_PORT, equalTo(8084));
