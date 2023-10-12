@@ -68,6 +68,7 @@ This project demonstrates using:
 - A child `component-test` module. 
 - REST calls to the service under test.
 - Multiple additional containers (simulators) - these also benefit from the multi module structure as each is defined in its own child module.
+- Running component tests with gradle.
 
 Other reference projects that utilise the framework:
 
