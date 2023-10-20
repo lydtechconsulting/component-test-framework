@@ -51,8 +51,8 @@ public class ConduktorGatewayClient {
         injectChaos(ChaosType.LEADER_ELECTION, failureRatePercentage, null, null);
     }
 
-    public void simulateSlowBroker(int failureRatePercentage, int minLatencyMs, int maxLatencyMs)  {
-        injectChaos(ChaosType.SLOW_BROKER, failureRatePercentage, null, Latency.builder().minLatencyMs(minLatencyMs).maxLatencyMs(maxLatencyMs).build());
+    public void simulateSlowBroker(int rateInPercentage, int minLatencyMs, int maxLatencyMs)  {
+        injectChaos(ChaosType.SLOW_BROKER, rateInPercentage, null, Latency.builder().minLatencyMs(minLatencyMs).maxLatencyMs(maxLatencyMs).build());
     }
 
     @Getter
@@ -62,13 +62,13 @@ public class ConduktorGatewayClient {
         private int maxLatencyMs;
     }
 
-    private void injectChaos(ChaosType chaosType, int failureRatePercentage, GatewayInjectChaosRequest.ErrorMap errorMap, Latency latency)  {
+    private void injectChaos(ChaosType chaosType, int rateInPercentage, GatewayInjectChaosRequest.ErrorMap errorMap, Latency latency)  {
         GatewayInjectChaosRequest gatewayInjectChaosRequest = GatewayInjectChaosRequest.builder()
                 .name(chaosType.name())
                 .pluginClass("io.conduktor.gateway.interceptor.chaos."+chaosType.getPluginClassName())
                 .priority(100)
                 .config(GatewayInjectChaosRequest.Config.builder()
-                        .rateInPercent(failureRatePercentage)
+                        .rateInPercent(rateInPercentage)
                         .errorMap(errorMap)
                         .minLatencyMs(latency!=null?latency.getMinLatencyMs():null)
                         .maxLatencyMs(latency!=null?latency.getMaxLatencyMs():null)
