@@ -45,6 +45,13 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
+     * MongoDB configuration.
+     */
+    private static final String DEFAULT_MONGODB_ENABLED = "false";
+    private static final String DEFAULT_MONGODB_IMAGE_TAG = "5.0.22";
+    private static final String DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED = "false";
+
+    /**
      * Kafka default configuration.
      */
 
@@ -151,6 +158,10 @@ public final class TestContainersConfiguration {
     public static String POSTGRES_PASSWORD;
     public static boolean POSTGRES_CONTAINER_LOGGING_ENABLED;
 
+    public static boolean MONGODB_ENABLED;
+    public static String MONGODB_IMAGE_TAG;
+    public static boolean MONGODB_CONTAINER_LOGGING_ENABLED;
+
     public static boolean KAFKA_ENABLED;
     public static int KAFKA_BROKER_COUNT;
     public static String KAFKA_CONFLUENT_IMAGE_TAG;
@@ -201,7 +212,6 @@ public final class TestContainersConfiguration {
     public static String LOCALSTACK_SERVICES;
     public static boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED;
 
-
     static {
         configure();
     }
@@ -227,6 +237,10 @@ public final class TestContainersConfiguration {
         POSTGRES_USERNAME = System.getProperty("postgres.username", DEFAULT_POSTGRES_USERNAME);
         POSTGRES_PASSWORD = System.getProperty("postgres.password", DEFAULT_POSTGRES_PASSWORD);
         POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
+
+        MONGODB_ENABLED = Boolean.valueOf(System.getProperty("mongodb.enabled", DEFAULT_MONGODB_ENABLED));
+        MONGODB_IMAGE_TAG = System.getProperty("mongodb.image.tag", DEFAULT_MONGODB_IMAGE_TAG);
+        MONGODB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mongodb.container.logging.enabled", DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED));
 
         KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
         KAFKA_BROKER_COUNT = Integer.parseInt(System.getProperty("kafka.broker.count", DEFAULT_KAFKA_BROKER_COUNT));
@@ -345,7 +359,13 @@ public final class TestContainersConfiguration {
             log.info("postgres.database.name: " + POSTGRES_DATABASE_NAME);
             log.info("postgres.username: " + POSTGRES_USERNAME);
             log.info("postgres.password: " + POSTGRES_PASSWORD);
-            log.info("postgres.container.logging.enabled: " + KAFKA_CONTAINER_LOGGING_ENABLED);
+            log.info("postgres.container.logging.enabled: " + POSTGRES_CONTAINER_LOGGING_ENABLED);
+        }
+
+        log.info("mongodb.enabled: " + MONGODB_ENABLED);
+        if(MONGODB_ENABLED) {
+            log.info("mongodb.image.tag: " + MONGODB_IMAGE_TAG);
+            log.info("mongodb.container.logging.enabled: " + MONGODB_CONTAINER_LOGGING_ENABLED);
         }
 
         log.info("kafka.enabled: " + KAFKA_ENABLED);

@@ -15,6 +15,7 @@ Currently supported resources:
 - Kafka broker (configurable number of nodes in the cluster)
 - Kafka Schema Registry
 - Postgres database
+- MongoDB database
 - Debezium Kafka Connect
 - Standalone wiremock
 - Localstack (AWS components - e.g. DynamoDB)
@@ -90,6 +91,8 @@ https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer
 
 https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Conduktor Gateway for chaos testing the service under test)
 
+https://github.com/lydtechconsulting/mongodb-springboot (demonstrates using MongoDB as the database for reading and writing items)
+
 # Configuration
 
 | Property                                        | Usage                                                                                                                                                                                                                                                                                                                                                                           | Default        |
@@ -112,6 +115,10 @@ https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Con
 | postgres.database.name                          | The name of the Postgres database.                                                                                                                                                                                                                                                                                                                                              | postgres-db    |
 | postgres.username                               | The Postgres username.                                                                                                                                                                                                                                                                                                                                                          | user           |
 | postgres.password                               | The Postgres password.                                                                                                                                                                                                                                                                                                                                                          | password       |
+| postgres.container.logging.enabled              | Whether to output the Postgres Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
+| mongodb.enabled                                 | Whether a Docker MongoDB container should be started.                                                                                                                                                                                                                                                                                                                           | false          |
+| mongodb.image.tag                               | The image tag of the MongoDB Docker container to use.                                                                                                                                                                                                                                                                                                                           | 5.0.22         |
+| mongodb.container.logging.enabled               | Whether to output the MongoDB Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | false          |
 | kafka.enabled                                   | Whether a Docker Kafka container should be started.                                                                                                                                                                                                                                                                                                                             | false          |
 | kafka.broker.count                              | The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be 'kafka', then subsequent will have an instance suffix, e.g. 'kafka-2'.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).                                       | 1              |
 | kafka.confluent.image.tag                       | The image tag of the Confluent Kafka Docker container to use.                                                                                                                                                                                                                                                                                                                   | 7.3.2          |
@@ -141,19 +148,19 @@ https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Con
 | conduktor.gateway.proxy.port                    | The exposed port of the Conduktor Gateway container.  This port must be available locally.  The port is used to connect to the proxy rather than the Kafka instance directly.  e.g. bootstrap-servers: conduktorgateway:6969                                                                                                                                                    | 6969           |
 | conduktor.gateway.http.port                     | The exposed port of the Conduktor Gateway container HTTP management API.  This port must be available locally.  The port is used to connect to the proxy rather than the Kafka instance directly.  e.g. bootstrap-servers: conduktorgateway:6969                                                                                                                                | 8888           |
 | conduktor.gateway.container.logging.enabled     | Whether to output the Conduktor Gateway Docker logs to the console.                                                                                                                                                                                                                                                                                                             | false          |
-|debezium.enabled| Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.                                                                                                                                                                                                                                             | false          |
-|debezium.image.tag| The image tag of the Debezium Docker container to use.                                                                                                                                                                                                                                                                                                                          | 2.2            |
-|debezium.port| The port of the Debezium Docker container.                                                                                                                                                                                                                                                                                                                                      | 8083           |
-|debezium.container.logging.enabled| Whether to output the Debezium Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
-|wiremock.enabled| Whether a Docker Wiremock container should be started.                                                                                                                                                                                                                                                                                                                          | false          |
-|wiremock.image.tag| The image tag of the Wiremock Docker container to use.                                                                                                                                                                                                                                                                                                                          | 2.35.0         |
-|wiremock.container.logging.enabled| Whether to output the Wiremock Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
-|localstack.enabled| Whether a Docker Localstack (AWS) container should be started.                                                                                                                                                                                                                                                                                                                  | false          |
-|localstack.image.tag| The image tag of the Localstack Docker container to use.                                                                                                                                                                                                                                                                                                                        | 0.14.3         |
-|localstack.port| The port of the Localstack Docker container.                                                                                                                                                                                                                                                                                                                                    | 4566           |
-|localstack.services| Comma delimited list of AWS services to start.                                                                                                                                                                                                                                                                                                                                  | dynamodb       |
-|localstack.region| The region to use.                                                                                                                                                                                                                                                                                                                                                              | eu-west-2      |
-|localstack.container.logging.enabled| Whether to output the Localstack Docker logs to the console.                                                                                                                                                                                                                                                                                                                    | false          |
+| debezium.enabled                                | Whether a Docker Debezium (Kafka Connect) container should be started.  Requires `kafka.enabled` and `postgres.enabled` to be true.                                                                                                                                                                                                                                             | false          |
+| debezium.image.tag                              | The image tag of the Debezium Docker container to use.                                                                                                                                                                                                                                                                                                                          | 2.2            |
+| debezium.port                                   | The port of the Debezium Docker container.                                                                                                                                                                                                                                                                                                                                      | 8083           |
+| debezium.container.logging.enabled              | Whether to output the Debezium Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
+| wiremock.enabled                                | Whether a Docker Wiremock container should be started.                                                                                                                                                                                                                                                                                                                          | false          |
+| wiremock.image.tag                              | The image tag of the Wiremock Docker container to use.                                                                                                                                                                                                                                                                                                                          | 2.35.0         |
+| wiremock.container.logging.enabled              | Whether to output the Wiremock Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
+| localstack.enabled                              | Whether a Docker Localstack (AWS) container should be started.                                                                                                                                                                                                                                                                                                                  | false          |
+| localstack.image.tag                            | The image tag of the Localstack Docker container to use.                                                                                                                                                                                                                                                                                                                        | 0.14.3         |
+| localstack.port                                 | The port of the Localstack Docker container.                                                                                                                                                                                                                                                                                                                                    | 4566           |
+| localstack.services                             | Comma delimited list of AWS services to start.                                                                                                                                                                                                                                                                                                                                  | dynamodb       |
+| localstack.region                               | The region to use.                                                                                                                                                                                                                                                                                                                                                              | eu-west-2      |
+| localstack.container.logging.enabled            | Whether to output the Localstack Docker logs to the console.                                                                                                                                                                                                                                                                                                                    | false          |
 
 The configuration is logged at test execution time at INFO level.  Enable in `logback-test.xml` with:
 ```
@@ -221,6 +228,9 @@ The following shows how to override the configurable properties in a maven proje
                             <postgres.username>user</postgres.username>
                             <postgres.password>password</postgres.password>
                             <postgres.container.logging.enabled>false</postgres.container.logging.enabled>
+                            <mongodb.enabled>true</mongodb.enabled>
+                            <mongodb.image.tag>5.0.22</mongodb.image.tag>
+                            <mongodb.container.logging.enabled>true</postgres.container.logging.enabled>
                             <kafka.enabled>true</kafka.enabled>
                             <kafka.broker.count>1</kafka.broker.count>
                             <kafka.confluent.image.tag>7.3.2</kafka.confluent.image.tag>
@@ -493,6 +503,34 @@ Additional containers work well in a multi module project.  They are co-located 
 
 https://github.com/lydtechconsulting/ctf-example-multi-module
 
+# Postgres Database
+
+Enable the Postgres database via the property `postgres.enabled`.  The connection details can be configured including the host, database name, user and password.
+
+Override the main configuration in the application's `application-component-test.yml` file in order to connect to the Dockerised Postgres, for example:
+```
+spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/postgres?currentSchema=dmeo
+        username: postgres
+        password: postgres
+```
+# MongoDB Database
+
+Enable the MongoDB database via the property `mongodb.enabled`.
+
+Override the main configuration in the application's `application-component-test.yml` file to connect to the Dockerised MongoDB, for example:
+
+```
+spring:
+  data:
+    mongodb:
+      database: demo
+      port: 27017
+      host: mongodb
+      auto-index-creation: true
+  ```
+  
 # Kafka
 
 If the Kafka messaging broker is enabled via `kafka.enabled`, a number of broker and topic configurations can be applied.  These include setting the number of broker nodes in the cluster (`kafka.broker.count`), the topic replication factor (`kafka.topic.replication.factor`), and the minimum number of brokers that must be in-sync to accept a producer write (`kafka.min.insync.replicas`).  Any topics that should be created upfront can be declared in a comma separated list (`kafka.topics`), and the default topic partition count can be configured (`kafka.topic.partition.count`).

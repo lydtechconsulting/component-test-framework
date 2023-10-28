@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.4.0] - 2023-10-28
+### Added
+- Supports MongoDB.
+
 ## [2.3.0] - 2023-10-11
 ### Added
 - Supports Conduktor Gateway.

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -40,6 +41,7 @@ public final class TestContainersManager {
     private List<GenericContainer> serviceContainers = new ArrayList<>(1);
     private List<GenericContainer> additionalContainers;
     private GenericContainer postgresContainer;
+    private MongoDBContainer mongoDBContainer;
     private List<KafkaContainer> kafkaContainers;
     private GenericContainer zookeeperContainer;
     private DebeziumContainer debeziumContainer;
@@ -68,6 +70,9 @@ public final class TestContainersManager {
         network = Network.newNetwork();
         if (POSTGRES_ENABLED) {
             postgresContainer = createPostgresContainer();
+        }
+        if (MONGODB_ENABLED) {
+            mongoDBContainer = createMongoDBContainer();
         }
         if (KAFKA_ENABLED) {
             if(KAFKA_TOPIC_REPLICATION_FACTOR > KAFKA_BROKER_COUNT) {
@@ -150,6 +155,9 @@ public final class TestContainersManager {
         try {
             if(POSTGRES_ENABLED) {
                 postgresContainer.start();
+            }
+            if(MONGODB_ENABLED) {
+                mongoDBContainer.start();
             }
             if(KAFKA_ENABLED) {
                 if(KAFKA_BROKER_COUNT>1) {
@@ -250,6 +258,21 @@ public final class TestContainersManager {
                 })
                 .withExposedPorts(POSTGRES_PORT);
         if(POSTGRES_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+
+    private MongoDBContainer createMongoDBContainer() {
+        String containerName = MONGODB.toString();
+        MongoDBContainer container = new MongoDBContainer("mongo:" + MONGODB_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                });
+        if(MONGODB_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;

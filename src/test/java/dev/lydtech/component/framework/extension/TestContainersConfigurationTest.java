@@ -38,6 +38,10 @@ public class TestContainersConfigurationTest {
         System.clearProperty("postgres.password");
         System.clearProperty("postgres.container.logging.enabled");
 
+        System.clearProperty("mongodb.enabled");
+        System.clearProperty("mongodb.image.tag");
+        System.clearProperty("mongodb.container.logging.enabled");
+
         System.clearProperty("kafka.enabled");
         System.clearProperty("kafka.broker.count");
         System.clearProperty("kafka.confluent.image.tag");
@@ -112,6 +116,9 @@ public class TestContainersConfigurationTest {
         assertThat(POSTGRES_USERNAME, equalTo("user"));
         assertThat(POSTGRES_PASSWORD, equalTo("password"));
         assertThat(POSTGRES_CONTAINER_LOGGING_ENABLED, equalTo(false));
+        assertThat(MONGODB_ENABLED, equalTo(false));
+        assertThat(MONGODB_IMAGE_TAG, equalTo("5.0.22"));
+        assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(KAFKA_ENABLED, equalTo(false));
         assertThat(KAFKA_BROKER_COUNT, equalTo(1));
         assertThat(KAFKA_CONFLUENT_IMAGE_TAG, equalTo("7.3.2"));
@@ -179,6 +186,10 @@ public class TestContainersConfigurationTest {
         System.setProperty("postgres.username", "postgres-user-override");
         System.setProperty("postgres.password", "postgres-password-override");
         System.setProperty("postgres.container.logging.enabled", "true");
+
+        System.setProperty("mongodb.enabled", "true");
+        System.setProperty("mongodb.image.tag", "mongodb-override");
+        System.setProperty("mongodb.container.logging.enabled", "true");
 
         System.setProperty("kafka.enabled", "true");
         System.setProperty("kafka.broker.count", "12");
@@ -250,6 +261,9 @@ public class TestContainersConfigurationTest {
         assertThat(POSTGRES_USERNAME, equalTo("postgres-user-override"));
         assertThat(POSTGRES_PASSWORD, equalTo("postgres-password-override"));
         assertThat(POSTGRES_CONTAINER_LOGGING_ENABLED, equalTo(true));
+        assertThat(MONGODB_ENABLED, equalTo(true));
+        assertThat(MONGODB_IMAGE_TAG, equalTo("mongodb-override"));
+        assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(KAFKA_ENABLED, equalTo(true));
         assertThat(KAFKA_BROKER_COUNT, equalTo(12));
         assertThat(KAFKA_CONFLUENT_IMAGE_TAG, equalTo("kafka-override"));

@@ -11,7 +11,8 @@ public enum Resource {
     CONDUKTOR,
     CONDUKTORGATEWAY,
     WIREMOCK,
-    LOCALSTACK;
+    LOCALSTACK,
+    MONGODB;
 
     @Override
     public String toString() {
