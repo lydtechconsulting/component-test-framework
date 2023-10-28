@@ -230,7 +230,7 @@ The following shows how to override the configurable properties in a maven proje
                             <postgres.container.logging.enabled>false</postgres.container.logging.enabled>
                             <mongodb.enabled>true</mongodb.enabled>
                             <mongodb.image.tag>5.0.22</mongodb.image.tag>
-                            <mongodb.container.logging.enabled>true</postgres.container.logging.enabled>
+                            <mongodb.container.logging.enabled>true</mongodb.container.logging.enabled>
                             <kafka.enabled>true</kafka.enabled>
                             <kafka.broker.count>1</kafka.broker.count>
                             <kafka.confluent.image.tag>7.3.2</kafka.confluent.image.tag>
