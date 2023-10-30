@@ -3,29 +3,29 @@
 # Contents
 
 - [Overview](README.md#overview)
-- [Supported Resources](https://github.com/lydtechconsulting/component-test-framework#supported-resources)
-- [Supported Versions](https://github.com/lydtechconsulting/component-test-framework#supported-versions)
-- [Maven Dependency](https://github.com/lydtechconsulting/component-test-framework#maven-dependency)
-- [Example Usage Projects](https://github.com/lydtechconsulting/component-test-framework#example-usage-projects)
-- [Configuration Options](https://github.com/lydtechconsulting/component-test-framework#configuration-options)
-- [Using Maven](https://github.com/lydtechconsulting/component-test-framework#using-maven)
-- [Using Gradle](https://github.com/lydtechconsulting/component-test-framework#using-gradle)
-- [Writing Component Tests](https://github.com/lydtechconsulting/component-test-framework#writing-component-tests)
-- [Service Under Test](https://github.com/lydtechconsulting/component-test-framework#service-under-test)
-- [Running The Component Tests](https://github.com/lydtechconsulting/component-test-framework#running-the-component-tests)
-- [Additional Containers](https://github.com/lydtechconsulting/component-test-framework#additional-containers)
-- [Postgres Database](https://github.com/lydtechconsulting/component-test-framework#postgres-database)
-- [MongoDB Database](https://github.com/lydtechconsulting/component-test-framework#mongodb-database)
-- [Kafka](https://github.com/lydtechconsulting/component-test-framework#kafka)
-- [Kafka Avro](https://github.com/lydtechconsulting/component-test-framework#kafka-avro)
-- [Kafka Schema Registry](https://github.com/lydtechconsulting/component-test-framework#kafka-schema-registry)
-- [Confluent Control Center](https://github.com/lydtechconsulting/component-test-framework#confluent-control-center)
-- [Conduktor Platform](https://github.com/lydtechconsulting/component-test-framework#conduktor-platform)
-- [Conduktor Gateway](https://github.com/lydtechconsulting/component-test-framework#conduktor-gateway)
-- [Debezium](https://github.com/lydtechconsulting/component-test-framework#debezium)
-- [Wiremock](https://github.com/lydtechconsulting/component-test-framework#wiremock)
-- [Localstack (with DynamoDB)](https://github.com/lydtechconsulting/component-test-framework#localstack-(with-dynamodb))
-- [Docker Commands](https://github.com/lydtechconsulting/component-test-framework#docker-commands)
+- [Supported Resources](README.md#supported-resources)
+- [Supported Versions](README.md#supported-versions)
+- [Maven Dependency](README.md#maven-dependency)
+- [Example Usage Projects](README.md#example-usage-projects)
+- [Configuration Options](README.md#configuration-options)
+- [Using Maven](README.md#using-maven)
+- [Using Gradle](README.md#using-gradle)
+- [Writing Component Tests](README.md#writing-component-tests)
+- [Service Under Test](README.md#service-under-test)
+- [Running The Component Tests](README.md#running-the-component-tests)
+- [Additional Containers](README.md#additional-containers)
+- [Postgres Database](README.md#postgres-database)
+- [MongoDB Database](README.md#mongodb-database)
+- [Kafka](README.md#kafka)
+- [Kafka Avro](README.md#kafka-avro)
+- [Kafka Schema Registry](README.md#kafka-schema-registry)
+- [Confluent Control Center](README.md#confluent-control-center)
+- [Conduktor Platform](README.md#conduktor-platform)
+- [Conduktor Gateway](README.md#conduktor-gateway)
+- [Debezium](README.md#debezium)
+- [Wiremock](README.md#wiremock)
+- [Localstack (with DynamoDB)](README.md#localstack-(with-dynamodb))
+- [Docker Commands](README.md#docker-commands)
 
 
 # Overview
@@ -38,7 +38,7 @@ Uses the TestContainers library to start and manage the Docker containers:
 
 https://www.testcontainers.org/
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Supported Resources:
 
@@ -56,7 +56,7 @@ https://www.testcontainers.org/
 - Conduktor Gateway
 
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Supported Versions
 
@@ -71,7 +71,7 @@ https://www.testcontainers.org/
 - Java 11
 
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Maven Dependency
 
@@ -85,7 +85,7 @@ Add this library as a dependency to the pom of the service under test:
     </dependency>
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Example Usage Projects
 
@@ -135,7 +135,7 @@ https://github.com/lydtechconsulting/springboot-postgres (demonstrates using Pos
 
 https://github.com/lydtechconsulting/springboot-mongodb (demonstrates using MongoDB as the database for reading and writing items)
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Configuration Options
 
@@ -215,7 +215,7 @@ The configuration is logged at test execution time at INFO level.  Enable in `lo
 For choosing a value for the `kafka.confluent.image.tag` property, the Confluent Platform and Apache Kafka Compatibility matrix is available here:
 https://docs.confluent.io/platform/current/installation/versions-interoperability.html
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Using Maven
 
@@ -334,7 +334,7 @@ The property overrides are all optional.  There is no need to include them if th
 
 In a multi module maven project the surefire plugin should be added to the pom of the component test module.
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Using Gradle
 
@@ -356,7 +356,7 @@ systemProp.containers.stayup=true
 
 The `containers.stayup` property is added to the environment variables by the Gradle build.
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Writing Component Tests
 
@@ -386,7 +386,7 @@ kafka:
 
 This one Kafka instance is sufficient to declare even if more Kafka instances are started via `kafka.broker.count`, as the bootstrap servers list is used to find the cluster, which itself has the details of the other instances.
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Service Under Test
 
@@ -449,7 +449,7 @@ Querying using RestAssured:
 RestAssured.get("/v1/my-service).then().assertThat().statusCode(202)
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Running The Component Tests
 
@@ -545,7 +545,7 @@ This port can then used in the IDE Remote JVM Debug Run/Debug Configurations dia
 
 Note that if the application code is changed then it must be rebuilt, and the service Docker container rebuilt and restarted.  This results in a different debug port being mapped.
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Additional Containers
 
@@ -565,7 +565,7 @@ Additional containers work well in a multi module project.  They are co-located 
 
 https://github.com/lydtechconsulting/ctf-example-multi-module
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Postgres Database
 
@@ -618,7 +618,7 @@ dataSource.setPassword(password);
 JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # MongoDB Database
 
@@ -667,7 +667,7 @@ MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
 MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoClientSettings), "demo");
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Kafka
 ## Kafka Configuration
@@ -740,7 +740,7 @@ public static <T> T readFromJson(String json, Class<T> clazz) throws MappingExce
 public static String writeToJson(Object obj) throws MappingException
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Kafka Avro
 
@@ -766,7 +766,7 @@ Consume and assert Avro messages (in this case a FooCompleted record):
 List<ConsumerRecord<String, FooCompleted>> outboundEvents = KafkaAvroClient.getInstance().consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM);
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Kafka Schema Registry
 
@@ -794,7 +794,7 @@ KafkaSchemaRegistryClient.getInstance().resetSchemaRegistry();
 
 A recommended pattern is to call both the reset and the register methods in the test `@BeforeAll`.
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Confluent Control Center
 
@@ -856,7 +856,7 @@ Once the containers are running, navigate to:
 http://localhost:9021
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Conduktor Platform
 
@@ -881,7 +881,7 @@ password: admin
 
 Launch the `Console` application in order to view the broker, topics, messages, and schema registry data. 
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Conduktor Gateway
 
@@ -924,7 +924,7 @@ conduktorGatewayClient.reset();
 
 When no interceptors are registered, the Gateway will pass requests through directly to Kafka.
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Debezium
 
@@ -942,7 +942,7 @@ DebeziumClient.getInstance().deleteConnector("outbox-connector");
 
 See the `ctf-example-service` project for example usage.
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Wiremock
 
@@ -988,7 +988,7 @@ This requires the corresponding mapping file to be located under `src/test/resou
 src/test/resources/thirdParty/retry_behaviour_success.json
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Localstack
 
@@ -1014,7 +1014,7 @@ DynamoDbClient.getInstance().createTable(ProcessedEvent.class, "eu-west-2");
 ```
 This method is overloaded to also allow passing in the access key and secret key to use, and the read and write capacity units for the table.
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
 
 # Docker Commands
 
@@ -1073,4 +1073,4 @@ e.g. for the following exception:
 com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"could not find an available, non-overlapping IPv4 address pool among the defaults to assign to the network"}
 ```
 
-[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+[[Back To Top](README.md)]
