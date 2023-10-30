@@ -2,7 +2,7 @@
 
 # Contents
 
-- [Overview](https://github.com/lydtechconsulting/component-test-framework#overview)
+- [Overview](README.md#overview)
 - [Supported Resources](https://github.com/lydtechconsulting/component-test-framework#supported-resources)
 - [Supported Versions](https://github.com/lydtechconsulting/component-test-framework#supported-versions)
 - [Maven Dependency](https://github.com/lydtechconsulting/component-test-framework#maven-dependency)
