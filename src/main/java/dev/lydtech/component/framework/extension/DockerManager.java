@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.DockerClientFactory;
 
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_NAME_PREFIX;
@@ -30,6 +31,8 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
@@ -40,6 +43,7 @@ import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
 import static dev.lydtech.component.framework.resource.Resource.KAFKA;
 import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
 import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
+import static dev.lydtech.component.framework.resource.Resource.MONGODB;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
 import static dev.lydtech.component.framework.resource.Resource.SERVICE;
 import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
@@ -99,13 +103,14 @@ public final class DockerManager {
             }
 
         findContainerAndMapPort(dockerClient, POSTGRES.toString(), POSTGRES_ENABLED, POSTGRES_PORT);
+        findContainerAndMapPort(dockerClient, MONGODB.toString(), MONGODB_ENABLED, MONGODB_PORT);
         // Just need to map the port of one of the Kafka servers.
         findContainerAndMapPort(dockerClient, KAFKA.toString(), KAFKA_ENABLED, KAFKA_PORT);
         findContainerAndMapPort(dockerClient, DEBEZIUM.toString(), DEBEZIUM_ENABLED, DEBEZIUM_PORT);
         findContainerAndMapPort(dockerClient, KAFKA_SCHEMA_REGISTRY.toString().replace("_", "."), KAFKA_SCHEMA_REGISTRY_ENABLED, KAFKA_SCHEMA_REGISTRY_PORT);
         findContainerAndMapPort(dockerClient, WIREMOCK.toString(), WIREMOCK_ENABLED, WIREMOCK_PORT);
         findContainerAndMapPort(dockerClient, LOCALSTACK.toString(), LOCALSTACK_ENABLED, LOCALSTACK_PORT);
-        findContainerAndMapPort(dockerClient, CONDUKTORGATEWAY.toString(), CONDUKTOR_GATEWAY_ENABLED, 8888);
+        findContainerAndMapPort(dockerClient, CONDUKTORGATEWAY.toString(), CONDUKTOR_GATEWAY_ENABLED, CONDUKTOR_GATEWAY_HTTP_PORT);
 
         captureHost();
 

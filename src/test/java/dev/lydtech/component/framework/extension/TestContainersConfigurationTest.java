@@ -34,6 +34,7 @@ public class TestContainersConfigurationTest {
         System.clearProperty("postgres.host.name");
         System.clearProperty("postgres.port");
         System.clearProperty("postgres.database.name");
+        System.clearProperty("postgres.schema.name");
         System.clearProperty("postgres.username");
         System.clearProperty("postgres.password");
         System.clearProperty("postgres.container.logging.enabled");
@@ -113,11 +114,13 @@ public class TestContainersConfigurationTest {
         assertThat(POSTGRES_HOST_NAME, equalTo("postgres-host"));
         assertThat(POSTGRES_PORT, equalTo(5432));
         assertThat(POSTGRES_DATABASE_NAME, equalTo("postgres-db"));
+        assertThat(POSTGRES_SCHEMA_NAME, equalTo("test"));
         assertThat(POSTGRES_USERNAME, equalTo("user"));
         assertThat(POSTGRES_PASSWORD, equalTo("password"));
         assertThat(POSTGRES_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(MONGODB_ENABLED, equalTo(false));
-        assertThat(MONGODB_IMAGE_TAG, equalTo("5.0.22"));
+        assertThat(MONGODB_PORT, equalTo(27017));
+        assertThat(MONGODB_IMAGE_TAG, equalTo("7.0.2"));
         assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(KAFKA_ENABLED, equalTo(false));
         assertThat(KAFKA_BROKER_COUNT, equalTo(1));
@@ -183,6 +186,7 @@ public class TestContainersConfigurationTest {
         System.setProperty("postgres.host.name", "postgres-host-override");
         System.setProperty("postgres.port", "5433");
         System.setProperty("postgres.database.name", "postgres-db-override");
+        System.setProperty("postgres.schema.name", "postgres-schema-override");
         System.setProperty("postgres.username", "postgres-user-override");
         System.setProperty("postgres.password", "postgres-password-override");
         System.setProperty("postgres.container.logging.enabled", "true");
@@ -258,10 +262,12 @@ public class TestContainersConfigurationTest {
         assertThat(POSTGRES_HOST_NAME, equalTo("postgres-host-override"));
         assertThat(POSTGRES_PORT, equalTo(5433));
         assertThat(POSTGRES_DATABASE_NAME, equalTo("postgres-db-override"));
+        assertThat(POSTGRES_SCHEMA_NAME, equalTo("postgres-schema-override"));
         assertThat(POSTGRES_USERNAME, equalTo("postgres-user-override"));
         assertThat(POSTGRES_PASSWORD, equalTo("postgres-password-override"));
         assertThat(POSTGRES_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(MONGODB_ENABLED, equalTo(true));
+        assertThat(MONGODB_PORT, equalTo(27017));
         assertThat(MONGODB_IMAGE_TAG, equalTo("mongodb-override"));
         assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(KAFKA_ENABLED, equalTo(true));

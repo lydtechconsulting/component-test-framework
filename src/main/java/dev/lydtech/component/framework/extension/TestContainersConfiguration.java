@@ -40,6 +40,7 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_POSTGRES_HOST_NAME = "postgres-host";
     private static final String DEFAULT_POSTGRES_PORT = "5432";
     private static final String DEFAULT_POSTGRES_DATABASE_NAME = "postgres-db";
+    private static final String DEFAULT_POSTGRES_SCHEMA_NAME = "test";
     private static final String DEFAULT_POSTGRES_USERNAME = "user";
     private static final String DEFAULT_POSTGRES_PASSWORD = "password";
     private static final String DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED = "false";
@@ -48,7 +49,8 @@ public final class TestContainersConfiguration {
      * MongoDB configuration.
      */
     private static final String DEFAULT_MONGODB_ENABLED = "false";
-    private static final String DEFAULT_MONGODB_IMAGE_TAG = "5.0.22";
+    private static final String DEFAULT_MONGODB_IMAGE_TAG = "7.0.2";
+    private static final String DEFAULT_MONGODB_PORT = "27017";
     private static final String DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
@@ -154,12 +156,14 @@ public final class TestContainersConfiguration {
     public static String POSTGRES_HOST_NAME;
     public static int POSTGRES_PORT;
     public static String POSTGRES_DATABASE_NAME;
+    public static String POSTGRES_SCHEMA_NAME;
     public static String POSTGRES_USERNAME;
     public static String POSTGRES_PASSWORD;
     public static boolean POSTGRES_CONTAINER_LOGGING_ENABLED;
 
     public static boolean MONGODB_ENABLED;
     public static String MONGODB_IMAGE_TAG;
+    public static Integer MONGODB_PORT;
     public static boolean MONGODB_CONTAINER_LOGGING_ENABLED;
 
     public static boolean KAFKA_ENABLED;
@@ -234,12 +238,15 @@ public final class TestContainersConfiguration {
         POSTGRES_HOST_NAME = System.getProperty("postgres.host.name", DEFAULT_POSTGRES_HOST_NAME);
         POSTGRES_PORT = Integer.parseInt(System.getProperty("postgres.port", DEFAULT_POSTGRES_PORT));
         POSTGRES_DATABASE_NAME = System.getProperty("postgres.database.name", DEFAULT_POSTGRES_DATABASE_NAME);
+        POSTGRES_SCHEMA_NAME = System.getProperty("postgres.schema.name", DEFAULT_POSTGRES_SCHEMA_NAME);
         POSTGRES_USERNAME = System.getProperty("postgres.username", DEFAULT_POSTGRES_USERNAME);
         POSTGRES_PASSWORD = System.getProperty("postgres.password", DEFAULT_POSTGRES_PASSWORD);
         POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
 
         MONGODB_ENABLED = Boolean.valueOf(System.getProperty("mongodb.enabled", DEFAULT_MONGODB_ENABLED));
         MONGODB_IMAGE_TAG = System.getProperty("mongodb.image.tag", DEFAULT_MONGODB_IMAGE_TAG);
+        // Port cannot be overridden in the MongoDB Testcontainer.
+        MONGODB_PORT = Integer.parseInt(DEFAULT_MONGODB_PORT);
         MONGODB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mongodb.container.logging.enabled", DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED));
 
         KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
@@ -357,6 +364,7 @@ public final class TestContainersConfiguration {
             log.info("postgres.host.name: " + POSTGRES_HOST_NAME);
             log.info("postgres.port: " + POSTGRES_PORT);
             log.info("postgres.database.name: " + POSTGRES_DATABASE_NAME);
+            log.info("postgres.schema.name: " + POSTGRES_SCHEMA_NAME);
             log.info("postgres.username: " + POSTGRES_USERNAME);
             log.info("postgres.password: " + POSTGRES_PASSWORD);
             log.info("postgres.container.logging.enabled: " + POSTGRES_CONTAINER_LOGGING_ENABLED);
@@ -365,6 +373,7 @@ public final class TestContainersConfiguration {
         log.info("mongodb.enabled: " + MONGODB_ENABLED);
         if(MONGODB_ENABLED) {
             log.info("mongodb.image.tag: " + MONGODB_IMAGE_TAG);
+            log.info("mongodb.port: " + MONGODB_PORT);
             log.info("mongodb.container.logging.enabled: " + MONGODB_CONTAINER_LOGGING_ENABLED);
         }
 

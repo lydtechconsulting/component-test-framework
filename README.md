@@ -1,5 +1,35 @@
 # Component Test Framework
 
+# Contents
+
+- [Overview](https://github.com/lydtechconsulting/component-test-framework#overview)
+- [Supported Resources](https://github.com/lydtechconsulting/component-test-framework#supported-resources)
+- [Supported Versions](https://github.com/lydtechconsulting/component-test-framework#supported-versions)
+- [Maven Dependency](https://github.com/lydtechconsulting/component-test-framework#maven-dependency)
+- [Example Usage Projects](https://github.com/lydtechconsulting/component-test-framework#example-usage-projects)
+- [Configuration Options](https://github.com/lydtechconsulting/component-test-framework#configuration-options)
+- [Using Maven](https://github.com/lydtechconsulting/component-test-framework#using-maven)
+- [Using Gradle](https://github.com/lydtechconsulting/component-test-framework#using-gradle)
+- [Writing Component Tests](https://github.com/lydtechconsulting/component-test-framework#writing-component-tests)
+- [Service Under Test](https://github.com/lydtechconsulting/component-test-framework#service-under-test)
+- [Running The Component Tests](https://github.com/lydtechconsulting/component-test-framework#running-the-component-tests)
+- [Additional Containers](https://github.com/lydtechconsulting/component-test-framework#additional-containers)
+- [Postgres Database](https://github.com/lydtechconsulting/component-test-framework#postgres-database)
+- [MongoDB Database](https://github.com/lydtechconsulting/component-test-framework#mongodb-database)
+- [Kafka](https://github.com/lydtechconsulting/component-test-framework#kafka)
+- [Kafka Avro](https://github.com/lydtechconsulting/component-test-framework#kafka-avro)
+- [Kafka Schema Registry](https://github.com/lydtechconsulting/component-test-framework#kafka-schema-registry)
+- [Confluent Control Center](https://github.com/lydtechconsulting/component-test-framework#confluent-control-center)
+- [Conduktor Platform](https://github.com/lydtechconsulting/component-test-framework#conduktor-platform)
+- [Conduktor Gateway](https://github.com/lydtechconsulting/component-test-framework#conduktor-gateway)
+- [Debezium](https://github.com/lydtechconsulting/component-test-framework#debezium)
+- [Wiremock](https://github.com/lydtechconsulting/component-test-framework#wiremock)
+- [Localstack (with DynamoDB)](https://github.com/lydtechconsulting/component-test-framework#localstack-(with-dynamodb))
+- [Docker Commands](https://github.com/lydtechconsulting/component-test-framework#docker-commands)
+
+
+# Overview
+
 A library allowing component testing of a Spring Boot application.
 
 Dockerises the service under test and the required resources.
@@ -8,7 +38,9 @@ Uses the TestContainers library to start and manage the Docker containers:
 
 https://www.testcontainers.org/
 
-Currently supported resources:
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Supported Resources:
 
 - Configurable number of instances of the service under test.
 - Additional containers (simulators/services)
@@ -23,6 +55,9 @@ Currently supported resources:
 - Conduktor Platform
 - Conduktor Gateway
 
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # Supported Versions
 
 `component-test-framework` version `2.x` supports:
@@ -35,7 +70,10 @@ Currently supported resources:
 - Kafka Clients 2.x
 - Java 11
 
-# Dependency
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Maven Dependency
 
 Add this library as a dependency to the pom of the service under test:
 ```
@@ -47,7 +85,9 @@ Add this library as a dependency to the pom of the service under test:
     </dependency>
 ```
 
-# Example Usage
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Example Usage Projects
 
 Example companion projects have been created to demonstrate usage of this framework.
 
@@ -91,9 +131,13 @@ https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer
 
 https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Conduktor Gateway for chaos testing the service under test)
 
-https://github.com/lydtechconsulting/mongodb-springboot (demonstrates using MongoDB as the database for reading and writing items)
+https://github.com/lydtechconsulting/springboot-postgres (demonstrates using Postgres as the database for reading and writing items)
 
-# Configuration
+https://github.com/lydtechconsulting/springboot-mongodb (demonstrates using MongoDB as the database for reading and writing items)
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Configuration Options
 
 | Property                                        | Usage                                                                                                                                                                                                                                                                                                                                                                           | Default        |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
@@ -113,11 +157,12 @@ https://github.com/lydtechconsulting/mongodb-springboot (demonstrates using Mong
 | postgres.host.name                              | The name of the Postgres host.                                                                                                                                                                                                                                                                                                                                                  | postgres       |
 | postgres.port                                   | The port of the Postgres Docker container.                                                                                                                                                                                                                                                                                                                                      | 5432           |
 | postgres.database.name                          | The name of the Postgres database.                                                                                                                                                                                                                                                                                                                                              | postgres-db    |
+| postgres.schema.name                            | The name of the Postgres schema.                                                                                                                                                                                                                                                                                                                                                | test           |
 | postgres.username                               | The Postgres username.                                                                                                                                                                                                                                                                                                                                                          | user           |
 | postgres.password                               | The Postgres password.                                                                                                                                                                                                                                                                                                                                                          | password       |
 | postgres.container.logging.enabled              | Whether to output the Postgres Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
 | mongodb.enabled                                 | Whether a Docker MongoDB container should be started.                                                                                                                                                                                                                                                                                                                           | false          |
-| mongodb.image.tag                               | The image tag of the MongoDB Docker container to use.                                                                                                                                                                                                                                                                                                                           | 5.0.22         |
+| mongodb.image.tag                               | The image tag of the MongoDB Docker container to use.                                                                                                                                                                                                                                                                                                                           | 7.0.2          |
 | mongodb.container.logging.enabled               | Whether to output the MongoDB Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | false          |
 | kafka.enabled                                   | Whether a Docker Kafka container should be started.                                                                                                                                                                                                                                                                                                                             | false          |
 | kafka.broker.count                              | The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be 'kafka', then subsequent will have an instance suffix, e.g. 'kafka-2'.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).                                       | 1              |
@@ -170,7 +215,9 @@ The configuration is logged at test execution time at INFO level.  Enable in `lo
 For choosing a value for the `kafka.confluent.image.tag` property, the Confluent Platform and Apache Kafka Compatibility matrix is available here:
 https://docs.confluent.io/platform/current/installation/versions-interoperability.html
 
-# Maven Configuration
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Using Maven
 
 ## Pom.xml Properties
 
@@ -225,6 +272,7 @@ The following shows how to override the configurable properties in a maven proje
                             <postgres.host.name>postgres</postgres.host.name>
                             <postgres.port>5432</postgres.port>
                             <postgres.database.name>postgres-db</postgres.database.name>
+                            <postgres.schema.name>test</postgres.schema.name>
                             <postgres.username>user</postgres.username>
                             <postgres.password>password</postgres.password>
                             <postgres.container.logging.enabled>false</postgres.container.logging.enabled>
@@ -286,7 +334,9 @@ The property overrides are all optional.  There is no need to include them if th
 
 In a multi module maven project the surefire plugin should be added to the pom of the component test module.
 
-# Gradle Configuration
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Using Gradle
 
 Add the following to the `build.gradle` test method:
 ```
@@ -306,7 +356,11 @@ systemProp.containers.stayup=true
 
 The `containers.stayup` property is added to the environment variables by the Gradle build.
 
-# Component Test Annotations
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Writing Component Tests
+
+## Component Test Annotations
 
 Annotate the SpringBoot test with the following extra annotations:
 
@@ -332,7 +386,11 @@ kafka:
 
 This one Kafka instance is sufficient to declare even if more Kafka instances are started via `kafka.broker.count`, as the bootstrap servers list is used to find the cluster, which itself has the details of the other instances.
 
-# Service Health
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Service Under Test
+
+## Service Health
 
 The service under test must expose its health endpoint for the test set up to know that the service has successfully started before the configurable `service.startup.timeout.seconds` has expired.
 ```
@@ -352,7 +410,7 @@ Include the Spring Boot Actuator module (along with the Spring Boot Starter Web 
 </dependency>
 ```
 
-# Dockerising The Service
+## Dockerising The Service
 
 Build a Docker container with the service under test.  
 
@@ -377,6 +435,21 @@ docker build -t ct/my-service:latest .
 Assumes `ct` is used as the container prefix for the component tests (which is the default but can be overridden).
 
 The name (`my-service`) must match the `service.name` configuration.
+
+## Discovering The Service URL
+
+The `dev.lydtech.component.framework.client.service.ServiceClient` provides a static `getBaseUrl` method to get the base URL, enabling REST calls to be made.
+e.g. if using RestAssured as the HTTP client in the test:
+```
+RestAssured.baseURI = ServiceClient.getBaseUrl();
+```
+
+Querying using RestAssured:
+```
+RestAssured.get("/v1/my-service).then().assertThat().statusCode(202)
+```
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
 
 # Running The Component Tests
 
@@ -414,7 +487,7 @@ Override any of the other configurable properties in the same way, specifying `-
 ./gradlew clean build -Dservice.instance.count=2 -Dkafka.enabled
 ```
 
-# Keeping Docker Containers Up Between Test Runs
+## Keeping Docker Containers Up Between Test Runs
 
 A common usage of this framework is to keep the Docker containers running whilst developing and running the component tests.
 
@@ -433,7 +506,7 @@ To manually stop the containers, see the Docker commands section below.
 
 The `containers.stayup` property drives the `TESTCONTAINERS_RYUK_DISABLED` environment property.  This is a TestContainers library property it uses to determine whether it should automatically clean up the Docker containers at the end of the test run.
 
-# Running Component Tests Within The IDE
+## Running Component Tests Within The IDE
 
 Component tests can be run within the IDE as other tests are.  Typically a component test run is executed via the `mvn` command, and must be configured to leave the containers up.  This means that the configuration properties defined in the pom are used.
 
@@ -452,20 +525,7 @@ e.g. add the following to the Configuration dialog to start up Postgres and Kafk
 -postgres.enabled=true -Dkafka.enabled=true
 ```
 
-# Discovering The Service URL
-
-The `dev.lydtech.component.framework.client.service.ServiceClient` provides a static `getBaseUrl` method to get the base URL, enabling REST calls to be made.
-e.g. if using RestAssured as the HTTP client in the test:
-```
-RestAssured.baseURI = ServiceClient.getBaseUrl();
-```
-
-Querying using RestAssured:
-```
-RestAssured.get("/v1/my-service).then().assertThat().statusCode(202)
-```
-
-# Remote Debugging The Service
+## Remote Debugging The Service
 
 As the service is running in a Docker container, in order to debug a test run then remote debugging is required.
 
@@ -485,6 +545,8 @@ This port can then used in the IDE Remote JVM Debug Run/Debug Configurations dia
 
 Note that if the application code is changed then it must be rebuilt, and the service Docker container rebuilt and restarted.  This results in a different debug port being mapped.
 
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # Additional Containers
 
 Any number of additional containers can be started as part of the test run, using the `additional.containers` parameter.  This enables spinning up of simulator services that take the place of real world third party services that the service under test calls.
@@ -503,9 +565,11 @@ Additional containers work well in a multi module project.  They are co-located 
 
 https://github.com/lydtechconsulting/ctf-example-multi-module
 
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # Postgres Database
 
-Enable the Postgres database via the property `postgres.enabled`.  The connection details can be configured including the host, database name, user and password.
+Enable the Postgres database via the property `postgres.enabled`.  The connection details can be configured including the host, database name, schema name, user and password.
 
 Override the main configuration in the application's `application-component-test.yml` file in order to connect to the Dockerised Postgres, for example:
 ```
@@ -515,9 +579,50 @@ spring:
         username: postgres
         password: postgres
 ```
+
+Use the `PostgresClient` utility class to get a `Connection` that can be used to run queries against the database:
+```
+import dev.lydtech.component.framework.client.database.PostgresClient;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+Connection dbConnection = PostgresClient.getInstance().getConnection();
+```
+
+Note that when leaving containers up between test runs, if the default Postgres properties are overridden, then the test needs to be passed these in order to create the connection.  e.g. set:
+```
+-Dpostgres.database.name=dbname2 -Dpostgres.schema.name=schema2 -Dpostgres.username=user2 -Dpostgres.password=password2
+```
+
+Alternatively use the method to get the `Connection` that taking these parameters:
+```
+Connection dbConnection = PostgresClient.getInstance().getConnection("dbname2", "schema2", "user2", "password2");
+```
+
+Close the connection at the end of the test:
+```
+PostgresClient.getInstance().close(dbConnection);
+```
+
+The DB URL with the host and port can be obtained with the following call:
+```
+String dbUrl = MongoDbClient.getInstance().getMongoClient().getDbHostAndPortUrl();
+```
+This has the mapped port for the Docker container enabling the test to connect to the database.  It could then for example be used to instantiate a `JdbcTemplate` if using Spring:
+```
+DriverManagerDataSource dataSource = new DriverManagerDataSource();
+dataSource.setUrl(dbUrl);
+dataSource.setUsername(username);
+dataSource.setPassword(password);
+JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+```
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # MongoDB Database
 
-Enable the MongoDB database via the property `mongodb.enabled`.
+Enable the MongoDB database via the property `mongodb.enabled`.  The database is available on port `27017`.
 
 Override the main configuration in the application's `application-component-test.yml` file to connect to the Dockerised MongoDB, for example:
 
@@ -528,14 +633,48 @@ spring:
       database: demo
       port: 27017
       host: mongodb
-      auto-index-creation: true
-  ```
-  
+```
+
+Use the `MongoDbClient` utility class to get a `MongoClient` that can be used to run queries against the database:
+```
+import dev.lydtech.component.framework.client.database.MongoDbClient;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+
+MongoClient mongoClient = MongoDbClient.getInstance().getMongoClient();
+MongoCollection items = mongoClient.getDatabase("demo").getCollection("items");
+FindIterable results = items.find(Filters.eq("name", request.getName()));
+```
+
+Close the connection at the end of the test:
+```
+MongoDbClient.getInstance().close(mongoClient);
+```
+
+Alternatively the MongoDB URL can be obtained with the following call:
+```
+String dbUrl = MongoDbClient.getInstance().getMongoClient().getDbUrl();
+```
+
+This has the mapped port for the Docker container enabling the test to connect to the database.  It could then for example be used to instantiate a `MongoTemplate` if using Spring:
+```
+ConnectionString connectionString = new ConnectionString(dbUrl);
+MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
+    .applyConnectionString(connectionString)
+    .build();
+MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoClientSettings), "demo");
+```
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # Kafka
+## Kafka Configuration
 
 If the Kafka messaging broker is enabled via `kafka.enabled`, a number of broker and topic configurations can be applied.  These include setting the number of broker nodes in the cluster (`kafka.broker.count`), the topic replication factor (`kafka.topic.replication.factor`), and the minimum number of brokers that must be in-sync to accept a producer write (`kafka.min.insync.replicas`).  Any topics that should be created upfront can be declared in a comma separated list (`kafka.topics`), and the default topic partition count can be configured (`kafka.topic.partition.count`).
 
-# Kafka Client
+## Kafka Client
 
 The Kafka Client enables the component test to send events to topics on the Kafka broker, and likewise consume events that are emitted by the service under test.  These are JSON events. 
 
@@ -590,7 +729,20 @@ Consume and assert a message:
 KafkaClient.consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM, AWAIT_AT_MOST_SECONDS);
 ```
 
-# Kafka Avro Client
+## Kafka JSON Marshalling
+
+A JSON mapping utility is provided to allow marshalling of PoJOs to/from JSON Strings.  This is a convenient feature for preparing event payloads to be sent in the JSON format to Kafka and likewise converted to their PoJO version when consumed.
+```
+import dev.lydtech.component.framework.mapper.JsonMapper
+
+public static <T> T readFromJson(String json, Class<T> clazz) throws MappingException
+
+public static String writeToJson(Object obj) throws MappingException
+```
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
+# Kafka Avro
 
 The Kafka Avro Client enables the component test to send events to topics on the Kafka broker, and likewise consume events that are emitted by the service under test.  These are Avro events, which are events with a rich data structure that is defined by a schema.
 
@@ -614,13 +766,15 @@ Consume and assert Avro messages (in this case a FooCompleted record):
 List<ConsumerRecord<String, FooCompleted>> outboundEvents = KafkaAvroClient.getInstance().consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM);
 ```
 
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # Kafka Schema Registry
 
 The Kafka Confluent Schema Registry is a registry for holding the schemas of the messages sent to Kafka topics.  
 
 The provided Kafka Schema Registry client enables the component test to interact with the Dockerised Confluent Schema Registry container in order to register the necessary schemas.
 
-At runtime the Schema Registry is hit by the Kafka Avro serialiser and deserialiser in the Kafka Producers and Consumers in order for them to retrieve the required Avro schema for the given payload.
+At runtime the Schema Registry is hit by the Kafka Avro serializer and deserializer in the Kafka Producers and Consumers in order for them to retrieve the required Avro schema for the given payload.
 
 To this end the client provides a `registerSchema` method which takes the subject (which is the topic name) and the Avro schema associated with the messages on this topic.
 
@@ -639,6 +793,8 @@ KafkaSchemaRegistryClient.getInstance().resetSchemaRegistry();
 ```
 
 A recommended pattern is to call both the reset and the register methods in the test `@BeforeAll`.
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
 
 # Confluent Control Center
 
@@ -700,6 +856,8 @@ Once the containers are running, navigate to:
 http://localhost:9021
 ```
 
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # Conduktor Platform
 
 The Conduktor Platform is a web application that provides a user interface for inspecting the Kafka broker and topics.  Messages on the topics can be viewed, and if the Confluent Schema Registry is enabled the message schemas can be viewed.  Full broker and topic configuration is also available.
@@ -722,6 +880,8 @@ password: admin
 ```
 
 Launch the `Console` application in order to view the broker, topics, messages, and schema registry data. 
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
 
 # Conduktor Gateway
 
@@ -764,6 +924,8 @@ conduktorGatewayClient.reset();
 
 When no interceptors are registered, the Gateway will pass requests through directly to Kafka.
 
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # Debezium
 
 Debezium provides a Kafka Connect source connector, streaming events from the Database changelog to Kafka.
@@ -779,6 +941,8 @@ DebeziumClient.getInstance().deleteConnector("outbox-connector");
 ```
 
 See the `ctf-example-service` project for example usage.
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
 
 # Wiremock
 
@@ -824,6 +988,8 @@ This requires the corresponding mapping file to be located under `src/test/resou
 src/test/resources/thirdParty/retry_behaviour_success.json
 ```
 
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
+
 # Localstack
 
 ## DynamoDB
@@ -848,16 +1014,7 @@ DynamoDbClient.getInstance().createTable(ProcessedEvent.class, "eu-west-2");
 ```
 This method is overloaded to also allow passing in the access key and secret key to use, and the read and write capacity units for the table.
 
-# JSON Mapping
-
-A JSON mapping utility is provided to allow marshalling of PoJOs to/from JSON Strings.  This is a convenient feature for preparing event payloads to be sent in the JSON format to Kafka and likewise converted to their PoJO version when consumed.
-```
-import dev.lydtech.component.framework.mapper.JsonMapper
-
-public static <T> T readFromJson(String json, Class<T> clazz) throws MappingException
-
-public static String writeToJson(Object obj) throws MappingException
-```
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]
 
 # Docker Commands
 
@@ -915,3 +1072,5 @@ e.g. for the following exception:
 ```
 com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"could not find an available, non-overlapping IPv4 address pool among the defaults to assign to the network"}
 ```
+
+[[Back To Top](https://github.com/lydtechconsulting/component-test-framework)]

@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.4.1] - 2023-10-30
+### Added
+- PostgresClient for connecting to Postgres instance
+- MongoDbClient for connecting to MongoDB instance
+
 ## [2.4.0] - 2023-10-28
 ### Added
 - Supports MongoDB.
