@@ -24,7 +24,7 @@
 - [Conduktor Gateway](README.md#conduktor-gateway)
 - [Debezium](README.md#debezium)
 - [Wiremock](README.md#wiremock)
-- [Localstack (with DynamoDB)](README.md#localstack-(with-dynamodb))
+- [Localstack (with DynamoDB)](README.md#localstack)
 - [Docker Commands](README.md#docker-commands)
 
 
