@@ -25,6 +25,8 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_NAME_PREFIX;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_PORT;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
@@ -40,6 +42,7 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
 import static dev.lydtech.component.framework.resource.Resource.CONDUKTORGATEWAY;
 import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
+import static dev.lydtech.component.framework.resource.Resource.ELASTICSEARCH;
 import static dev.lydtech.component.framework.resource.Resource.KAFKA;
 import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
 import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
@@ -111,6 +114,7 @@ public final class DockerManager {
         findContainerAndMapPort(dockerClient, WIREMOCK.toString(), WIREMOCK_ENABLED, WIREMOCK_PORT);
         findContainerAndMapPort(dockerClient, LOCALSTACK.toString(), LOCALSTACK_ENABLED, LOCALSTACK_PORT);
         findContainerAndMapPort(dockerClient, CONDUKTORGATEWAY.toString(), CONDUKTOR_GATEWAY_ENABLED, CONDUKTOR_GATEWAY_HTTP_PORT);
+        findContainerAndMapPort(dockerClient, ELASTICSEARCH.toString(), ELASTICSEARCH_ENABLED, ELASTICSEARCH_PORT);
 
         captureHost();
 

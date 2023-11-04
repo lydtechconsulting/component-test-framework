@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.5.0] - 2023-11-04
+### Added
+- Supports Elasticsearch.
+
 ## [2.4.1] - 2023-10-30
 ### Added
 - PostgresClient for connecting to Postgres instance

@@ -14,11 +14,11 @@ public class MongoDbClient {
     private static String dbUrl;
 
     private MongoDbClient(){
-        String postgresHost = Optional.ofNullable(System.getProperty("docker.host"))
+        String mongoDbHost = Optional.ofNullable(System.getProperty("docker.host"))
                 .orElse("localhost");
-        String postgresPort = Optional.ofNullable(System.getProperty("mongodb.mapped.port"))
+        String mongoDbPort = Optional.ofNullable(System.getProperty("mongodb.mapped.port"))
                 .orElseThrow(() -> new RuntimeException("mongodb.mapped.port property not found"));
-        dbUrl = "mongodb://" + postgresHost + ":" + postgresPort + "/";
+        dbUrl = "mongodb://" + mongoDbHost + ":" + mongoDbPort + "/";
     }
 
     public synchronized static MongoDbClient getInstance() {

@@ -35,6 +35,7 @@ public final class TestContainersConfiguration {
     /**
      * Postgres configuration.
      */
+
     private static final String DEFAULT_POSTGRES_ENABLED = "false";
     private static final String DEFAULT_POSTGRES_IMAGE_TAG = "14-alpine";
     private static final String DEFAULT_POSTGRES_HOST_NAME = "postgres-host";
@@ -48,6 +49,7 @@ public final class TestContainersConfiguration {
     /**
      * MongoDB configuration.
      */
+
     private static final String DEFAULT_MONGODB_ENABLED = "false";
     private static final String DEFAULT_MONGODB_IMAGE_TAG = "7.0.2";
     private static final String DEFAULT_MONGODB_PORT = "27017";
@@ -135,6 +137,18 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
+     * Elasticsearch configuration.
+     */
+
+    private static final String DEFAULT_ELASTICSEARCH_ENABLED = "false";
+    private static final String DEFAULT_ELASTICSEARCH_IMAGE_TAG = "8.10.4";
+    private static final String DEFAULT_ELASTICSEARCH_PORT = "9200";
+    private static final String DEFAULT_ELASTICSEARCH_PASSWORD = null;
+    private static final String DEFAULT_ELASTICSEARCH_CLUSTER_NAME = "elasticsearch";
+    private static final String DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE = "single-node";
+    private static final String DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = "false";
+
+    /**
      * The runtime configuration.
      */
 
@@ -215,6 +229,14 @@ public final class TestContainersConfiguration {
     public static int LOCALSTACK_PORT;
     public static String LOCALSTACK_SERVICES;
     public static boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED;
+
+    public static boolean ELASTICSEARCH_ENABLED;
+    public static String ELASTICSEARCH_IMAGE_TAG;
+    public static int ELASTICSEARCH_PORT;
+    public static String ELASTICSEARCH_PASSWORD;
+    public static String ELASTICSEARCH_CLUSTER_NAME;
+    public static String ELASTICSEARCH_DISCOVERY_TYPE;
+    public static boolean ELASTICSEARCH_CONTAINER_LOGGING_ENABLED;
 
     static {
         configure();
@@ -298,6 +320,15 @@ public final class TestContainersConfiguration {
         LOCALSTACK_PORT = Integer.parseInt(System.getProperty("localstack.port", DEFAULT_LOCALSTACK_PORT));
         LOCALSTACK_SERVICES = System.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
         LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
+
+        ELASTICSEARCH_ENABLED = Boolean.valueOf(System.getProperty("elasticsearch.enabled", DEFAULT_ELASTICSEARCH_ENABLED));
+        ELASTICSEARCH_IMAGE_TAG = System.getProperty("elasticsearch.image.tag", DEFAULT_ELASTICSEARCH_IMAGE_TAG);
+        // Port cannot be overridden in the Elasticsearch Testcontainer.
+        ELASTICSEARCH_PORT = Integer.parseInt(DEFAULT_ELASTICSEARCH_PORT);
+        ELASTICSEARCH_PASSWORD = System.getProperty("elasticsearch.password", DEFAULT_ELASTICSEARCH_PASSWORD);
+        ELASTICSEARCH_CLUSTER_NAME = System.getProperty("elasticsearch.cluster.name", DEFAULT_ELASTICSEARCH_CLUSTER_NAME);
+        ELASTICSEARCH_DISCOVERY_TYPE = System.getProperty("elasticsearch.discovery.type", DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE);
+        ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("elasticsearch.container.logging.enabled", DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED));
     }
 
     protected static List<AdditionalContainer> parseAdditionalContainers() {
@@ -444,6 +475,16 @@ public final class TestContainersConfiguration {
             log.info("localstack.port: " + LOCALSTACK_PORT);
             log.info("localstack.services: " + LOCALSTACK_SERVICES);
             log.info("localstack.container.logging.enabled: " + LOCALSTACK_CONTAINER_LOGGING_ENABLED);
+        }
+
+        log.info("elasticsearch.enabled: " + ELASTICSEARCH_ENABLED);
+        if(ELASTICSEARCH_ENABLED) {
+            log.info("elasticsearch.image.tag: " + ELASTICSEARCH_IMAGE_TAG);
+            log.info("elasticsearch.port: " + ELASTICSEARCH_PORT);
+            log.info("elasticsearch.password: " + ELASTICSEARCH_PASSWORD);
+            log.info("elasticsearch.cluster.name: " + ELASTICSEARCH_CLUSTER_NAME);
+            log.info("elasticsearch.discovery.type: " + ELASTICSEARCH_DISCOVERY_TYPE);
+            log.info("elasticsearch.container.logging.enabled: " + ELASTICSEARCH_CONTAINER_LOGGING_ENABLED);
         }
     }
 }

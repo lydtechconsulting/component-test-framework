@@ -25,8 +25,8 @@
 - [Debezium](README.md#debezium)
 - [Wiremock](README.md#wiremock)
 - [Localstack (with DynamoDB)](README.md#localstack)
+- [Elasticsearch](README.md#elasticsearch)
 - [Docker Commands](README.md#docker-commands)
-
 
 # Overview
 
@@ -54,7 +54,7 @@ https://www.testcontainers.org/
 - Confluent Control Center
 - Conduktor Platform
 - Conduktor Gateway
-
+- Elasticsearch
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -69,7 +69,6 @@ https://www.testcontainers.org/
 - Spring Boot 2.x
 - Kafka Clients 2.x
 - Java 11
-
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -134,6 +133,8 @@ https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Con
 https://github.com/lydtechconsulting/springboot-postgres (demonstrates using Postgres as the database for reading and writing items)
 
 https://github.com/lydtechconsulting/springboot-mongodb (demonstrates using MongoDB as the database for reading and writing items)
+
+https://github.com/lydtechconsulting/springboot-elasticsearch (demonstrates reading and writing items to Elasticsearch)
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -206,6 +207,12 @@ https://github.com/lydtechconsulting/springboot-mongodb (demonstrates using Mong
 | localstack.services                             | Comma delimited list of AWS services to start.                                                                                                                                                                                                                                                                                                                                  | dynamodb       |
 | localstack.region                               | The region to use.                                                                                                                                                                                                                                                                                                                                                              | eu-west-2      |
 | localstack.container.logging.enabled            | Whether to output the Localstack Docker logs to the console.                                                                                                                                                                                                                                                                                                                    | false          |
+| elasticsearch.enabled                                | Whether a Docker Elasticsearch container should be started.                                                                                                                                                                                                                                                                                                                          | false          |
+| elasticsearch.image.tag                              | The image tag of the Elasticsearch Docker container to use.                                                                                                                                                                                                                                                                                                                          | 8.10.4         |
+| elasticsearch.password                               | The Elasticsearch password to use.                                                                                                                                                                                                                                                                                                                          |          |
+| elasticsearch.cluster.name                           | The name of the Elasticsearch cluster.                                                                                                                                                                                                                                                                                                                          | elasticsearch         |
+| elasticsearch.discovery.type                         | Whether to form a single node or multi node Elasticsearch cluster.  | single-node         |
+| elasticsearch.container.logging.enabled              | Whether to output the Elasticsearch Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
 
 The configuration is logged at test execution time at INFO level.  Enable in `logback-test.xml` with:
 ```
@@ -321,6 +328,12 @@ The following shows how to override the configurable properties in a maven proje
                             <localstack.services>lambda,dynamodb,s3</localstack.services>
                             <localstack.region>eu-west-2</localstack.region>
                             <localstack.container.logging.enabled>false</localstack.container.logging.enabled>
+                            <elasticsearch.enabled>true</elasticsearch.enabled>
+                            <elasticsearch.image.tag>8.10.4</elasticsearch.image.tag>
+                            <elasticsearch.password>password</elasticsearch.password>
+                            <elasticsearch.cluster.name>elasticsearch</elasticsearch.cluster.name>
+                            <elasticsearch.discovery.type>single-node</elasticsearch.discovery.type>
+                            <elasticsearch.container.logging.enabled>false</elasticsearch.container.logging.enabled>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
@@ -1013,6 +1026,28 @@ import dev.lydtech.component.framework.client.localstack.DynamoDbClient;
 DynamoDbClient.getInstance().createTable(ProcessedEvent.class, "eu-west-2");
 ```
 This method is overloaded to also allow passing in the access key and secret key to use, and the read and write capacity units for the table.
+
+[[Back To Top](README.md#component-test-framework)]
+
+# Elasticsearch
+
+Enable Elasticsearch via the property `elasticsearch.enabled`.  Elasticsearch is available on port `9200`.
+
+The container base URL can be obtained using the `ElasticsearchClient`:
+
+```
+import dev.lydtech.component.framework.client.elastic.ElasticsearchCtfClient;
+
+String baseUrl = ElasticsearchCtfClient.getInstance().getBaseUrl();
+```
+
+The `co.elastic.clients.elasticsearch.ElasticsearchClient` can be obtained which can then be used to query the dockerised Elasticsearch.  Note this method is overloaded, also taking a `JsonpMapper`.
+```
+ElasticsearchClient esClient = ElasticsearchCtfClient.getInstance().getElasticsearchClient();
+GetResponse<Item> getResponse = esClient.get(s -> s
+    .index("item")
+    .id(location), Item.class);
+```
 
 [[Back To Top](README.md#component-test-framework)]
 

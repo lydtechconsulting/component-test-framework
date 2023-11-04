@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dev.lydtech</groupId>
 	<artifactId>component-test-framework</artifactId>
-	<version>2.4.1</version>
+	<version>2.5.0</version>
 	<name>component-test-framework</name>
 	<description>Component Test Framework</description>
 	<url>https://github.com/lydtechconsulting/component-test-framework</url>
@@ -119,6 +119,11 @@
 			<artifactId>kafka</artifactId>
 			<version>${testcontainers.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>${testcontainers.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.amazonaws</groupId>
@@ -179,6 +184,20 @@
 			<version>3.12.14</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>8.10.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>co.elastic.clients</groupId>
+			<artifactId>elasticsearch-java</artifactId>
+			<version>8.10.4</version>
+			<scope>provided</scope>
+		</dependency>
+
 
 	</dependencies>
 

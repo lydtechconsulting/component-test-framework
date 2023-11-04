@@ -29,10 +29,89 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.*;
-import static dev.lydtech.component.framework.resource.Resource.*;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ADDITIONAL_CONTAINERS;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_PROXY_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_LICENSE_KEY;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_NAME_PREFIX;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_CLUSTER_NAME;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_DISCOVERY_TYPE;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_PASSWORD;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_BROKER_COUNT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONFLUENT_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_JMX_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_CONTROL_CENTER_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_MIN_INSYNC_REPLICAS;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPICS;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPIC_PARTITION_COUNT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_TOPIC_REPLICATION_FACTOR;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_SERVICES;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_DATABASE_NAME;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_HOST_NAME;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PASSWORD;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_USERNAME;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_DEBUG_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_INSTANCE_COUNT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_NAME;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_STARTUP_TIMEOUT_SECONDS;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_CONTAINER_LOGGING_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_ENABLED;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
+import static dev.lydtech.component.framework.resource.Resource.CONDUKTOR;
+import static dev.lydtech.component.framework.resource.Resource.CONDUKTORGATEWAY;
+import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
+import static dev.lydtech.component.framework.resource.Resource.ELASTICSEARCH;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA_CONTROL_CENTER;
+import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
+import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
+import static dev.lydtech.component.framework.resource.Resource.MONGODB;
+import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
+import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
 
 @Slf4j
 public final class TestContainersManager {
@@ -41,7 +120,7 @@ public final class TestContainersManager {
     private List<GenericContainer> serviceContainers = new ArrayList<>(1);
     private List<GenericContainer> additionalContainers;
     private GenericContainer postgresContainer;
-    private MongoDBContainer mongoDBContainer;
+    private MongoDBContainer mongoDbContainer;
     private List<KafkaContainer> kafkaContainers;
     private GenericContainer zookeeperContainer;
     private DebeziumContainer debeziumContainer;
@@ -51,6 +130,7 @@ public final class TestContainersManager {
     private GenericContainer controlCenterContainer;
     private GenericContainer conduktorContainer;
     private GenericContainer conduktorGatewayContainer;
+    private GenericContainer elasticSearchContainer;
 
     private TestContainersManager(){}
 
@@ -72,7 +152,7 @@ public final class TestContainersManager {
             postgresContainer = createPostgresContainer();
         }
         if (MONGODB_ENABLED) {
-            mongoDBContainer = createMongoDBContainer();
+            mongoDbContainer = createMongoDBContainer();
         }
         if (KAFKA_ENABLED) {
             if(KAFKA_TOPIC_REPLICATION_FACTOR > KAFKA_BROKER_COUNT) {
@@ -137,6 +217,9 @@ public final class TestContainersManager {
             }
             conduktorGatewayContainer = createConduktorGatewayContainer();
         }
+        if (ELASTICSEARCH_ENABLED) {
+            elasticSearchContainer = createElasticsearchContainer();
+        }
 
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT + 1)
                 .mapToObj(this::createServiceContainer)
@@ -148,7 +231,7 @@ public final class TestContainersManager {
                 additionalContainer.getDebugPort(),
                 additionalContainer.getImageTag(),
                 additionalContainer.getAdditionalContainerLoggingEnabled()))
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     private void startContainers() {
@@ -157,7 +240,7 @@ public final class TestContainersManager {
                 postgresContainer.start();
             }
             if(MONGODB_ENABLED) {
-                mongoDBContainer.start();
+                mongoDbContainer.start();
             }
             if(KAFKA_ENABLED) {
                 if(KAFKA_BROKER_COUNT>1) {
@@ -187,6 +270,9 @@ public final class TestContainersManager {
             }
             if(LOCALSTACK_ENABLED) {
                 localstackContainer.start();
+            }
+            if(ELASTICSEARCH_ENABLED) {
+                elasticSearchContainer.start();
             }
             serviceContainers.stream().forEach(container -> container.start());
             additionalContainers.stream().forEach(container -> container.start());
@@ -506,6 +592,28 @@ public final class TestContainersManager {
                 .withEnv("SERVICES", LOCALSTACK_SERVICES)
                 .withExposedPorts(LOCALSTACK_PORT);
         if(LOCALSTACK_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    private GenericContainer createElasticsearchContainer() {
+        String containerName = ELASTICSEARCH.toString();
+        DockerImageName elasticsearchImage = DockerImageName.parse("elastic/elasticsearch").asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch");
+        ElasticsearchContainer container = new ElasticsearchContainer(elasticsearchImage.withTag(ELASTICSEARCH_IMAGE_TAG))
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withEnv("cluster.name", ELASTICSEARCH_CLUSTER_NAME)
+                .withEnv("discovery.type", ELASTICSEARCH_DISCOVERY_TYPE)
+                .withEnv("xpack.security.enabled", "false")
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                });
+        if(ELASTICSEARCH_PASSWORD != null && !ELASTICSEARCH_PASSWORD.isBlank()) {
+            // This sets "xpack.security.enabled" to true
+            container.withPassword(ELASTICSEARCH_PASSWORD);
+        }
+        if(ELASTICSEARCH_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;
