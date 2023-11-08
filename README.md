@@ -48,7 +48,7 @@ https://www.testcontainers.org/
 - Kafka Schema Registry
 - Postgres database
 - MongoDB database
-- Debezium Kafka Connect with Postgres and MongoDB
+- Debezium Kafka Connect
 - Standalone wiremock
 - Localstack (AWS components - e.g. DynamoDB)
 - Confluent Control Center
