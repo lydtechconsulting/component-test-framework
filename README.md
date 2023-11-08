@@ -48,7 +48,7 @@ https://www.testcontainers.org/
 - Kafka Schema Registry
 - Postgres database
 - MongoDB database
-- Debezium Kafka Connect
+- Debezium Kafka Connect with Postgres and MongoDB
 - Standalone wiremock
 - Localstack (AWS components - e.g. DynamoDB)
 - Confluent Control Center
@@ -129,6 +129,10 @@ https://github.com/lydtechconsulting/kafka-consumer-retry (uses multiple instanc
 https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer with additional configuration for batch send)
 
 https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Conduktor Gateway for chaos testing the service under test)
+
+https://github.com/lydtechconsulting/kafka-connect-debezium-postgres (demonstrates using Kafka Connect with Debezium for Change Data Capture with Postgres) 
+
+https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb (demonstrates using Kafka Connect with Debezium for Change Data Capture with MongoDB)
 
 https://github.com/lydtechconsulting/springboot-postgres (demonstrates using Postgres as the database for reading and writing items)
 
