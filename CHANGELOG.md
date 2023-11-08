@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.5.1] - 2023-11-08
+### Changed
+- Support MongoDB replica sets
+- Updated default Debezium version to 2.4.0.Final
+
 ## [2.5.0] - 2023-11-04
 ### Added
 - Supports Elasticsearch.

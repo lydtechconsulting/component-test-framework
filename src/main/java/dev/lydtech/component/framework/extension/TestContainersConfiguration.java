@@ -53,6 +53,7 @@ public final class TestContainersConfiguration {
     private static final String DEFAULT_MONGODB_ENABLED = "false";
     private static final String DEFAULT_MONGODB_IMAGE_TAG = "7.0.2";
     private static final String DEFAULT_MONGODB_PORT = "27017";
+    private static final String DEFAULT_MONGODB_REPLICA_SET = "mongo-replica-set";
     private static final String DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
@@ -73,7 +74,7 @@ public final class TestContainersConfiguration {
      */
 
     private static final String DEFAULT_DEBEZIUM_ENABLED = "false";
-    private static final String DEFAULT_DEBEZIUM_IMAGE_TAG = "2.2";
+    private static final String DEFAULT_DEBEZIUM_IMAGE_TAG = "2.4.0.Final";
     private static final String DEFAULT_DEBEZIUM_PORT = "8083";
     private static final String DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED = "false";
 
@@ -178,6 +179,7 @@ public final class TestContainersConfiguration {
     public static boolean MONGODB_ENABLED;
     public static String MONGODB_IMAGE_TAG;
     public static Integer MONGODB_PORT;
+    public static String MONGODB_REPLICA_SET;
     public static boolean MONGODB_CONTAINER_LOGGING_ENABLED;
 
     public static boolean KAFKA_ENABLED;
@@ -269,6 +271,7 @@ public final class TestContainersConfiguration {
         MONGODB_IMAGE_TAG = System.getProperty("mongodb.image.tag", DEFAULT_MONGODB_IMAGE_TAG);
         // Port cannot be overridden in the MongoDB Testcontainer.
         MONGODB_PORT = Integer.parseInt(DEFAULT_MONGODB_PORT);
+        MONGODB_REPLICA_SET = System.getProperty("mongodb.replica.set", DEFAULT_MONGODB_REPLICA_SET);
         MONGODB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mongodb.container.logging.enabled", DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED));
 
         KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
@@ -405,6 +408,7 @@ public final class TestContainersConfiguration {
         if(MONGODB_ENABLED) {
             log.info("mongodb.image.tag: " + MONGODB_IMAGE_TAG);
             log.info("mongodb.port: " + MONGODB_PORT);
+            log.info("mongodb.replica.set: " + MONGODB_REPLICA_SET);
             log.info("mongodb.container.logging.enabled: " + MONGODB_CONTAINER_LOGGING_ENABLED);
         }
 

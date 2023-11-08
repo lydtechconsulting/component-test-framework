@@ -55,9 +55,9 @@ public final class DebeziumClient {
         }
     }
 
-    public void deleteConnector(String connectorName) {
+    public Integer deleteConnector(String connectorName) {
         try {
-            deleteRequest(CONNECTOR_PATH+"/"+connectorName, 204);
+            return deleteRequest(CONNECTOR_PATH+"/"+connectorName);
         } catch (Exception e) {
             // Note this returns a 409 conflict if rebalancing at time of delete.
             log.error("Failed to delete Kafka Connect connector: " + connectorName, e);
@@ -80,11 +80,10 @@ public final class DebeziumClient {
         return id;
     }
 
-    private void deleteRequest(String path, Integer expectedResponse) {
-        RestAssured.given()
+    private Integer deleteRequest(String path) {
+        return RestAssured.given()
                 .spec(requestSpec)
                 .delete(path)
-                .then()
-                .statusCode(expectedResponse);
+                .getStatusCode();
     }
 }

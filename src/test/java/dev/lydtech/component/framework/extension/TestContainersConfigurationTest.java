@@ -59,6 +59,7 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_IMAGE_TAG;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_PORT;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_REPLICA_SET;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_DATABASE_NAME;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
@@ -112,6 +113,7 @@ public class TestContainersConfigurationTest {
 
         System.clearProperty("mongodb.enabled");
         System.clearProperty("mongodb.image.tag");
+        System.clearProperty("mongodb.replica.set");
         System.clearProperty("mongodb.container.logging.enabled");
 
         System.clearProperty("kafka.enabled");
@@ -199,6 +201,7 @@ public class TestContainersConfigurationTest {
         assertThat(MONGODB_ENABLED, equalTo(false));
         assertThat(MONGODB_PORT, equalTo(27017));
         assertThat(MONGODB_IMAGE_TAG, equalTo("7.0.2"));
+        assertThat(MONGODB_REPLICA_SET, equalTo("mongo-replica-set"));
         assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(KAFKA_ENABLED, equalTo(false));
         assertThat(KAFKA_BROKER_COUNT, equalTo(1));
@@ -230,7 +233,7 @@ public class TestContainersConfigurationTest {
         assertThat(CONDUKTOR_GATEWAY_HTTP_PORT, equalTo(8888));
         assertThat(CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(DEBEZIUM_ENABLED, equalTo(false));
-        assertThat(DEBEZIUM_IMAGE_TAG, equalTo("2.2"));
+        assertThat(DEBEZIUM_IMAGE_TAG, equalTo("2.4.0.Final"));
         assertThat(DEBEZIUM_PORT, equalTo(8083));
         assertThat(DEBEZIUM_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(WIREMOCK_ENABLED, equalTo(false));
@@ -278,6 +281,7 @@ public class TestContainersConfigurationTest {
 
         System.setProperty("mongodb.enabled", "true");
         System.setProperty("mongodb.image.tag", "mongodb-override");
+        System.setProperty("mongodb.replica.set", "mongodb-replica-set-override");
         System.setProperty("mongodb.container.logging.enabled", "true");
 
         System.setProperty("kafka.enabled", "true");
@@ -361,6 +365,7 @@ public class TestContainersConfigurationTest {
         assertThat(MONGODB_ENABLED, equalTo(true));
         assertThat(MONGODB_PORT, equalTo(27017));
         assertThat(MONGODB_IMAGE_TAG, equalTo("mongodb-override"));
+        assertThat(MONGODB_REPLICA_SET, equalTo("mongodb-replica-set-override"));
         assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(KAFKA_ENABLED, equalTo(true));
         assertThat(KAFKA_BROKER_COUNT, equalTo(12));

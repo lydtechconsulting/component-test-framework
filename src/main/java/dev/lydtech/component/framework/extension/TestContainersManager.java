@@ -82,6 +82,7 @@ import static dev.lydtech.component.framework.extension.TestContainersConfigurat
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_IMAGE_TAG;
+import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_REPLICA_SET;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_DATABASE_NAME;
 import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
@@ -182,8 +183,8 @@ public final class TestContainersManager {
             }
         }
         if (DEBEZIUM_ENABLED) {
-            if(!KAFKA_ENABLED || !POSTGRES_ENABLED) {
-                throw new RuntimeException("Kafka and Postgres must be enabled in order to use Debezium.");
+            if(!KAFKA_ENABLED) {
+                throw new RuntimeException("Kafka must be enabled in order to use Debezium.");
             }
             debeziumContainer = createDebeziumContainer();
         }
@@ -355,6 +356,7 @@ public final class TestContainersManager {
         MongoDBContainer container = new MongoDBContainer("mongo:" + MONGODB_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
+                .withCommand("--replSet", MONGODB_REPLICA_SET)
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 });
