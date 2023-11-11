@@ -110,35 +110,37 @@ This project demonstrates using:
 - Multiple additional containers (simulators) - these also benefit from the multi module structure as each is defined in its own child module.
 - Running component tests with gradle.
 
-Other reference projects that utilise the framework:
+Other reference projects that utilise the framework for component testing the application:
 
-https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb (includes Localstack with DynamoDB and uses multiple instances of the service under test)
+https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb - includes Localstack with DynamoDB and uses multiple instances of the service under test.
 
-https://github.com/lydtechconsulting/kafka-schema-registry-avro (a multi-module maven project demonstrating using the Confluent Schema Registry, and demonstrates using Confluent Control Center and Conduktor Platform with Confluent Schema Registry integration)
+https://github.com/lydtechconsulting/kafka-schema-registry-avro - a multi-module maven project demonstrating using the Confluent Schema Registry, and demonstrates using Confluent Control Center and Conduktor Platform with Confluent Schema Registry integration.
 
-https://github.com/lydtechconsulting/kafka-metrics (demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform)
+https://github.com/lydtechconsulting/kafka-metrics - demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform)
 
-https://github.com/lydtechconsulting/kafka-springboot-consume-produce
+https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka to consume and produce events, and observe events using Confluent Control Center)
 
-https://github.com/lydtechconsulting/kafka-streams
+https://github.com/lydtechconsulting/kafka-streams - demonstrates using Kafka with the Kafka Streams API. 
 
-https://github.com/lydtechconsulting/kafka-idempotent-consumer (uses multiple instances of the service under test)
+https://github.com/lydtechconsulting/kafka-idempotent-consumer - uses multiple instances of the service under test.
 
-https://github.com/lydtechconsulting/kafka-consumer-retry (uses multiple instances of the service under test)
+https://github.com/lydtechconsulting/kafka-consumer-retry - uses multiple instances of the service under test.
 
-https://github.com/lydtechconsulting/kafka-batch-consume (uses a custom Producer with additional configuration for batch send)
+https://github.com/lydtechconsulting/kafka-batch-consume - uses a custom Producer with additional configuration for batch send.
 
-https://github.com/lydtechconsulting/kafka-chaos-testing (demonstrates using Conduktor Gateway for chaos testing the service under test)
+https://github.com/lydtechconsulting/kafka-chaos-testing - demonstrates using Conduktor Gateway for chaos testing the service under test.
 
-https://github.com/lydtechconsulting/kafka-connect-debezium-postgres (demonstrates using Kafka Connect with Debezium for Change Data Capture with Postgres) 
+https://github.com/lydtechconsulting/kafka-connect-debezium-postgres - demonstrates using Kafka Connect with Debezium for Change Data Capture with Postgres. 
 
-https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb (demonstrates using Kafka Connect with Debezium for Change Data Capture with MongoDB)
+https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb - demonstrates using Kafka Connect with Debezium for Change Data Capture with MongoDB.
 
-https://github.com/lydtechconsulting/springboot-postgres (demonstrates using Postgres as the database for reading and writing items)
+https://github.com/lydtechconsulting/springboot-rest - demonstrates hitting the service via a REST API to perform CRUD operations.
 
-https://github.com/lydtechconsulting/springboot-mongodb (demonstrates using MongoDB as the database for reading and writing items)
+https://github.com/lydtechconsulting/springboot-postgres - demonstrates using Postgres as the database for reading and writing items.
 
-https://github.com/lydtechconsulting/springboot-elasticsearch (demonstrates reading and writing items to Elasticsearch)
+https://github.com/lydtechconsulting/springboot-mongodb - demonstrates using MongoDB as the database for reading and writing items.
+
+https://github.com/lydtechconsulting/springboot-elasticsearch - demonstrates reading and writing items to Elasticsearch.
 
 [[Back To Top](README.md#component-test-framework)]
 
