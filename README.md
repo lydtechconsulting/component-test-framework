@@ -34,7 +34,7 @@ A library allowing component testing of a Spring Boot application.
 
 Dockerises the service under test and the required resources.
 
-Uses the TestContainers library to start and manage the Docker containers:
+Uses the Testcontainers library to start and manage the Docker containers:
 
 https://www.testcontainers.org/
 
@@ -386,13 +386,13 @@ The `containers.stayup` property is added to the environment variables by the Gr
 Annotate the SpringBoot test with the following extra annotations:
 
 ```
-import dev.lydtech.component.framework.extension.TestContainersSetupExtension;
+import dev.lydtech.component.framework.extension.TestcontainersSetupExtension;
 
-@ExtendWith(TestContainersSetupExtension.class)
+@ExtendWith(TestcontainersSetupExtension.class)
 public class KafkaStreamsCT {
 ```
 
-The `TestContainersSetupExtension` is the JUnit5 extension that enables hooking into a test execution run before the tests themselves run, so that the Dockerised containers can be started.
+The `TestcontainersSetupExtension` is the JUnit5 extension that enables hooking into a test execution run before the tests themselves run, so that the Dockerised containers can be started.
 
 The component test class should be named with the suffix `CT`.  This ensures it is not run via the standard maven-surefire-plugin (if that is in use in the service pom.xml).  Instead it is only run with the `mvn` command when the profile `-Pcomponent` is included.
 
@@ -525,7 +525,7 @@ Changes to system properties are only respected when containers are being brough
 
 To manually stop the containers, see the Docker commands section below.
 
-The `containers.stayup` property drives the `TESTCONTAINERS_RYUK_DISABLED` environment property.  This is a TestContainers library property it uses to determine whether it should automatically clean up the Docker containers at the end of the test run.
+The `containers.stayup` property drives the `TESTCONTAINERS_RYUK_DISABLED` environment property.  This is a Testcontainers library property it uses to determine whether it should automatically clean up the Docker containers at the end of the test run.
 
 ## Running Component Tests Within The IDE
 

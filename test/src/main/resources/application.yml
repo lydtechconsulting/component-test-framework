@@ -1,0 +1,6 @@
+spring:
+    application:
+        name: ctf
+
+server:
+    port: 9001

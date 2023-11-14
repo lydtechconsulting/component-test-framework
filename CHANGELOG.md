@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.0] - 2023-11-18
+### Changed
+- TestContainers classes renamed Testcontainers
+- Changed to multi-module project
+- Component testing the component test framework
+
 ## [2.5.1] - 2023-11-08
 ### Changed
 - Support MongoDB replica sets
