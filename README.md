@@ -1059,6 +1059,28 @@ GetResponse<Item> getResponse = esClient.get(s -> s
 
 [[Back To Top](README.md#component-test-framework)]
 
+# Testing the Component Test Framework
+
+Build the test Spring Boot application jar:
+```
+mvn clean install
+```
+
+Build Docker container:
+```
+docker build -t ct/component-test-framework:latest .
+```
+
+Run tests:
+```
+mvn test -Pcomponent
+```
+
+Run tests leaving containers up:
+```
+mvn test -Pcomponent -Dcontainers.stayup
+```
+
 # Docker Commands
 
 ## List Docker Containers
