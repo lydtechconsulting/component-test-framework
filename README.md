@@ -7,6 +7,7 @@
 - [Supported Versions](README.md#supported-versions)
 - [Maven Dependency](README.md#maven-dependency)
 - [Example Usage Projects](README.md#example-usage-projects)
+- [Upgrading From Previous Versions](README.md#upgrading-from-previous-versions)
 - [Configuration Options](README.md#configuration-options)
 - [Using Maven](README.md#using-maven)
 - [Using Gradle](README.md#using-gradle)
@@ -34,7 +35,7 @@ A library allowing component testing of a Spring Boot application.
 
 Dockerises the service under test and the required resources.
 
-Uses the TestContainers library to start and manage the Docker containers:
+Uses the Testcontainers library to start and manage the Docker containers:
 
 https://www.testcontainers.org/
 
@@ -143,6 +144,25 @@ https://github.com/lydtechconsulting/springboot-mongodb - demonstrates using Mon
 https://github.com/lydtechconsulting/springboot-elasticsearch - demonstrates reading and writing items to Elasticsearch.
 
 [[Back To Top](README.md#component-test-framework)]
+
+# Upgrading From Previous Versions
+
+## Upgrading To 2.6.0 From Any Previous Version
+
+- JUnit Extension Class
+The JUnit extension class `dev.lydtech.component.framework.extension.TestContainersSetupExtension` has been deprecated.  Instead use `dev.lydtech.component.framework.extension.ComponentTestExtension`.  e.g. `@ExtendWith(ComponentTestExtension.class)`.
+
+- Testcontainers Environment Variable
+The Testcontainers environment variable `TESTCONTAINERS_RYUK_DISABLED` used for keeping containers up between test runs has changed to `TESTCONTAINERS_REUSE_ENABLE`.  In the maven pom component test profile, change to use this variable:
+```
+<environmentVariables>
+    <TESTCONTAINERS_REUSE_ENABLE>${containers.stayup}</TESTCONTAINERS_REUSE_ENABLE>
+</environmentVariables>
+```
+Similarly for gradle, change the environment set up to:
+```
+environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup')
+```
 
 # Configuration Options
 
@@ -268,7 +288,7 @@ The following shows how to override the configurable properties in a maven proje
                             <include>*CT.*</include>
                         </includes>
                         <environmentVariables>
-                            <TESTCONTAINERS_RYUK_DISABLED>${containers.stayup}</TESTCONTAINERS_RYUK_DISABLED>
+                            <TESTCONTAINERS_REUSE_ENABLE>${containers.stayup}</TESTCONTAINERS_REUSE_ENABLE>
                         </environmentVariables>
                         <systemPropertyVariables>
                             <container.name.prefix>ct</container.name.prefix>
@@ -363,7 +383,7 @@ Add the following to the `build.gradle` test method:
 ```
 test {
     systemProperties = System.properties
-    environment "TESTCONTAINERS_RYUK_DISABLED", System.getProperty('containers.stayup')
+    environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup')
     useJUnitPlatform()
 }
 ```
@@ -386,13 +406,13 @@ The `containers.stayup` property is added to the environment variables by the Gr
 Annotate the SpringBoot test with the following extra annotations:
 
 ```
-import dev.lydtech.component.framework.extension.TestContainersSetupExtension;
+import dev.lydtech.component.framework.extension.ComponentTestExtension;
 
-@ExtendWith(TestContainersSetupExtension.class)
-public class KafkaStreamsCT {
+@ExtendWith(ComponentTestExtension.class)
+public class EndToEndCT {
 ```
 
-The `TestContainersSetupExtension` is the JUnit5 extension that enables hooking into a test execution run before the tests themselves run, so that the Dockerised containers can be started.
+The `ComponentTestExtension` is the JUnit5 extension that enables hooking into a test execution run before the tests themselves run, so that the Dockerised containers can be started.
 
 The component test class should be named with the suffix `CT`.  This ensures it is not run via the standard maven-surefire-plugin (if that is in use in the service pom.xml).  Instead it is only run with the `mvn` command when the profile `-Pcomponent` is included.
 
@@ -525,7 +545,7 @@ Changes to system properties are only respected when containers are being brough
 
 To manually stop the containers, see the Docker commands section below.
 
-The `containers.stayup` property drives the `TESTCONTAINERS_RYUK_DISABLED` environment property.  This is a TestContainers library property it uses to determine whether it should automatically clean up the Docker containers at the end of the test run.
+The `containers.stayup` property drives the `TESTCONTAINERS_REUSE_ENABLE` environment property.  This is a Testcontainers library property it uses to determine whether it should automatically clean up the Docker containers at the end of the test run.
 
 ## Running Component Tests Within The IDE
 

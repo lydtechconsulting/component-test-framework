@@ -1,17 +1,18 @@
-package dev.lydtech.component.framework.extension;
+package dev.lydtech.component.framework.configuration;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import dev.lydtech.component.framework.management.AdditionalContainer;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public final class TestContainersConfiguration {
+public final class TestcontainersConfiguration {
 
     // Label key for the Docker container housing the service.
-    protected static final String CONTAINER_MAIN_LABEL_KEY = "dev.lydtech.main-container-label";
+    public static final String CONTAINER_MAIN_LABEL_KEY = "dev.lydtech.main-container-label";
 
     /**
      * Service default configuration.
@@ -376,7 +377,7 @@ public final class TestContainersConfiguration {
     }
 
     static {
-        log.info("TestContainers Configuration:");
+        log.info("Testcontainers Configuration:");
 
         log.info("containers.stayup: " + System.getProperty("containers.stayup", Boolean.FALSE.toString()));
         log.info("container.name.prefix: " + CONTAINER_NAME_PREFIX);

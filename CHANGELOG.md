@@ -1,9 +1,15 @@
 # Changelog
 
+## [2.6.0] - 2023-11-18
+### Changed
+- Updated Testcontainers version to 1.19.2.
+- Environment variable TESTCONTAINERS_REUSE_ENABLE replaces TESTCONTAINERS_RYUK_DISABLED.
+- ComponentTestExtension replaces the deprecated TestContainersSetupExtension.
+
 ## [2.5.1] - 2023-11-08
 ### Changed
-- Support MongoDB replica sets
-- Updated default Debezium version to 2.4.0.Final
+- Support MongoDB replica sets.
+- Updated default Debezium version to 2.4.0.Final.
 
 ## [2.5.0] - 2023-11-04
 ### Added
@@ -11,8 +17,8 @@
 
 ## [2.4.1] - 2023-10-30
 ### Added
-- PostgresClient for connecting to Postgres instance
-- MongoDbClient for connecting to MongoDB instance
+- PostgresClient for connecting to Postgres instance.
+- MongoDbClient for connecting to MongoDB instance.
 
 ## [2.4.0] - 2023-10-28
 ### Added
@@ -24,12 +30,12 @@
 
 ## [2.2.0] - 2023-06-16
 ### Changed
-- Updated default Conduktor Platform version to 1.15.0
+- Updated default Conduktor Platform version to 1.15.0.
 
 ## [2.1.0] - 2023-03-30
 ### Changed
-- Updated default Debezium version to 2.2
-- Updated default Wiremock version to 2.35.0
+- Updated default Debezium version to 2.2.
+- Updated default Wiremock version to 2.35.0.
 
 ## [2.0.0] - 2023-03-17
 ### Changed
