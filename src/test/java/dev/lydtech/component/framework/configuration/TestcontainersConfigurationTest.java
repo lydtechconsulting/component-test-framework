@@ -60,7 +60,6 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_IMAGE_TAG;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_REPLICA_SET;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_DATABASE_NAME;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_ENABLED;
@@ -202,7 +201,6 @@ public class TestcontainersConfigurationTest {
         assertThat(MONGODB_ENABLED, equalTo(false));
         assertThat(MONGODB_PORT, equalTo(27017));
         assertThat(MONGODB_IMAGE_TAG, equalTo("7.0.2"));
-        assertThat(MONGODB_REPLICA_SET, equalTo("mongo-replica-set"));
         assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(KAFKA_ENABLED, equalTo(false));
         assertThat(KAFKA_BROKER_COUNT, equalTo(1));
@@ -282,7 +280,6 @@ public class TestcontainersConfigurationTest {
 
         System.setProperty("mongodb.enabled", "true");
         System.setProperty("mongodb.image.tag", "mongodb-override");
-        System.setProperty("mongodb.replica.set", "mongodb-replica-set-override");
         System.setProperty("mongodb.container.logging.enabled", "true");
 
         System.setProperty("kafka.enabled", "true");
@@ -366,7 +363,6 @@ public class TestcontainersConfigurationTest {
         assertThat(MONGODB_ENABLED, equalTo(true));
         assertThat(MONGODB_PORT, equalTo(27017));
         assertThat(MONGODB_IMAGE_TAG, equalTo("mongodb-override"));
-        assertThat(MONGODB_REPLICA_SET, equalTo("mongodb-replica-set-override"));
         assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(KAFKA_ENABLED, equalTo(true));
         assertThat(KAFKA_BROKER_COUNT, equalTo(12));

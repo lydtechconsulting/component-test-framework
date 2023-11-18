@@ -190,7 +190,6 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 | postgres.container.logging.enabled              | Whether to output the Postgres Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | false          |
 | mongodb.enabled                                 | Whether a Docker MongoDB container should be started.                                                                                                                                                                                                                                                                                                                           | false          |
 | mongodb.image.tag                               | The image tag of the MongoDB Docker container to use.                                                                                                                                                                                                                                                                                                                           | 7.0.2          |
-| mongodb.replica.set                             | The name of the MongoDB replica set.                                                                                                                                                                                                                                                                                                                                            | mongo-replica-set            |
 | mongodb.container.logging.enabled               | Whether to output the MongoDB Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | false          |
 | kafka.enabled                                   | Whether a Docker Kafka container should be started.                                                                                                                                                                                                                                                                                                                             | false          |
 | kafka.broker.count                              | The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be 'kafka', then subsequent will have an instance suffix, e.g. 'kafka-2'.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).                                       | 1              |
@@ -312,7 +311,6 @@ The following shows how to override the configurable properties in a maven proje
                             <postgres.container.logging.enabled>false</postgres.container.logging.enabled>
                             <mongodb.enabled>true</mongodb.enabled>
                             <mongodb.image.tag>7.0.2</mongodb.image.tag>
-                            <mongodb.replica.set>mongo-replica-set</mongodb.replica.set>
                             <mongodb.container.logging.enabled>true</mongodb.container.logging.enabled>
                             <kafka.enabled>true</kafka.enabled>
                             <kafka.broker.count>1</kafka.broker.count>
@@ -675,6 +673,7 @@ spring:
       port: 27017
       host: mongodb
 ```
+The MongoDB Testcontainer creates a replica set name `docker-rs`. 
 
 Use the `MongoDbClient` utility class to get a `MongoClient` that can be used to run queries against the database:
 ```

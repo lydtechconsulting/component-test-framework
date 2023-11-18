@@ -82,7 +82,6 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_REPLICA_SET;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_DATABASE_NAME;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_ENABLED;
@@ -359,7 +358,6 @@ public final class TestcontainersManager {
         MongoDBContainer container = new MongoDBContainer("mongo:" + MONGODB_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
-                .withCommand("--replSet", MONGODB_REPLICA_SET)
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
