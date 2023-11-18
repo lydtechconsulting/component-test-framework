@@ -12,13 +12,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * Example usage:
  *
- * <pre>
- *
- * {@code @ExtendWith(ComponentTestExtension.class)}
- * {@code @ActiveProfiles("component-test")}
- * @code public class EndToEndCT {
- *
- * </pre>
+ * @ExtendWith(ComponentTestExtension.class)
+ * @ActiveProfiles("component-test")
+ * public class EndToEndCT {
  */
 @Slf4j
 public final class ComponentTestExtension implements BeforeAllCallback {
