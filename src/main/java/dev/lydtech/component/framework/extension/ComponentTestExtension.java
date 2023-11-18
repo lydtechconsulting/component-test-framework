@@ -8,12 +8,20 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 /**
- * @deprecated since "2.5.1".
- * Use {@link ComponentTestExtension} instead.
+ * Junit5 Extension class to instantiate the component-test-framework.
+ *
+ * Example usage:
+ *
+ * <pre>
+ *
+ * {@code @ExtendWith(ComponentTestExtension.class)}
+ * {@code @ActiveProfiles("component-test")}
+ * @code public class EndToEndCT {
+ *
+ * </pre>
  */
-@Deprecated(since = "2.5.1", forRemoval = true)
 @Slf4j
-public final class TestContainersSetupExtension implements BeforeAllCallback {
+public final class ComponentTestExtension implements BeforeAllCallback {
 
     // Use a static boolean to track whether the containers are started so multiple test classes each with this extension
     // only perform one startup.

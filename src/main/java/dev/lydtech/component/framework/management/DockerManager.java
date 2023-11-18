@@ -1,4 +1,4 @@
-package dev.lydtech.component.framework.extension;
+package dev.lydtech.component.framework.management;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,28 +18,28 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.DockerClientFactory;
 
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.CONTAINER_NAME_PREFIX;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.DEBEZIUM_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.ELASTICSEARCH_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.LOCALSTACK_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.MONGODB_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.SERVICE_PORT;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_ENABLED;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.WIREMOCK_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_NAME_PREFIX;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_PORT;
 import static dev.lydtech.component.framework.resource.Resource.CONDUKTORGATEWAY;
 import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
 import static dev.lydtech.component.framework.resource.Resource.ELASTICSEARCH;
@@ -55,7 +55,7 @@ import static java.util.Collections.singletonList;
 @Slf4j
 public final class DockerManager {
 
-    protected static DockerClient getDockerClient() {
+    public static DockerClient getDockerClient() {
         log.info("Check if services are running");
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost("unix:///var/run/docker.sock")
@@ -68,12 +68,12 @@ public final class DockerManager {
     }
 
     /**
-     * Skip TestContainers setup if:
+     * Skip Testcontainers setup if:
      *
      * - Main container is running (it has the expected prefix and label) AND
-     * - TestContainers container is not running
+     * - Testcontainers container is not running
      */
-    protected static boolean shouldPerformSetup(DockerClient dockerClient) {
+    public static boolean shouldPerformSetup(DockerClient dockerClient) {
         List<Container> containers = dockerClient.listContainersCmd().exec();
         boolean mainContainerPresent = containers.stream()
                     .filter(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/" + CONTAINER_NAME_PREFIX + "-")))
@@ -90,7 +90,7 @@ public final class DockerManager {
         return !(mainContainerPresent && !testContainersPresent);
     }
 
-    protected static void captureDockerContainerPorts(DockerClient dockerClient) {
+    public static void captureDockerContainerPorts(DockerClient dockerClient) {
         log.info("Capturing Docker ports...");
         log.info("Container main label: "+CONTAINER_MAIN_LABEL);
         // To locate the service containers use the container prefix and main container label.  This decouples discovery

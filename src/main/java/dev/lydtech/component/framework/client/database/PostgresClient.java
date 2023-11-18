@@ -6,10 +6,10 @@ import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_DATABASE_NAME;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_PASSWORD;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_SCHEMA_NAME;
-import static dev.lydtech.component.framework.extension.TestContainersConfiguration.POSTGRES_USERNAME;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_DATABASE_NAME;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PASSWORD;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_SCHEMA_NAME;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_USERNAME;
 
 @Slf4j
 public class PostgresClient {
