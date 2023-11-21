@@ -68,6 +68,9 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR = "1";
     private static final String DEFAULT_KAFKA_MIN_INSYNC_REPLICAS = "1";
+    private static final String DEFAULT_KAFKA_SASL_PLAIN_ENABLED = "false";
+    private static final String DEFAULT_KAFKA_SASL_PLAIN_USERNAME = "demo";
+    private static final String DEFAULT_KAFKA_SASL_PLAIN_PASSWORD = "demo-password";
 
     /**
      * Debezium (Kafka Connect) default configuration.
@@ -190,6 +193,9 @@ public final class TestcontainersConfiguration {
     public static boolean KAFKA_CONTAINER_LOGGING_ENABLED;
     public static int KAFKA_TOPIC_REPLICATION_FACTOR;
     public static int KAFKA_MIN_INSYNC_REPLICAS;
+    public static boolean KAFKA_SASL_PLAIN_ENABLED;
+    public static String KAFKA_SASL_PLAIN_USERNAME;
+    public static String KAFKA_SASL_PLAIN_PASSWORD;
 
     public static boolean KAFKA_SCHEMA_REGISTRY_ENABLED;
     public static String KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
@@ -281,6 +287,9 @@ public final class TestcontainersConfiguration {
         KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
         KAFKA_TOPIC_REPLICATION_FACTOR = Integer.parseInt(System.getProperty("kafka.topic.replication.factor", DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR));
         KAFKA_MIN_INSYNC_REPLICAS = Integer.parseInt(System.getProperty("kafka.min.insync.replicas", DEFAULT_KAFKA_MIN_INSYNC_REPLICAS));
+        KAFKA_SASL_PLAIN_ENABLED = Boolean.valueOf(System.getProperty("kafka.sasl.plain.enabled", DEFAULT_KAFKA_SASL_PLAIN_ENABLED));
+        KAFKA_SASL_PLAIN_USERNAME = System.getProperty("kafka.sasl.plain.username", DEFAULT_KAFKA_SASL_PLAIN_USERNAME);
+        KAFKA_SASL_PLAIN_PASSWORD = System.getProperty("kafka.sasl.plain.password", DEFAULT_KAFKA_SASL_PLAIN_PASSWORD);
 
         KAFKA_SCHEMA_REGISTRY_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED));
         KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.schema.registry.confluent.image.tag", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
@@ -419,6 +428,11 @@ public final class TestcontainersConfiguration {
             log.info("kafka.topic.replication.factor: " + KAFKA_TOPIC_REPLICATION_FACTOR);
             log.info("kafka.min.insync.replicas: " + KAFKA_MIN_INSYNC_REPLICAS);
             log.info("kafka.container.logging.enabled: " + KAFKA_CONTAINER_LOGGING_ENABLED);
+            log.info("kafka.sasl.plain.enabled: " + KAFKA_SASL_PLAIN_ENABLED);
+            if(KAFKA_SASL_PLAIN_ENABLED) {
+                log.info("kafka.sasl.plain.username: " + KAFKA_SASL_PLAIN_USERNAME);
+                log.info("kafka.sasl.plain.password: " + KAFKA_SASL_PLAIN_PASSWORD);
+            }
         }
 
         log.info("kafka.schema.registry.enabled: " + KAFKA_SCHEMA_REGISTRY_ENABLED);

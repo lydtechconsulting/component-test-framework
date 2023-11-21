@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -22,11 +23,17 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.apache.kafka.common.security.plain.PlainLoginModule;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.awaitility.Awaitility;
+
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_PASSWORD;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_USERNAME;
 
 @Slf4j
 public final class KafkaClient {
@@ -73,6 +80,15 @@ public final class KafkaClient {
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
         config.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, 1000);
+
+        if(KAFKA_SASL_PLAIN_ENABLED) {
+            config.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+            config.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+            config.put(SaslConfigs.SASL_JAAS_CONFIG, String.format(
+                "%s required username=\"%s\" password=\"%s\";", PlainLoginModule.class.getName(), KAFKA_SASL_PLAIN_USERNAME, KAFKA_SASL_PLAIN_PASSWORD
+            ));
+        }
+
         if(additionalConfig!=null && !additionalConfig.isEmpty()) {
             config.putAll(additionalConfig);
         }
@@ -113,6 +129,15 @@ public final class KafkaClient {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+
+        if(KAFKA_SASL_PLAIN_ENABLED) {
+            config.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+            config.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+            config.put(SaslConfigs.SASL_JAAS_CONFIG, String.format(
+                "%s required username=\"%s\" password=\"%s\";", PlainLoginModule.class.getName(), KAFKA_SASL_PLAIN_USERNAME, KAFKA_SASL_PLAIN_PASSWORD
+            ));
+        }
+
         if(additionalConfig!=null && !additionalConfig.isEmpty()) {
             config.putAll(additionalConfig);
         }

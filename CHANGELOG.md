@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.7.0] - 2023-11-21
+### Added
+- Supports Kafka SASL plain.
+
 ## [2.6.0] - 2023-11-18
 ### Changed
 - Updated Testcontainers version to 1.19.2.

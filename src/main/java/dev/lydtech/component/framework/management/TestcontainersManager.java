@@ -20,6 +20,8 @@ import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.security.plain.PlainLoginModule;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
@@ -67,6 +69,9 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_MIN_INSYNC_REPLICAS;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_PASSWORD;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_USERNAME;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
@@ -426,6 +431,27 @@ public final class TestcontainersManager {
             // As there are multiple Kafka instances they need to use the same external Zookeeper.
             kafkaContainer.withExternalZookeeper("zookeeper:2181");
         }
+        if(KAFKA_SASL_PLAIN_ENABLED) {
+            if(KAFKA_SASL_PLAIN_USERNAME == null || KAFKA_SASL_PLAIN_USERNAME.isBlank() ||
+                    KAFKA_SASL_PLAIN_PASSWORD == null || KAFKA_SASL_PLAIN_PASSWORD.isBlank()) {
+                throw new RuntimeException("kafka.sasl.plain.enabled is true so kafka.sasl.plain.username: "+KAFKA_SASL_PLAIN_USERNAME+" - and kafka.sasl.plain.password: "+KAFKA_SASL_PLAIN_PASSWORD+" - must both be set.");
+            }
+            String jaasConfig = String.format(
+                "%s required username=\"%s\" password=\"%s\" user_%s=\"%s\";",
+                PlainLoginModule.class.getName(),
+                KAFKA_SASL_PLAIN_USERNAME,
+                KAFKA_SASL_PLAIN_PASSWORD,
+                KAFKA_SASL_PLAIN_USERNAME,
+                KAFKA_SASL_PLAIN_PASSWORD
+            );
+            kafkaContainer.withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "PLAINTEXT:SASL_PLAINTEXT,BROKER:SASL_PLAINTEXT");
+            kafkaContainer.withEnv("KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL", "PLAIN");
+            kafkaContainer.withEnv("KAFKA_LISTENER_NAME_BROKER_SASL_ENABLED_MECHANISMS", "PLAIN");
+            kafkaContainer.withEnv("KAFKA_LISTENER_NAME_BROKER_PLAIN_SASL_JAAS_CONFIG", jaasConfig);
+            kafkaContainer.withEnv("KAFKA_LISTENER_NAME_PLAINTEXT_SASL_ENABLED_MECHANISMS", "PLAIN");
+            kafkaContainer.withEnv("KAFKA_LISTENER_NAME_PLAINTEXT_PLAIN_SASL_JAAS_CONFIG", jaasConfig);
+        }
+
         return kafkaContainer
                 .withEnv("KAFKA_BROKER_ID", String.valueOf(instance))
                 .withEnv("KAFKA_NUM_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
@@ -637,9 +663,18 @@ public final class TestcontainersManager {
     private void createTopics() {
         if(!KAFKA_TOPICS.isEmpty()) {
             Properties properties = new Properties();
-            properties.put(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainers.get(0).getBootstrapServers()
-            );
+            properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainers.get(0).getBootstrapServers());
+            if(KAFKA_SASL_PLAIN_ENABLED) {
+                properties.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
+                properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+                String jaasConfig = String.format(
+                        "%s required username=\"%s\" password=\"%s\";",
+                        PlainLoginModule.class.getName(),
+                        KAFKA_SASL_PLAIN_USERNAME,
+                        KAFKA_SASL_PLAIN_PASSWORD
+                );
+                properties.put(SaslConfigs.SASL_JAAS_CONFIG, jaasConfig);
+            }
             Admin admin = Admin.create(properties);
             Collection<NewTopic> newTopics = new ArrayList<>(KAFKA_TOPICS.size());
             int partitions = KAFKA_TOPIC_PARTITION_COUNT;

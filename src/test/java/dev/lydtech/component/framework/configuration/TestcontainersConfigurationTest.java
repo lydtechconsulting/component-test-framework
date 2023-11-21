@@ -44,6 +44,9 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_MIN_INSYNC_REPLICAS;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_PASSWORD;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_USERNAME;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
@@ -125,6 +128,9 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("kafka.container.logging.enabled");
         System.clearProperty("kafka.topic.replication.factor");
         System.clearProperty("kafka.min.insync.replicas");
+        System.clearProperty("kafka.sasl.plain.enabled");
+        System.clearProperty("kafka.sasl.plain.username");
+        System.clearProperty("kafka.sasl.plain.password");
 
         System.clearProperty("kafka.schema.registry.enabled");
         System.clearProperty("kafka.schema.registry.confluent.image.tag");
@@ -211,6 +217,9 @@ public class TestcontainersConfigurationTest {
         assertThat(KAFKA_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(KAFKA_TOPIC_REPLICATION_FACTOR, equalTo(1));
         assertThat(KAFKA_MIN_INSYNC_REPLICAS, equalTo(1));
+        assertThat(KAFKA_SASL_PLAIN_ENABLED, equalTo(false));
+        assertThat(KAFKA_SASL_PLAIN_USERNAME, equalTo("demo"));
+        assertThat(KAFKA_SASL_PLAIN_PASSWORD, equalTo("demo-password"));
         assertThat(KAFKA_SCHEMA_REGISTRY_ENABLED, equalTo(false));
         assertThat(KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG, equalTo("7.3.2"));
         assertThat(KAFKA_SCHEMA_REGISTRY_PORT, equalTo(8081));
@@ -291,6 +300,9 @@ public class TestcontainersConfigurationTest {
         System.setProperty("kafka.container.logging.enabled", "true");
         System.setProperty("kafka.topic.replication.factor", "5");
         System.setProperty("kafka.min.insync.replicas", "4");
+        System.setProperty("kafka.sasl.plain.enabled", "true");
+        System.setProperty("kafka.sasl.plain.username", "demo-override");
+        System.setProperty("kafka.sasl.plain.password", "demo-password-override");
 
         System.setProperty("kafka.schema.registry.enabled", "true");
         System.setProperty("kafka.schema.registry.confluent.image.tag", "registry-override");
@@ -373,6 +385,9 @@ public class TestcontainersConfigurationTest {
         assertThat(KAFKA_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(KAFKA_TOPIC_REPLICATION_FACTOR, equalTo(5));
         assertThat(KAFKA_MIN_INSYNC_REPLICAS, equalTo(4));
+        assertThat(KAFKA_SASL_PLAIN_ENABLED, equalTo(true));
+        assertThat(KAFKA_SASL_PLAIN_USERNAME, equalTo("demo-override"));
+        assertThat(KAFKA_SASL_PLAIN_PASSWORD, equalTo("demo-password-override"));
         assertThat(KAFKA_SCHEMA_REGISTRY_ENABLED, equalTo(true));
         assertThat(KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG, equalTo("registry-override"));
         assertThat(KAFKA_SCHEMA_REGISTRY_PORT, equalTo(8082));

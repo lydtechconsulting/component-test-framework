@@ -143,6 +143,8 @@ https://github.com/lydtechconsulting/springboot-mongodb - demonstrates using Mon
 
 https://github.com/lydtechconsulting/springboot-elasticsearch - demonstrates reading and writing items to Elasticsearch.
 
+https://github.com/lydtechconsulting/kafka-sasl-plain - demonstrates consumers and producers connecting to Kafka using the Simple Authentication and Security Layer (SASL) PLAIN protocol.
+
 [[Back To Top](README.md#component-test-framework)]
 
 # Upgrading From Previous Versions
@@ -201,6 +203,9 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 | kafka.topic.partition.count                     | The number of partitions for topics that are created.                                                                                                                                                                                                                                                                                                                           | 5              |
 | kafka.topic.replication.factor                  | The replication factor to use for topics.  Must not be greater than the configured `kafka.broker.count`.                                                                                                                                                                                                                                                                        | 1              |
 | kafka.min.insync.replicas                       | The minimum in-sync number of replicas required for successful writes to topics.  Must not be greater than the configured `kafka.broker.count` nor the `kafka.topic.replication.factor`.                                                                                                                                                                                        | 1              |
+| kafka.sasl.plain.enabled                        | Whether Kafka SASL PLAIN is enabled.                                                                                                                                                                                                                                                                                                                                            | false          |
+| kafka.sasl.plain.username                       | The Kafka SASL PLAIN username.  Must be set if `kafka.sasl.plain.enabled` is true.                                                                                                                                                                                                                                                                                              | demo           |
+| kafka.sasl.plain.password                       | The Kafka SASL PLAIN password.  Must be set if `kafka.sasl.plain.enabled` is true.                                                                                                                                                                                                                                                                                              | demo-password  |
 | kafka.container.logging.enabled                 | Whether to output the Kafka Docker logs to the console.                                                                                                                                                                                                                                                                                                                         | false          |
 | kafka.schema.registry.enabled                   | Whether a Docker Schema Registry container should be started.                                                                                                                                                                                                                                                                                                                   | false          |
 | kafka.schema.registry.confluent.image.tag       | The image tag of the Kafka Confluent Schema Registry Docker container to use.  Recommendation is to keep this the same as `kafka.confluent.image.tag`.                                                                                                                                                                                                                          | 7.3.2          |
@@ -322,6 +327,9 @@ The following shows how to override the configurable properties in a maven proje
                             <kafka.topic.partition.count>5</kafka.topic.partition.count>
                             <kafka.topic.replication.factor>1</kafka.topic.replication.factor>
                             <kafka.min.insync.replicas>1</kafka.min.insync.replicas>
+                            <kafka.sasl.plain.enabled>true</kafka.sasl.plain.enabled>
+                            <kafka.sasl.plain.username>demo</kafka.sasl.plain.username>
+                            <kafka.sasl.plain.password>demo-secret</kafka.sasl.plain.password>
                             <kafka.container.logging.enabled>false</kafka.container.logging.enabled>
                             <kafka.schema.registry.enabled>true</kafka.schema.registry.enabled>
                             <kafka.schema.registry.confluent.image.tag>7.3.2</kafka.schema.registry.confluent.image.tag>
@@ -770,6 +778,10 @@ Consume and assert a message:
 ```
 KafkaClient.consumeAndAssert("TestName", fooConsumer, EXPECTED_COUNT_RECEIVED, FURTHER_POLLS_TO_PERFORM, AWAIT_AT_MOST_SECONDS);
 ```
+
+## Kafka SASL PLAIN
+
+The framework supports enforcing Simple Authentication and Security Layer (SASL) PLAIN.  To enable, set `kafka.sasl.plain.enabled` to `true`.  Supply the `kafka.sasl.plain.username` and `kafka.sasl.plain.password` required to connect to Kafka.
 
 ## Kafka JSON Marshalling
 
