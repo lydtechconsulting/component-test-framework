@@ -12,8 +12,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  *
  * Example usage:
  *
- * @ExtendWith(ComponentTestExtension.class)
- * @ActiveProfiles("component-test")
+ * {@literal @}ExtendWith(ComponentTestExtension.class)
+ * {@literal @}ActiveProfiles("component-test")
  * public class EndToEndCT {
  */
 @Slf4j
