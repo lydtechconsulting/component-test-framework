@@ -1,10 +1,7 @@
 package dev.lydtech.component.framework.management;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -34,78 +31,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ADDITIONAL_CONTAINERS;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_PROXY_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_LICENSE_KEY;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_NAME_PREFIX;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_CLUSTER_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_DISCOVERY_TYPE;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_PASSWORD;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_BROKER_COUNT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONFLUENT_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_JMX_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_MIN_INSYNC_REPLICAS;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_PASSWORD;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_USERNAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_TOPICS;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_TOPIC_PARTITION_COUNT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_TOPIC_REPLICATION_FACTOR;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_SERVICES;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_DATABASE_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_HOST_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PASSWORD;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_USERNAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_DEBUG_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_INSTANCE_COUNT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_STARTUP_TIMEOUT_SECONDS;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.*;
 import static dev.lydtech.component.framework.resource.Resource.CONDUKTOR;
 import static dev.lydtech.component.framework.resource.Resource.CONDUKTORGATEWAY;
 import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
@@ -313,7 +239,10 @@ public final class TestcontainersManager {
     }
 
     private GenericContainer createAdditionalContainer(String name, Integer port, Integer debugPort, String imageTag, boolean containerLoggingEnabled) {
-        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:"+debugPort+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
+        String suspendFlag = SERVICE_DEBUG_SUSPEND ? "y" : "n";
+        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+debugPort+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
+
+
 
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+name+":" + imageTag)
                 .withEnv("JAVA_OPTS", javaOpts)

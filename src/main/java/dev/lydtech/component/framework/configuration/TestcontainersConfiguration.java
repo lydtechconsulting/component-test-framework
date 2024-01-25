@@ -1,8 +1,6 @@
 package dev.lydtech.component.framework.configuration;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import dev.lydtech.component.framework.management.AdditionalContainer;
@@ -25,6 +23,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS = "180";
     private static final String DEFAULT_SERVICE_IMAGE_TAG = "latest";
     private static final String DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_SERVICE_DEBUG_SUSPEND = "false";
 
     /**
      * Container configuration.
@@ -163,6 +162,8 @@ public final class TestcontainersConfiguration {
     public static int SERVICE_INSTANCE_COUNT;
     public static int SERVICE_PORT;
     public static int SERVICE_DEBUG_PORT;
+    public static boolean SERVICE_DEBUG_SUSPEND;
+    public static Map<String, String> SERVICE_ENV_VARS;
     public static int SERVICE_STARTUP_TIMEOUT_SECONDS;
     public static String SERVICE_IMAGE_TAG;
     public static boolean SERVICE_CONTAINER_LOGGING_ENABLED;
@@ -255,6 +256,8 @@ public final class TestcontainersConfiguration {
         SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME);
         SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
         SERVICE_PORT = Integer.parseInt(System.getProperty("service.port", DEFAULT_SERVICE_PORT));
+        SERVICE_DEBUG_SUSPEND = Boolean.parseBoolean(System.getProperty("service.debug.suspend", DEFAULT_SERVICE_DEBUG_SUSPEND));
+        SERVICE_ENV_VARS = parseEnvVars(System.getProperty("service.envvars", null));
         SERVICE_DEBUG_PORT = Integer.parseInt(System.getProperty("service.debug.port", DEFAULT_SERVICE_DEBUG_PORT));
         SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(System.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
         SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
@@ -368,6 +371,30 @@ public final class TestcontainersConfiguration {
             }
         }
         return additionalContainers;
+    }
+
+    protected static Map<String, String> parseEnvVars(String input) {
+        if (input == null) {
+            return new HashMap<>();
+        }
+
+        Map<String, String> resultMap = new HashMap<>();
+
+        String[] pairs = input.split(",");
+
+        for (String pair : pairs) {
+            String[] keyValue = pair.split("=");
+
+            if (keyValue.length == 2) {
+                String key = keyValue[0].trim();
+                String value = keyValue[1].trim();
+                resultMap.put(key, value);
+            } else {
+                throw new IllegalArgumentException("invalid key/value pair string for service env vars");
+            }
+        }
+
+        return resultMap;
     }
 
     protected static List<String> parseKafkaTopics() {
