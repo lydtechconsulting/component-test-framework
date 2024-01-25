@@ -24,6 +24,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_SERVICE_IMAGE_TAG = "latest";
     private static final String DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_SERVICE_DEBUG_SUSPEND = "false";
+    private static final String DEFAULT_APPLICATION_YML_PATH = "./target/test-classes/application-component-test.yml";
 
     /**
      * Container configuration.
@@ -167,6 +168,7 @@ public final class TestcontainersConfiguration {
     public static int SERVICE_STARTUP_TIMEOUT_SECONDS;
     public static String SERVICE_IMAGE_TAG;
     public static boolean SERVICE_CONTAINER_LOGGING_ENABLED;
+    public static String SERVICE_APPLICATION_YML_PATH;
 
     public static List<AdditionalContainer> ADDITIONAL_CONTAINERS;
 
@@ -262,6 +264,7 @@ public final class TestcontainersConfiguration {
         SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(System.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
         SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
         SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
+        SERVICE_APPLICATION_YML_PATH = System.getProperty("service.application.yml.path", DEFAULT_APPLICATION_YML_PATH);
 
         ADDITIONAL_CONTAINERS = parseAdditionalContainers();
 

@@ -220,7 +220,7 @@ public final class TestcontainersManager {
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+SERVICE_NAME+":" + SERVICE_IMAGE_TAG)
                 .withEnv("JAVA_OPTS", javaOpts)
                 .withLabel(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL)
-                .withFileSystemBind("./target/test-classes/application-component-test.yml", "/application.yml", BindMode.READ_ONLY)
+                .withFileSystemBind(SERVICE_APPLICATION_YML_PATH, "/application.yml", BindMode.READ_ONLY)
                 .withExposedPorts(SERVICE_PORT, SERVICE_DEBUG_PORT)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)

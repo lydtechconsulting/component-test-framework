@@ -28,6 +28,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("service.container.logging.enabled");
         System.clearProperty("service.debug.suspend");
         System.clearProperty("service.envvars");
+        System.clearProperty("service.application.yml.path");
 
         System.clearProperty("additional.containers");
 
@@ -123,6 +124,7 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(SERVICE_DEBUG_SUSPEND, equalTo(false));
         assertThat(SERVICE_ENV_VARS, equalTo(new HashMap<>()));
+        assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./target/test-classes/application-component-test.yml"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(new ArrayList<>()));
         assertThat(POSTGRES_ENABLED, equalTo(false));
         assertThat(POSTGRES_IMAGE_TAG, equalTo("14-alpine"));
@@ -205,6 +207,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("service.container.logging.enabled", "true");
         System.setProperty("service.debug.suspend", "true");
         System.setProperty("service.envvars", "key1=value1,key2=value2");
+        System.setProperty("service.application.yml.path", "./other/path/to/application.yml");
 
         System.setProperty("additional.containers", "third-party-simulator,9002,5002,latest,false");
 
@@ -298,6 +301,7 @@ public class TestcontainersConfigurationTest {
         expectedEnvVars.put("key1", "value1");
         expectedEnvVars.put("key2", "value2");
         assertThat(SERVICE_ENV_VARS, equalTo(expectedEnvVars));
+        assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./other/path/to/application.yml"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(Arrays.asList(new AdditionalContainer("third-party-simulator", 9002, 5002, "latest", false))));
         assertThat(POSTGRES_ENABLED, equalTo(true));
         assertThat(POSTGRES_IMAGE_TAG, equalTo("postgres-override"));
