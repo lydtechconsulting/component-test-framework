@@ -228,7 +228,11 @@ public final class TestcontainersManager {
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
                     cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
-                })
+                });
+
+        SERVICE_ADDITIONAL_FILESYSTEM_BINDS.keySet().forEach(source -> container.withFileSystemBind(source, SERVICE_ADDITIONAL_FILESYSTEM_BINDS.get(source), BindMode.READ_ONLY));
+
+            container
                 .withReuse(true)
                 .waitingFor(Wait.forHttp("/actuator/health")
                     .forPort(SERVICE_PORT)
