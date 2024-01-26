@@ -1,88 +1,13 @@
 package dev.lydtech.component.framework.configuration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import dev.lydtech.component.framework.management.AdditionalContainer;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ADDITIONAL_CONTAINERS;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_PROXY_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_LICENSE_KEY;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_NAME_PREFIX;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_CLUSTER_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_DISCOVERY_TYPE;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_PASSWORD;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_BROKER_COUNT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONFLUENT_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_JMX_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_CONTROL_CENTER_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_MIN_INSYNC_REPLICAS;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_PASSWORD;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SASL_PLAIN_USERNAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_TOPICS;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_TOPIC_PARTITION_COUNT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_TOPIC_REPLICATION_FACTOR;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.LOCALSTACK_SERVICES;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_DATABASE_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_HOST_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PASSWORD;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_SCHEMA_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_USERNAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_DEBUG_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_INSTANCE_COUNT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_NAME;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_STARTUP_TIMEOUT_SECONDS;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_CONTAINER_LOGGING_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_IMAGE_TAG;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
@@ -101,6 +26,9 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("service.startup.timeout.seconds");
         System.clearProperty("service.image.tag");
         System.clearProperty("service.container.logging.enabled");
+        System.clearProperty("service.debug.suspend");
+        System.clearProperty("service.envvars");
+        System.clearProperty("service.application.yml.path");
 
         System.clearProperty("additional.containers");
 
@@ -194,6 +122,9 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_STARTUP_TIMEOUT_SECONDS, equalTo(180));
         assertThat(SERVICE_IMAGE_TAG, equalTo("latest"));
         assertThat(SERVICE_CONTAINER_LOGGING_ENABLED, equalTo(false));
+        assertThat(SERVICE_DEBUG_SUSPEND, equalTo(false));
+        assertThat(SERVICE_ENV_VARS, equalTo(new HashMap<>()));
+        assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./target/test-classes/application-component-test.yml"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(new ArrayList<>()));
         assertThat(POSTGRES_ENABLED, equalTo(false));
         assertThat(POSTGRES_IMAGE_TAG, equalTo("14-alpine"));
@@ -274,6 +205,9 @@ public class TestcontainersConfigurationTest {
         System.setProperty("service.startup.timeout.seconds", "10");
         System.setProperty("service.image.tag", "service-override");
         System.setProperty("service.container.logging.enabled", "true");
+        System.setProperty("service.debug.suspend", "true");
+        System.setProperty("service.envvars", "key1=value1,key2=value2");
+        System.setProperty("service.application.yml.path", "./other/path/to/application.yml");
 
         System.setProperty("additional.containers", "third-party-simulator,9002,5002,latest,false");
 
@@ -362,6 +296,12 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_STARTUP_TIMEOUT_SECONDS, equalTo(10));
         assertThat(SERVICE_IMAGE_TAG, equalTo("service-override"));
         assertThat(SERVICE_CONTAINER_LOGGING_ENABLED, equalTo(true));
+        assertThat(SERVICE_DEBUG_SUSPEND, equalTo(true));
+        HashMap<Object, Object> expectedEnvVars = new HashMap<>();
+        expectedEnvVars.put("key1", "value1");
+        expectedEnvVars.put("key2", "value2");
+        assertThat(SERVICE_ENV_VARS, equalTo(expectedEnvVars));
+        assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./other/path/to/application.yml"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(Arrays.asList(new AdditionalContainer("third-party-simulator", 9002, 5002, "latest", false))));
         assertThat(POSTGRES_ENABLED, equalTo(true));
         assertThat(POSTGRES_IMAGE_TAG, equalTo("postgres-override"));
@@ -458,5 +398,19 @@ public class TestcontainersConfigurationTest {
         System.setProperty("additional.containers", "third-party-simulator,9002");
         Exception exception = assertThrows(RuntimeException.class, () -> TestcontainersConfiguration.parseAdditionalContainers());
         assertThat(exception.getMessage(), equalTo("Invalid additional containers details: [third-party-simulator, 9002] -  expecting 5 args, found 2."));
+    }
+
+    @Test
+    void testParseEnvVars_Invalid() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> TestcontainersConfiguration.parseEnvVars("invalid"));
+        assertThat(exception.getMessage(), equalTo("invalid key/value pair string for service env vars"));
+    }
+
+    @Test
+    void testParseEnvVars() {
+        Map<String, String> envVarsMap = parseEnvVars("firstKey=firstVal,    secondKey   =    secondVal");
+        assertThat(envVarsMap.size(), equalTo(2));
+        assertThat(envVarsMap.get("firstKey"), equalTo("firstVal"));
+        assertThat(envVarsMap.get("secondKey"), equalTo("secondVal"));
     }
 }
