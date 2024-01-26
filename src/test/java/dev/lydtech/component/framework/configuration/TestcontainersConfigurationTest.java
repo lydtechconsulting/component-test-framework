@@ -3,7 +3,6 @@ package dev.lydtech.component.framework.configuration;
 import java.util.*;
 
 import dev.lydtech.component.framework.management.AdditionalContainer;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +28,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("service.debug.suspend");
         System.clearProperty("service.envvars");
         System.clearProperty("service.application.yml.path");
+        System.clearProperty("service.additional.filesystem.binds");
 
         System.clearProperty("additional.containers");
 
@@ -124,6 +124,7 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(SERVICE_DEBUG_SUSPEND, equalTo(false));
         assertThat(SERVICE_ENV_VARS, equalTo(new HashMap<>()));
+        assertThat(SERVICE_ADDITIONAL_FILESYSTEM_BINDS, equalTo(new HashMap<>()));
         assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./target/test-classes/application-component-test.yml"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(new ArrayList<>()));
         assertThat(POSTGRES_ENABLED, equalTo(false));
@@ -207,6 +208,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("service.container.logging.enabled", "true");
         System.setProperty("service.debug.suspend", "true");
         System.setProperty("service.envvars", "key1=value1,key2=value2");
+        System.setProperty("service.additional.filesystem.binds", "./src/test/resources/myDirectory=./myDirectory");
         System.setProperty("service.application.yml.path", "./other/path/to/application.yml");
 
         System.setProperty("additional.containers", "third-party-simulator,9002,5002,latest,false");
@@ -301,6 +303,9 @@ public class TestcontainersConfigurationTest {
         expectedEnvVars.put("key1", "value1");
         expectedEnvVars.put("key2", "value2");
         assertThat(SERVICE_ENV_VARS, equalTo(expectedEnvVars));
+        HashMap<Object, Object> expectedFileSystemBinds = new HashMap<>();
+        expectedFileSystemBinds.put("./src/test/resources/myDirectory", "./myDirectory");
+        assertThat(SERVICE_ADDITIONAL_FILESYSTEM_BINDS, equalTo(expectedFileSystemBinds));
         assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./other/path/to/application.yml"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(Arrays.asList(new AdditionalContainer("third-party-simulator", 9002, 5002, "latest", false))));
         assertThat(POSTGRES_ENABLED, equalTo(true));
@@ -402,13 +407,13 @@ public class TestcontainersConfigurationTest {
 
     @Test
     void testParseEnvVars_Invalid() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> TestcontainersConfiguration.parseEnvVars("invalid"));
-        assertThat(exception.getMessage(), equalTo("invalid key/value pair string for service env vars"));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> TestcontainersConfiguration.parseKvPairs("invalid"));
+        assertThat(exception.getMessage(), equalTo("invalid key/value pair string for service property"));
     }
 
     @Test
     void testParseEnvVars() {
-        Map<String, String> envVarsMap = parseEnvVars("firstKey=firstVal,    secondKey   =    secondVal");
+        Map<String, String> envVarsMap = parseKvPairs("firstKey=firstVal,    secondKey   =    secondVal");
         assertThat(envVarsMap.size(), equalTo(2));
         assertThat(envVarsMap.get("firstKey"), equalTo("firstVal"));
         assertThat(envVarsMap.get("secondKey"), equalTo("secondVal"));

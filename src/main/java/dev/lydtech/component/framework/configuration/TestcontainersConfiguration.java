@@ -165,6 +165,7 @@ public final class TestcontainersConfiguration {
     public static int SERVICE_DEBUG_PORT;
     public static boolean SERVICE_DEBUG_SUSPEND;
     public static Map<String, String> SERVICE_ENV_VARS;
+    public static Map<String, String> SERVICE_ADDITIONAL_FILESYSTEM_BINDS;
     public static int SERVICE_STARTUP_TIMEOUT_SECONDS;
     public static String SERVICE_IMAGE_TAG;
     public static boolean SERVICE_CONTAINER_LOGGING_ENABLED;
@@ -259,7 +260,8 @@ public final class TestcontainersConfiguration {
         SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
         SERVICE_PORT = Integer.parseInt(System.getProperty("service.port", DEFAULT_SERVICE_PORT));
         SERVICE_DEBUG_SUSPEND = Boolean.parseBoolean(System.getProperty("service.debug.suspend", DEFAULT_SERVICE_DEBUG_SUSPEND));
-        SERVICE_ENV_VARS = parseEnvVars(System.getProperty("service.envvars", null));
+        SERVICE_ENV_VARS = parseKvPairs(System.getProperty("service.envvars", null));
+        SERVICE_ADDITIONAL_FILESYSTEM_BINDS = parseKvPairs(System.getProperty("service.additional.filesystem.binds", null));
         SERVICE_DEBUG_PORT = Integer.parseInt(System.getProperty("service.debug.port", DEFAULT_SERVICE_DEBUG_PORT));
         SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(System.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
         SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
@@ -376,7 +378,7 @@ public final class TestcontainersConfiguration {
         return additionalContainers;
     }
 
-    protected static Map<String, String> parseEnvVars(String input) {
+    protected static Map<String, String> parseKvPairs(String input) {
         if (input == null) {
             return new HashMap<>();
         }
@@ -393,7 +395,7 @@ public final class TestcontainersConfiguration {
                 String value = keyValue[1].trim();
                 resultMap.put(key, value);
             } else {
-                throw new IllegalArgumentException("invalid key/value pair string for service env vars");
+                throw new IllegalArgumentException("invalid key/value pair string for service property");
             }
         }
 
