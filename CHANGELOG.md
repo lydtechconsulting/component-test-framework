@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.8.0] - 2024-01-26
+### Added
+- New service configuration parameters supported.
+
 ## [2.7.0] - 2023-11-21
 ### Added
 - Supports Kafka SASL plain.
