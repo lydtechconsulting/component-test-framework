@@ -217,8 +217,10 @@ public final class TestcontainersManager {
         String containerName = SERVICE_NAME+"-"+instance;
         String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
 
+        SERVICE_ENV_VARS.put("JAVA_OPTS", javaOpts)
+
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+SERVICE_NAME+":" + SERVICE_IMAGE_TAG)
-                .withEnv("JAVA_OPTS", javaOpts)
+                .withEnv(SERVICE_ENV_VARS)
                 .withLabel(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL)
                 .withFileSystemBind(SERVICE_APPLICATION_YML_PATH, "/application.yml", BindMode.READ_ONLY)
                 .withExposedPorts(SERVICE_PORT, SERVICE_DEBUG_PORT)
