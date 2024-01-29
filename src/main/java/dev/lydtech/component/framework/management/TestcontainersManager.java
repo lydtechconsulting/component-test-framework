@@ -215,7 +215,8 @@ public final class TestcontainersManager {
 
     private GenericContainer createServiceContainer(int instance) {
         String containerName = SERVICE_NAME+"-"+instance;
-        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
+        String suspendFlag = SERVICE_DEBUG_SUSPEND ? "y" : "n";
+        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
 
         SERVICE_ENV_VARS.put("JAVA_OPTS", javaOpts);
 
@@ -233,11 +234,16 @@ public final class TestcontainersManager {
         SERVICE_ADDITIONAL_FILESYSTEM_BINDS.keySet().forEach(source -> container.withFileSystemBind(source, SERVICE_ADDITIONAL_FILESYSTEM_BINDS.get(source), BindMode.READ_ONLY));
 
             container
-                .withReuse(true)
-                .waitingFor(Wait.forHttp("/actuator/health")
-                    .forPort(SERVICE_PORT)
-                    .forStatusCode(200)
-                    .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));
+                .withReuse(true);
+            if (SERVICE_STARTUP_LOG_MESSAGE != null) {
+                container.waitingFor(Wait.forLogMessage(SERVICE_STARTUP_LOG_MESSAGE, 1));
+            } else {
+                container.waitingFor(Wait.forHttp("/actuator/health")
+                        .forPort(SERVICE_PORT)
+                        .forStatusCode(200)
+                        .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));
+            }
+
         if(SERVICE_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
@@ -245,10 +251,7 @@ public final class TestcontainersManager {
     }
 
     private GenericContainer createAdditionalContainer(String name, Integer port, Integer debugPort, String imageTag, boolean containerLoggingEnabled) {
-        String suspendFlag = SERVICE_DEBUG_SUSPEND ? "y" : "n";
-        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+debugPort+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
-
-
+        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:"+debugPort+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
 
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+name+":" + imageTag)
                 .withEnv("JAVA_OPTS", javaOpts)
