@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.9.0] - 2024-01-29
+### Added
+- New service configuration parameters supported.
+- 
 ## [2.8.0] - 2024-01-26
 ### Added
 - New service configuration parameters supported.

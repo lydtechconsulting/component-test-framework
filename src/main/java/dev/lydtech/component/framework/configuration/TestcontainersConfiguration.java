@@ -428,6 +428,14 @@ public final class TestcontainersConfiguration {
         log.info("service.instance.count: " + SERVICE_INSTANCE_COUNT);
         log.info("service.port: " + SERVICE_PORT);
         log.info("service.debug.port: " + SERVICE_DEBUG_PORT);
+        log.info("service.debug.suspend: " + SERVICE_DEBUG_SUSPEND);
+        log.info("service.envvars: " + SERVICE_ENV_VARS);
+        log.info("service.additional.filesystem.binds: " + SERVICE_ADDITIONAL_FILESYSTEM_BINDS);
+        String serviceStartupLogMessage = SERVICE_STARTUP_LOG_MESSAGE;
+        if(SERVICE_STARTUP_LOG_MESSAGE == null) {
+            serviceStartupLogMessage = "";
+        }
+        log.info("service.startup.log.message: " + serviceStartupLogMessage);
         log.info("service.startup.timeout.seconds: " + SERVICE_STARTUP_TIMEOUT_SECONDS);
         log.info("service.image.tag: " + SERVICE_IMAGE_TAG);
         log.info("service.container.logging.enabled: " + SERVICE_CONTAINER_LOGGING_ENABLED);
