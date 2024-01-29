@@ -23,6 +23,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("service.port");
         System.clearProperty("service.debug.port");
         System.clearProperty("service.startup.timeout.seconds");
+        System.clearProperty("service.startup.log.message");
         System.clearProperty("service.image.tag");
         System.clearProperty("service.container.logging.enabled");
         System.clearProperty("service.debug.suspend");
@@ -120,6 +121,7 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_PORT, equalTo(9001));
         assertThat(SERVICE_DEBUG_PORT, equalTo(5001));
         assertThat(SERVICE_STARTUP_TIMEOUT_SECONDS, equalTo(180));
+        assertThat(SERVICE_STARTUP_LOG_MESSAGE, equalTo(null));
         assertThat(SERVICE_IMAGE_TAG, equalTo("latest"));
         assertThat(SERVICE_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(SERVICE_DEBUG_SUSPEND, equalTo(false));
@@ -204,6 +206,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("service.port", "9002");
         System.setProperty("service.debug.port", "5002");
         System.setProperty("service.startup.timeout.seconds", "10");
+        System.setProperty("service.startup.log.message", "My service is started");
         System.setProperty("service.image.tag", "service-override");
         System.setProperty("service.container.logging.enabled", "true");
         System.setProperty("service.debug.suspend", "true");
@@ -296,6 +299,7 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_PORT, equalTo(9002));
         assertThat(SERVICE_DEBUG_PORT, equalTo(5002));
         assertThat(SERVICE_STARTUP_TIMEOUT_SECONDS, equalTo(10));
+        assertThat(SERVICE_STARTUP_LOG_MESSAGE, equalTo("My service is started"));
         assertThat(SERVICE_IMAGE_TAG, equalTo("service-override"));
         assertThat(SERVICE_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(SERVICE_DEBUG_SUSPEND, equalTo(true));
