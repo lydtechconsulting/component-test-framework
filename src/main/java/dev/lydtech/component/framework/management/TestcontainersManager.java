@@ -236,7 +236,8 @@ public final class TestcontainersManager {
             container
                 .withReuse(true);
             if (SERVICE_STARTUP_LOG_MESSAGE != null) {
-                container.waitingFor(Wait.forLogMessage(SERVICE_STARTUP_LOG_MESSAGE, 1));
+                container.waitingFor(Wait.forLogMessage(SERVICE_STARTUP_LOG_MESSAGE, 1))
+                        .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS));
             } else {
                 container.waitingFor(Wait.forHttp("/actuator/health")
                         .forPort(SERVICE_PORT)
