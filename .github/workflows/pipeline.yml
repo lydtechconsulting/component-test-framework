@@ -1,4 +1,4 @@
-name: CI Build and Test
+name: CI Flow
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-
+    name: CI Build and Test
     runs-on: ubuntu-latest
 
     steps:
