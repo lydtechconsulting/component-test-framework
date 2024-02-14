@@ -114,7 +114,7 @@ public class TestcontainersConfigurationTest {
 
         TestcontainersConfiguration.configure();
 
-        assertThat(CONTAINER_NAME_PREFIX, equalTo("ct"));
+        assertThat(CONTAINER_NAME_PREFIX, equalTo("ctFAIL"));
         assertThat(CONTAINER_MAIN_LABEL, equalTo("main-container"));
         assertThat(SERVICE_NAME, equalTo("app"));
         assertThat(SERVICE_INSTANCE_COUNT, equalTo(1));
