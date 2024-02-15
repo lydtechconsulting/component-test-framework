@@ -1,14 +1,12 @@
-name: CI Flow
+name: Main Flow
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
-    name: CI Build and Test
+    name: Main Build And Test
     runs-on: ubuntu-latest
 
     steps:
