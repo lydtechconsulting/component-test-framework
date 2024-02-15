@@ -1161,3 +1161,8 @@ com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"c
 
 [[Back To Top](README.md#component-test-framework)]
 
+## CTF Versioning
+
+For auto increment of patch version, merge a change to `main`.
+
+For manual increment of minor or major version, start commit message with `feat:`.
