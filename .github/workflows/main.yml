@@ -66,8 +66,8 @@ jobs:
         git push origin v${version}
         echo "Tagged: v${version}"
 
-        - name: Publish package
-          run: mvn --batch-mode deploy
-          env:
-            MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-            MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+    - name: Publish to Maven
+      run: mvn --batch-mode deploy
+      env:
+        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
