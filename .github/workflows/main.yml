@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Main - Build, Test, Version And Release
+    name: Main - Build, Test, Version And Publish
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +18,9 @@ jobs:
       with:
         java-version: 17
         distribution: 'temurin'
-        cache: maven
+        server-id: ossrh
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
 
     - name: Build with Maven
       run: mvn package
@@ -64,10 +66,8 @@ jobs:
         git push origin v${version}
         echo "Tagged: v${version}"
 
-    - name: Release to Nexus Repository
-      uses: samuelmeuli/action-maven-publish@v1
-      with:
-        gpg_private_key: ${{ secrets.GPG_SIGNING_KEY }}
-        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        nexus_username: ${{ secrets.OSSRH_USERNAME }}
-        nexus_password: ${{ secrets.OSSRH_PASSWORD }}
+        - name: Publish package
+          run: mvn --batch-mode deploy
+          env:
+            MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+            MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
