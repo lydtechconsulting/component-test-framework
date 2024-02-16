@@ -10,10 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Debug
-      run: |
-        set -x
-
     - name: Checkout Code
       uses: actions/checkout@v3
 

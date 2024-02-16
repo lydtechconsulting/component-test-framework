@@ -1161,7 +1161,9 @@ com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"c
 
 [[Back To Top](README.md#component-test-framework)]
 
-## Versioning
+## Versioning & Release
+
+Every commit or merge to `main` will increment the version and release to Maven central.
 
 - To increment the major version, start commit message with `major:` or `BREAKING CHANGE:`.
 - To increment the minor version, start commit message with `feat:`.
