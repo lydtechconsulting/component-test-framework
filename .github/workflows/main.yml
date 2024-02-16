@@ -13,6 +13,7 @@ jobs:
     - name: echo
       run: |
         set -x
+        gpg --version
         echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
 
     - name: Checkout Code
