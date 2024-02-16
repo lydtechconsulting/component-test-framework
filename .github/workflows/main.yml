@@ -10,13 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: echo
+      run: |
+        echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
+
     - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Setup Java
       uses: actions/setup-java@v3
-      run: |
-        echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
       with:
         java-version: 17
         distribution: 'temurin'
