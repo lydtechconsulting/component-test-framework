@@ -15,7 +15,8 @@ jobs:
 
     - name: Setup Java
       uses: actions/setup-java@v3
-      run echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
+      run: |
+        echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
       with:
         java-version: 17
         distribution: 'temurin'
