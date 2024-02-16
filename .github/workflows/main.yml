@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: echo
+    - name: Debug
       run: |
         set -x
-        gpg --version
-        echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
 
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -76,8 +74,7 @@ jobs:
 
     - name: Publish to Maven
       run: | 
-        echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
-        mvn deploy -Prelease -Dgpg.passphrase="${GPG_PASSPHRASE}"
+        mvn deploy -Prelease
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
