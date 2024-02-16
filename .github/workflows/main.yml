@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Main - Build, Test And Version
+    name: Main - Build, Test, Version And Release
     runs-on: ubuntu-latest
 
     steps:
@@ -63,3 +63,11 @@ jobs:
         git tag v${version}
         git push origin v${version}
         echo "Tagged: v${version}"
+
+    - name: Release to Nexus Repository
+      uses: samuelmeuli/action-maven-publish@v1
+      with:
+        gpg_private_key: ${{ secrets.GPG_SIGNING_KEY }}
+        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        nexus_username: ${{ secrets.OSSRH_USERNAME }}
+        nexus_password: ${{ secrets.OSSRH_PASSWORD }}
