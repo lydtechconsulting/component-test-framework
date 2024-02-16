@@ -1165,4 +1165,4 @@ com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"c
 
 - To increment the major version, start commit message with `major:` or `BREAKING CHANGE:`.
 - To increment the minor version, start commit message with `feat:`.
-- Otherwise the patch version is incremented. 
+- Otherwise the patch version is incremented.
