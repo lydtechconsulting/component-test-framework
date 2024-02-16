@@ -20,49 +20,43 @@ jobs:
     - name: Build with Maven
       run: mvn package
 
-    - name: Determine version change
+    - name: Determine Version Change
       id: determine_version_change
       run: |
         # Extract the commit message of the latest commit on the main branch
         COMMIT_MSG=$(git log -1 --pretty=format:%s)
-
-        # Check if the commit message contains "BREAKING CHANGE:", "feat:", or "feat!"
-        if [[ "$COMMIT_MSG" =~ (BREAKING CHANGE:|feat:|feat!) ]]; then
-          echo "version_change=major_minor" >> $GITHUB_OUTPUT
+        if [[ "$COMMIT_MSG" =~ (BREAKING CHANGE:|major:|major!) ]]; then
+        echo "version_change=major" 
+        elif [[ "$COMMIT_MSG" =~ (feat:|feat!) ]]; then
+        echo "version_change=minor"
         else
-          echo "version_change=patch_only" >> $GITHUB_OUTPUT
-        fi
+        echo "version_change=patch"
+        fi >> $GITHUB_OUTPUT
 
-    - name: Increment Patch Version
-      if: steps.determine_version_change.outputs.version_change == 'patch_only'
+    - name: Increment Version
       run: |
-        # Parse the current version from pom.xml
-        CURRENT_VERSION=$(grep -oPm1 "(?<=<version>)[^<]+" pom.xml)
-
-        # Extract major, minor, and patch version components
-        MAJOR=$(echo $CURRENT_VERSION | cut -d'.' -f1)
-        MINOR=$(echo $CURRENT_VERSION | cut -d'.' -f2)
-        PATCH=$(echo $CURRENT_VERSION | cut -d'.' -f3)
-
-        # Increment the patch version
-        PATCH=$((PATCH + 1))
-
-        # Generate the new version
-        NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-
-        # Replace the old version with the new version in pom.xml
-        sed -i "s/<version>$CURRENT_VERSION<\/version>/<version>$NEW_VERSION<\/version>/" pom.xml
+        echo "Version change: ${{steps.determine_version_change.outputs.version_change}}"
         
-        echo "Updated pom.xml with version $NEW_VERSION"
+        version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        case "${{ steps.determine_version_change.outputs.version_change }}" in
+        major) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.nextMajorVersion}.0.0 versions:commit ;;
+        minor) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}.0 versions:commit ;;
+        *) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} versions:commit ;;
+        esac
         
-        # Configure Git credentials using author's information from the latest commit on main branch
+        git config --global user.email "$(git log -1 --pretty=format:'%ae')"
+        git config --global user.name "$(git log -1 --pretty=format:'%an')"com
+        git add .
+        git commit -m "Updated version in pom.xml"
+        git push
+        echo "Updated version to: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+
+    - name: Create Git Tag
+      run: |
+        export version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Tagging with: v${version}"
         git config --global user.email "$(git log -1 --pretty=format:'%ae')"
         git config --global user.name "$(git log -1 --pretty=format:'%an')"
-        
-        # Commit the changes
-        git commit -m "Incremented patch version to $NEW_VERSION" pom.xml
-        git push
-
-    # Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+        git tag v${version}
+        git push origin v${version}
+        echo "Tagged: v${version}"
