@@ -69,7 +69,9 @@ jobs:
         echo "Tagged: v${version}"
 
     - name: Publish to Maven
-      run: mvn deploy -Prelease
+      run: | 
+        echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
+        mvn deploy -Prelease
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
