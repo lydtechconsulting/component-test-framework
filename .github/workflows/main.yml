@@ -74,7 +74,7 @@ jobs:
 
     - name: Publish to Maven
       run: | 
-        mvn deploy -Prelease -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
+        mvn deploy -Prelease -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
