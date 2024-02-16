@@ -12,6 +12,7 @@ jobs:
     steps:
     - name: echo
       run: |
+        set -x
         echo "OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}"
 
     - name: Checkout Code
