@@ -433,7 +433,7 @@ The `containers.stayup` property is added to the environment variables by the Gr
 
 ## Component Test Annotations
 
-Annotate the SpringBoot test with the following extra annotations:
+Annotate the JUnit test with the following extra annotation:
 
 ```
 import dev.lydtech.component.framework.extension.ComponentTestExtension;
