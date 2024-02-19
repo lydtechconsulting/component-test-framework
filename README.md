@@ -366,9 +366,9 @@ The following shows how to override the configurable properties in a maven proje
                             <conduktor.enabled>true</conduktor.enabled>
                             <conduktor.image.tag>1.15.0</conduktor.image.tag>
                             <conduktor.port>8088</conduktor.port>
-							<conduktor.license.key>my-license-key</conduktor.license.key>
-							<conduktor.container.logging.enabled>true</conduktor.container.logging.enabled>
-							<conduktor.gateway.enabled>true</conduktor.gateway.enabled>
+                            <conduktor.license.key>my-license-key</conduktor.license.key>
+                            <conduktor.container.logging.enabled>true</conduktor.container.logging.enabled>
+                            <conduktor.gateway.enabled>true</conduktor.gateway.enabled>
                             <conduktor.gateway.image.tag>2.1.5</conduktor.gateway.image.tag>
                             <conduktor.gateway.proxy.port>6969</conduktor.gateway.proxy.port>
                             <conduktor.gateway.http.port>8888</conduktor.gateway.http.port>
