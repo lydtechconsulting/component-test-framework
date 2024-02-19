@@ -31,13 +31,25 @@
 
 # Overview
 
-A library allowing component testing of a Spring Boot application.
+This open-source library facilitates component testing of a Spring Boot application.
 
-Dockerises the service under test and the required resources.
+The service under test and its required dependent resources (such as a broker or database) are spun up in Docker containers.  The component test then interacts with the system treating it as a black box, to verify the behaviour.
 
-Uses the Testcontainers library to start and manage the Docker containers:
+To use, a JUnit test is simply annotated with a Component Test Framework annotation.  Tests can be run both locally by the developer/tester, and automated in the CI pipeline.
 
-https://www.testcontainers.org/
+The framework uses the open-source [Testcontainers](https://www.testcontainers.org/) library to start and manage the Docker containers.
+
+In the following example, the Component Test Framework spins up the system under test.  In this case it comprises of two instances of the Spring Boot application to test and a two node Kafka cluster with Zookeeper, each in their own Docker container.  The application has a REST endpoint and consumes messages from, and produces messages to, Kafka.  Confluent Control Center is also spun up in a Docker container, which monitors the application instances and Kafka broker nodes, allowing the tester to view metrics on the system under test.  This can be a helpful tool in debugging test issues.
+
+![Figure 1: Component testing a Spring Boot application that integrates with Kafka](ctf-kafka-example.png)
+
+This test is available in the repository [here](https://github.com/lydtechconsulting/kafka-springboot-consume-produce).
+
+In this second example, a Change Data Capture (CDC) flow is tested.  The component test spins up the Spring Boot application, MongoDB, Debezium (Kafka Connect), and Kafka in Docker containers using the Component Test Framework.  The test registers the Debezium connector with Kafka Connect, and the end to end CDC flow is tested.
+
+![Figure 2: Component testing a CDC flow with Kafka Connect](ctf-cdc-example.png)
+
+This test is available in the repository [here](https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb).
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -119,7 +131,7 @@ https://github.com/lydtechconsulting/kafka-schema-registry-avro - a multi-module
 
 https://github.com/lydtechconsulting/kafka-metrics - demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform)
 
-https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka to consume and produce events, and observe events using Confluent Control Center)
+https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka to consume and produce events, and observe events using Confluent Control Center.
 
 https://github.com/lydtechconsulting/kafka-streams - demonstrates using Kafka with the Kafka Streams API. 
 
