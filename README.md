@@ -43,11 +43,15 @@ In the following example, the Component Test Framework spins up the system under
 
 ![Figure 1: Component testing a Spring Boot application that integrates with Kafka](ctf-kafka-example.png)
 
+<p style="text-align: center;"><I>Figure 1: Component testing a Spring Boot application that integrates with Kafka</I></p>
+
 This test is available in the repository [here](https://github.com/lydtechconsulting/kafka-springboot-consume-produce).
 
 In this second example, a Change Data Capture (CDC) flow is tested.  The component test spins up the Spring Boot application, MongoDB, Debezium (Kafka Connect), and Kafka in Docker containers using the Component Test Framework.  The test registers the Debezium connector with Kafka Connect, and the end to end CDC flow is tested.
 
 ![Figure 2: Component testing a CDC flow with Kafka Connect](ctf-cdc-example.png)
+
+<p style="text-align: center;"><I>Figure 2: Component testing a CDC flow with Kafka Connect</I></p>
 
 This test is available in the repository [here](https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb).
 
