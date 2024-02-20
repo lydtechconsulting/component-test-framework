@@ -41,16 +41,14 @@ The framework uses the open-source [Testcontainers](https://www.testcontainers.o
 
 In the following example, the Component Test Framework spins up the system under test.  In this case it comprises of two instances of the Spring Boot application to test and a two node Kafka cluster with Zookeeper, each in their own Docker container.  The application has a REST endpoint and consumes messages from, and produces messages to, Kafka.  Confluent Control Center is also spun up in a Docker container, which monitors the application instances and Kafka broker nodes, allowing the tester to view metrics on the system under test.  This can be a helpful tool in debugging test issues.
 
-![Figure 1: Component testing a Spring Boot application that integrates with Kafka](ctf-kafka-example.png)
-
+<div style="text-align:center"><img src="ctf-kafka-example.png" /></div>
 <p style="text-align: center;"><I>Figure 1: Component testing a Spring Boot application that integrates with Kafka</I></p>
 
 This test is available in the repository [here](https://github.com/lydtechconsulting/kafka-springboot-consume-produce).
 
 In this second example, a Change Data Capture (CDC) flow is tested.  The component test spins up the Spring Boot application, MongoDB, Debezium (Kafka Connect), and Kafka in Docker containers using the Component Test Framework.  The test registers the Debezium connector with Kafka Connect, and the end to end CDC flow is tested.
 
-![Figure 2: Component testing a CDC flow with Kafka Connect](ctf-cdc-example.png)
-
+<div style="text-align:center"><img src="ctf-cdc-example.png" /></div>
 <p style="text-align: center;"><I>Figure 2: Component testing a CDC flow with Kafka Connect</I></p>
 
 This test is available in the repository [here](https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb).
