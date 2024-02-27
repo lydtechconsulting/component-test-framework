@@ -239,7 +239,7 @@ public final class TestcontainersManager {
                 container.waitingFor(Wait.forLogMessage(SERVICE_STARTUP_LOG_MESSAGE, 1))
                         .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS));
             } else {
-                container.waitingFor(Wait.forHttp("/actuator/health")
+                container.waitingFor(Wait.forHttp(SERVICE_STARTUP_HEALTH_ENDPOINT)
                         .forPort(SERVICE_PORT)
                         .forStatusCode(200)
                         .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));

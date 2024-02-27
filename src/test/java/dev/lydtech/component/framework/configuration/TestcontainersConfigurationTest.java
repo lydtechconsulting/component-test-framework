@@ -23,6 +23,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("service.port");
         System.clearProperty("service.debug.port");
         System.clearProperty("service.startup.timeout.seconds");
+        System.clearProperty("service.startup.health.endpoint");
         System.clearProperty("service.startup.log.message");
         System.clearProperty("service.image.tag");
         System.clearProperty("service.container.logging.enabled");
@@ -121,6 +122,7 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_PORT, equalTo(9001));
         assertThat(SERVICE_DEBUG_PORT, equalTo(5001));
         assertThat(SERVICE_STARTUP_TIMEOUT_SECONDS, equalTo(180));
+        assertThat(SERVICE_STARTUP_HEALTH_ENDPOINT, equalTo("/actuator/health"));
         assertThat(SERVICE_STARTUP_LOG_MESSAGE, equalTo(null));
         assertThat(SERVICE_IMAGE_TAG, equalTo("latest"));
         assertThat(SERVICE_CONTAINER_LOGGING_ENABLED, equalTo(false));
@@ -206,6 +208,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("service.port", "9002");
         System.setProperty("service.debug.port", "5002");
         System.setProperty("service.startup.timeout.seconds", "10");
+        System.setProperty("service.startup.health.endpoint", "/actuator/health/overridden");
         System.setProperty("service.startup.log.message", "My service is started");
         System.setProperty("service.image.tag", "service-override");
         System.setProperty("service.container.logging.enabled", "true");
@@ -299,6 +302,7 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_PORT, equalTo(9002));
         assertThat(SERVICE_DEBUG_PORT, equalTo(5002));
         assertThat(SERVICE_STARTUP_TIMEOUT_SECONDS, equalTo(10));
+        assertThat(SERVICE_STARTUP_HEALTH_ENDPOINT, equalTo("/actuator/health/overridden"));
         assertThat(SERVICE_STARTUP_LOG_MESSAGE, equalTo("My service is started"));
         assertThat(SERVICE_IMAGE_TAG, equalTo("service-override"));
         assertThat(SERVICE_CONTAINER_LOGGING_ENABLED, equalTo(true));

@@ -198,7 +198,8 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 | service.envvars                                 | A comma-separated list of key=value pairs to pass as environment variables for the service container, e.g. ARG1=value1,ARG2=value2".                                                                                                                                                                                                                                            |                                                      |
 | service.additional.filesystem.binds             | A comma-separated list of key=value pairs to use as additional filesystem binds for the service container, where key=sourcePath and value=containerPath e.g. ./src/test/resources/myDirectory=./myDirectory".                                                                                                                                                                   |                                                      |
 | service.application.yml.path                    | Path to the Spring Application config file (yml format for the service under test).                                                                                                                                                                                                                                                                                             | ./target/test-classes/application-component-test.yml |
-| service.startup.log.message                     | The log message to wait for on startup. Instead of the default time wait, Testcontainers will not consider the container to be started until this regex is present in its logs.                                                                                                                                                                                                 |                                                      |
+| service.startup.health.endpoint         | The log health endpoint to wait for on startup.  Defaults to the Spring Actuator health endpoint.  If `service.startup.log.message` is set then this setting is ignored.                                                                                                                                                                                                        | /actuator/health                                     |
+| service.startup.log.message                     | The log message to wait for on startup. If set, instead of waiting for the health endpoint to return healthy, the container is not considered started until this regex is present in its logs.                                                                                                                                                                                  |                                                      |
 | service.startup.timeout.seconds                 | The number of seconds to wait for the service to start before considered failed.                                                                                                                                                                                                                                                                                                | 180                                                  |
 | service.container.logging.enabled               | Whether to output the service Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | false                                                |
 | additional.containers                           | Colon separated list of additional containers to spin up, such as simulators.  Each additional container entry requires a comma separated list of details:  name, port, debugPort, imageTag, containerLoggingEnabled.  Example is: `third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false`                                             |                                                      |
@@ -327,6 +328,7 @@ The following shows how to override the configurable properties in a maven proje
                             <service.envvars>ARG1=value1</service.envvars>
                             <service.additional.filesystem.binds>./src/test/resources/myDirectory=./myDirectory</service.additional.filesystem.binds>
                             <service.application.yml.path>./target/test-classes/application-component-test.yml</service.application.yml.path>
+                            <service.startup.health.endpoint>/actuator/health</service.startup.health.endpoint>
                             <service.startup.log.message>Service is running</service.startup.log.message>
                             <service.startup.timeout.seconds>180</service.startup.timeout.seconds>   
                             <service.container.logging.enabled>false</service.container.logging.enabled>
@@ -465,7 +467,7 @@ This one Kafka instance is sufficient to declare even if more Kafka instances ar
 
 ## Service Health
 
-The service under test must expose its health endpoint for the test set up to know that the service has successfully started before the configurable `service.startup.timeout.seconds` has expired.
+The service under test can expose its health endpoint for the test set up to know that the service has successfully started before the configurable `service.startup.timeout.seconds` has expired.  The endpoint to check can be overridden via the `service.startup.health.endpoint`.  It defaults to the Spring Actuator health endpoint:
 ```
 /actuator/health
 ```
@@ -482,6 +484,22 @@ Include the Spring Boot Actuator module (along with the Spring Boot Starter Web 
     <version>${spring.boot.version}</version>
 </dependency>
 ```
+For the default Micronaut health endpoint configure this to `/health`.  Ensure the application has the following dependency:
+
+```
+<dependency>
+    <groupId>io.micronaut</groupId>
+    <artifactId>micronaut-management</artifactId>
+    <version>{micronaut-version}</version>
+</dependency>
+```
+
+Alternatively the presence of a startup log message can be used to determine whether the service has successfully started, using the `service.startup.log.message` configuration.  Set this to the regex String to match on.  For example, set this property to `.*Startup completed.*` to match the following log message from a Micronaut application:
+```
+2024-02-27 14:05:46 INFO  i.m.r.Micronaut - Startup completed in 31ms. Server Running: http://d911af15be07:9001
+```
+
+If this property is set it will be used instead of the startup health endpoint property.
 
 ## Dockerising The Service
 

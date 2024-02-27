@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.10.0] - 2024-02-27
+### Added
+- Support configurable service health endpoint for startup.
+
 ## [2.9.0] - 2024-01-29
 ### Added
 - New service configuration parameters supported.

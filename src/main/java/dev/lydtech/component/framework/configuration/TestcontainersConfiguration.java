@@ -21,6 +21,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_SERVICE_PORT = "9001";
     private static final String DEFAULT_SERVICE_DEBUG_PORT = "5001";
     private static final String DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS = "180";
+    private static final String DEFAULT_SERVICE_STARTUP_HEALTH_ENDPOINT = "/actuator/health";
     private static final String DEFAULT_SERVICE_STARTUP_LOG_MESSAGE = null;
     private static final String DEFAULT_SERVICE_IMAGE_TAG = "latest";
     private static final String DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED = "false";
@@ -168,6 +169,7 @@ public final class TestcontainersConfiguration {
     public static Map<String, String> SERVICE_ENV_VARS;
     public static Map<String, String> SERVICE_ADDITIONAL_FILESYSTEM_BINDS;
     public static int SERVICE_STARTUP_TIMEOUT_SECONDS;
+    public static String SERVICE_STARTUP_HEALTH_ENDPOINT;
     public static String SERVICE_STARTUP_LOG_MESSAGE;
     public static String SERVICE_IMAGE_TAG;
     public static boolean SERVICE_CONTAINER_LOGGING_ENABLED;
@@ -266,6 +268,7 @@ public final class TestcontainersConfiguration {
         SERVICE_ADDITIONAL_FILESYSTEM_BINDS = parseKvPairs(System.getProperty("service.additional.filesystem.binds", null));
         SERVICE_DEBUG_PORT = Integer.parseInt(System.getProperty("service.debug.port", DEFAULT_SERVICE_DEBUG_PORT));
         SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(System.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
+        SERVICE_STARTUP_HEALTH_ENDPOINT = System.getProperty("service.startup.health.endpoint", DEFAULT_SERVICE_STARTUP_HEALTH_ENDPOINT);
         SERVICE_STARTUP_LOG_MESSAGE = System.getProperty("service.startup.log.message", DEFAULT_SERVICE_STARTUP_LOG_MESSAGE);
         SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
         SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
@@ -431,6 +434,7 @@ public final class TestcontainersConfiguration {
         log.info("service.debug.suspend: " + SERVICE_DEBUG_SUSPEND);
         log.info("service.envvars: " + SERVICE_ENV_VARS);
         log.info("service.additional.filesystem.binds: " + SERVICE_ADDITIONAL_FILESYSTEM_BINDS);
+        log.info("service.startup.health.endpoint: " + SERVICE_STARTUP_HEALTH_ENDPOINT);
         String serviceStartupLogMessage = SERVICE_STARTUP_LOG_MESSAGE;
         if(SERVICE_STARTUP_LOG_MESSAGE == null) {
             serviceStartupLogMessage = "";
