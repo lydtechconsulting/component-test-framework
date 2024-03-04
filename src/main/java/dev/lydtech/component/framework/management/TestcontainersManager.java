@@ -214,7 +214,7 @@ public final class TestcontainersManager {
     }
 
     private GenericContainer createServiceContainer(int instance) {
-        String containerName = SERVICE_NAME+"-"+instance;
+        String containerName = SERVICE_NAME+"-"+SERVICE_IMAGE_TAG+"-"+instance;
         String suspendFlag = SERVICE_DEBUG_SUSPEND ? "y" : "n";
         String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
 
@@ -252,6 +252,7 @@ public final class TestcontainersManager {
     }
 
     private GenericContainer createAdditionalContainer(String name, Integer port, Integer debugPort, String imageTag, boolean containerLoggingEnabled) {
+        String containerName = name+"-"+imageTag;
         String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:"+debugPort+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
 
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+name+":" + imageTag)
@@ -259,9 +260,9 @@ public final class TestcontainersManager {
                 .withFileSystemBind("./target/test-classes/"+name+"/application-component-test.yml", "/application.yml", BindMode.READ_ONLY)
                 .withExposedPorts(port, debugPort)
                 .withNetwork(network)
-                .withNetworkAliases(name)
+                .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+name);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
                 })
                 .withReuse(true)
                 .waitingFor(Wait.forHttp("/actuator/health")
