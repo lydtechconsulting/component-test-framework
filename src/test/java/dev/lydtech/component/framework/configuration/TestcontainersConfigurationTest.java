@@ -29,6 +29,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("service.container.logging.enabled");
         System.clearProperty("service.debug.suspend");
         System.clearProperty("service.envvars");
+        System.clearProperty("service.config.files.system.property");
         System.clearProperty("service.application.yml.path");
         System.clearProperty("service.additional.filesystem.binds");
 
@@ -129,7 +130,8 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_DEBUG_SUSPEND, equalTo(false));
         assertThat(SERVICE_ENV_VARS, equalTo(new HashMap<>()));
         assertThat(SERVICE_ADDITIONAL_FILESYSTEM_BINDS, equalTo(new HashMap<>()));
-        assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./target/test-classes/application-component-test.yml"));
+        assertThat(SERVICE_CONFIG_FILES_SYSTEM_PROPERTY, equalTo("spring.config.additional-location"));
+        assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("src/test/resources/application-component-test.yml"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(new ArrayList<>()));
         assertThat(POSTGRES_ENABLED, equalTo(false));
         assertThat(POSTGRES_IMAGE_TAG, equalTo("14-alpine"));
@@ -215,6 +217,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("service.debug.suspend", "true");
         System.setProperty("service.envvars", "key1=value1,key2=value2");
         System.setProperty("service.additional.filesystem.binds", "./src/test/resources/myDirectory=./myDirectory");
+        System.setProperty("service.config.files.system.property", "config.location.override");
         System.setProperty("service.application.yml.path", "./other/path/to/application.yml");
 
         System.setProperty("additional.containers", "third-party-simulator,9002,5002,latest,false");
@@ -314,6 +317,7 @@ public class TestcontainersConfigurationTest {
         HashMap<Object, Object> expectedFileSystemBinds = new HashMap<>();
         expectedFileSystemBinds.put("./src/test/resources/myDirectory", "./myDirectory");
         assertThat(SERVICE_ADDITIONAL_FILESYSTEM_BINDS, equalTo(expectedFileSystemBinds));
+        assertThat(SERVICE_CONFIG_FILES_SYSTEM_PROPERTY, equalTo("config.location.override"));
         assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./other/path/to/application.yml"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(Arrays.asList(new AdditionalContainer("third-party-simulator", 9002, 5002, "latest", false))));
         assertThat(POSTGRES_ENABLED, equalTo(true));

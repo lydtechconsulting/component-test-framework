@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.11.0] - 2024-03-05
+### Added
+- Support configurable configuration files system property.
+
 ## [2.10.0] - 2024-02-27
 ### Added
 - Support configurable service health endpoint for startup.

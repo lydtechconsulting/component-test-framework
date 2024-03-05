@@ -216,7 +216,7 @@ public final class TestcontainersManager {
     private GenericContainer createServiceContainer(int instance) {
         String containerName = SERVICE_NAME+"-"+instance;
         String suspendFlag = SERVICE_DEBUG_SUSPEND ? "y" : "n";
-        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -Dspring.config.additional-location=file:/application.yml";
+        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -D"+SERVICE_CONFIG_FILES_SYSTEM_PROPERTY+"=file:/application.yml";
 
         SERVICE_ENV_VARS.put("JAVA_OPTS", javaOpts);
 
