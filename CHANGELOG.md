@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.12.0] - 2024-03-06
+### Added
+- Support localstack initialisation file.
+
 ## [2.11.0] - 2024-03-05
 ### Added
 - Support configurable configuration files system property.
