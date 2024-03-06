@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dev.lydtech</groupId>
 	<artifactId>component-test-framework</artifactId>
-	<version>2.11.1</version>
+	<version>2.11.2</version>
 	<name>component-test-framework</name>
 	<description>Component Test Framework</description>
 	<url>https://github.com/lydtechconsulting/component-test-framework</url>
