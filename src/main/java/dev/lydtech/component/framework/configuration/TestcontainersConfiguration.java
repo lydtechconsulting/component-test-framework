@@ -142,6 +142,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_LOCALSTACK_PORT = "4566";
     private static final String DEFAULT_LOCALSTACK_SERVICES = "dynamodb";
     private static final String DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_LOCALSTACK_INIT_FILE_PATH = null;
 
     /**
      * Elasticsearch configuration.
@@ -246,6 +247,7 @@ public final class TestcontainersConfiguration {
     public static int LOCALSTACK_PORT;
     public static String LOCALSTACK_SERVICES;
     public static boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED;
+    public static String LOCALSTACK_INIT_FILE_PATH;
 
     public static boolean ELASTICSEARCH_ENABLED;
     public static String ELASTICSEARCH_IMAGE_TAG;
@@ -347,6 +349,7 @@ public final class TestcontainersConfiguration {
         LOCALSTACK_PORT = Integer.parseInt(System.getProperty("localstack.port", DEFAULT_LOCALSTACK_PORT));
         LOCALSTACK_SERVICES = System.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
         LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
+        LOCALSTACK_INIT_FILE_PATH = System.getProperty("localstack.init.file.path", DEFAULT_LOCALSTACK_INIT_FILE_PATH);
 
         ELASTICSEARCH_ENABLED = Boolean.valueOf(System.getProperty("elasticsearch.enabled", DEFAULT_ELASTICSEARCH_ENABLED));
         ELASTICSEARCH_IMAGE_TAG = System.getProperty("elasticsearch.image.tag", DEFAULT_ELASTICSEARCH_IMAGE_TAG);
