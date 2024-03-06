@@ -159,6 +159,10 @@ https://github.com/lydtechconsulting/springboot-elasticsearch - demonstrates rea
 
 https://github.com/lydtechconsulting/kafka-sasl-plain - demonstrates consumers and producers connecting to Kafka using the Simple Authentication and Security Layer (SASL) PLAIN protocol.
 
+https://github.com/lydtechconsulting/micronaut-postgres-java - demonstrates a Micronaut application written in Java, built with Gradle, using Postgres as the database for reading and writing items.
+
+https://github.com/lydtechconsulting/micronaut-postgres-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Postgres as the database for reading and writing items.
+
 [[Back To Top](README.md#component-test-framework)]
 
 # Upgrading From Previous Versions
