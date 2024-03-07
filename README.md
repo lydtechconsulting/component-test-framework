@@ -303,9 +303,7 @@ The `http.client5.version` override may need to be included to ensure that the c
 
 ## Maven Surefire Plugin
 
-Add the Maven Surefire Plugin to the pom of the service under test with the following profile.
-
-The following shows how to override the configurable properties in a maven project:
+Add the Maven Surefire Plugin to the pom of the service under test with the following profile.  This example includes adding some property overrides:
 ```
 <profiles>
     <profile>
@@ -323,86 +321,11 @@ The following shows how to override the configurable properties in a maven proje
                             <TESTCONTAINERS_REUSE_ENABLE>${containers.stayup}</TESTCONTAINERS_REUSE_ENABLE>
                         </environmentVariables>
                         <systemPropertyVariables>
-                            <container.name.prefix>ct</container.name.prefix>
-                            <container.main.label>main-container</container.main.label>
-                            <service.name>${project.name}</service.name>
-                            <service.instance.count>1</service.instance.count>
-                            <service.image.tag>latest</service.image.tag>
+                            <service.instance.count>3</service.instance.count>
                             <service.port>9001</service.port>
                             <service.debug.port>5001</service.debug.port>
-                            <service.debug.suspend>false</service.debug.suspend>
-                            <service.envvars>ARG1=value1</service.envvars>
-                            <service.config.files.system.property>spring.config.additional-location</service.config.files.system.property>
-                            <service.additional.filesystem.binds>./src/test/resources/myDirectory=./myDirectory</service.additional.filesystem.binds>
-                            <service.application.yml.path>src/test/resources/application-component-test.yml</service.application.yml.path>
-                            <service.startup.health.endpoint>/actuator/health</service.startup.health.endpoint>
-                            <service.startup.log.message>Service is running</service.startup.log.message>
-                            <service.startup.timeout.seconds>180</service.startup.timeout.seconds>   
-                            <service.container.logging.enabled>false</service.container.logging.enabled>
-                            <additional.containers>third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false</additional.containers>
-                            <postgres.enabled>true</postgres.enabled>
-                            <postgres.image.tag>14-alpine</postgres.image.tag>
-                            <postgres.host.name>postgres</postgres.host.name>
-                            <postgres.port>5432</postgres.port>
-                            <postgres.database.name>postgres-db</postgres.database.name>
-                            <postgres.schema.name>test</postgres.schema.name>
-                            <postgres.username>user</postgres.username>
-                            <postgres.password>password</postgres.password>
-                            <postgres.container.logging.enabled>false</postgres.container.logging.enabled>
-                            <mongodb.enabled>true</mongodb.enabled>
-                            <mongodb.image.tag>7.0.2</mongodb.image.tag>
-                            <mongodb.container.logging.enabled>true</mongodb.container.logging.enabled>
                             <kafka.enabled>true</kafka.enabled>
-                            <kafka.broker.count>1</kafka.broker.count>
-                            <kafka.confluent.image.tag>7.3.2</kafka.confluent.image.tag>
-                            <kafka.port>9093</kafka.port>
-                            <kafka.topics>inbound-foo-topic,outbound-bar-topic</kafka.topics>
-                            <kafka.topic.partition.count>5</kafka.topic.partition.count>
-                            <kafka.topic.replication.factor>1</kafka.topic.replication.factor>
-                            <kafka.min.insync.replicas>1</kafka.min.insync.replicas>
-                            <kafka.sasl.plain.enabled>true</kafka.sasl.plain.enabled>
-                            <kafka.sasl.plain.username>demo</kafka.sasl.plain.username>
-                            <kafka.sasl.plain.password>demo-secret</kafka.sasl.plain.password>
-                            <kafka.container.logging.enabled>false</kafka.container.logging.enabled>
-                            <kafka.schema.registry.enabled>true</kafka.schema.registry.enabled>
-                            <kafka.schema.registry.confluent.image.tag>7.3.2</kafka.schema.registry.confluent.image.tag>
-                            <kafka.schema.registry.port>8081</kafka.schema.registry.port>
-                            <kafka.schema.registry.container.logging.enabled>true</kafka.schema.registry.container.logging.enabled>
-                            <kafka.control.center.enabled>true</kafka.control.center.enabled>
-                            <kafka.control.center.confluent.image.tag>7.3.2</kafka.control.center.confluent.image.tag>
-                            <kafka.control.center.port>9021</kafka.control.center.port>                            
-                            <kafka.control.center.export.metrics.enabled>true</kafka.control.center.export.metrics.enabled>
-                            <kafka.control.center.jmx.port>9101</kafka.control.center.jmx.port>
-                            <kafka.control.center.container.logging.enabled>true</kafka.control.center.container.logging.enabled>
-                            <conduktor.enabled>true</conduktor.enabled>
-                            <conduktor.image.tag>1.15.0</conduktor.image.tag>
-                            <conduktor.port>8088</conduktor.port>
-                            <conduktor.license.key>my-license-key</conduktor.license.key>
-                            <conduktor.container.logging.enabled>true</conduktor.container.logging.enabled>
-                            <conduktor.gateway.enabled>true</conduktor.gateway.enabled>
-                            <conduktor.gateway.image.tag>2.1.5</conduktor.gateway.image.tag>
-                            <conduktor.gateway.proxy.port>6969</conduktor.gateway.proxy.port>
-                            <conduktor.gateway.http.port>8888</conduktor.gateway.http.port>
-                            <conduktor.gateway.logging.enabled>false</conduktor.gateway.logging.enabled>
-                            <debezium.enabled>true</debezium.enabled>
-                            <debezium.image.tag>2.2</debezium.image.tag>
-                            <debezium.port>8083</debezium.port>
-                            <debezium.container.logging.enabled>false</debezium.container.logging.enabled>
-                            <wiremock.enabled>true</wiremock.enabled>
-                            <wiremock.image.tag>2.35.0</wiremock.image.tag>
-                            <wiremock.container.logging.enabled>false</wiremock.container.logging.enabled>
-                            <localstack.enabled>true</localstack.enabled>
-                            <localstack.image.tag>0.14.3</localstack.image.tag>
-                            <localstack.port>4566</localstack.port>
-                            <localstack.services>lambda,dynamodb,s3</localstack.services>
-                            <localstack.region>eu-west-2</localstack.region>
-                            <localstack.container.logging.enabled>false</localstack.container.logging.enabled>
-                            <elasticsearch.enabled>true</elasticsearch.enabled>
-                            <elasticsearch.image.tag>8.10.4</elasticsearch.image.tag>
-                            <elasticsearch.password>password</elasticsearch.password>
-                            <elasticsearch.cluster.name>elasticsearch</elasticsearch.cluster.name>
-                            <elasticsearch.discovery.type>single-node</elasticsearch.discovery.type>
-                            <elasticsearch.container.logging.enabled>false</elasticsearch.container.logging.enabled>
+                            <kafka.broker.count>3</kafka.broker.count>
                         </systemPropertyVariables>
                     </configuration>
                 </plugin>
@@ -429,7 +352,7 @@ test {
 }
 ```
 
-Define any properties that need their default value to be overridden in the `gradle.properties` file:
+Define any properties that need their default value to be overridden in the `gradle.properties` file.  For example:
 ```
 systemProp.service.name=ctf-example-mm-service
 systemProp.additional.containers=third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false
