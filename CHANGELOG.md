@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.12.0] - 2024-03-06
+## [2.12.0] - 2024-03-08
 ### Added
 - Support localstack initialisation file.
 
