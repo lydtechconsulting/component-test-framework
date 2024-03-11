@@ -23,6 +23,7 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_NAME_PREFIX;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_SET_UNIQUE_ID;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_ENABLED;
@@ -74,20 +75,21 @@ public final class DockerManager {
      * - Testcontainers container is not running
      */
     public static boolean shouldPerformSetup(DockerClient dockerClient) {
-        List<Container> containers = dockerClient.listContainersCmd().exec();
-        boolean mainContainerPresent = containers.stream()
-                    .filter(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/" + CONTAINER_NAME_PREFIX + "-")))
-                    .anyMatch(container -> container.getLabels()
-                            .entrySet()
-                            .stream()
-                            .anyMatch(entry ->
-                                    entry.getKey().equals(CONTAINER_MAIN_LABEL_KEY) && entry.getValue().equals(CONTAINER_MAIN_LABEL)
-                            ));
-        boolean testContainersPresent = containers.stream().anyMatch(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/testcontainers-ryuk")));
-
-        log.info("Current container status: main service with prefix ({}) and label ({}) running: {}, testcontainers running: {}",  CONTAINER_NAME_PREFIX, CONTAINER_MAIN_LABEL, mainContainerPresent, testContainersPresent);
-
-        return !(mainContainerPresent && !testContainersPresent);
+//        List<Container> containers = dockerClient.listContainersCmd().exec();
+//        boolean mainContainerPresent = containers.stream()
+//                    .filter(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/" + CONTAINER_NAME_PREFIX + "-")))
+//                    .anyMatch(container -> container.getLabels()
+//                            .entrySet()
+//                            .stream()
+//                            .anyMatch(entry ->
+//                                    entry.getKey().equals(CONTAINER_MAIN_LABEL_KEY) && entry.getValue().equals(CONTAINER_MAIN_LABEL)
+//                            ));
+//        boolean testContainersPresent = containers.stream().anyMatch(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/testcontainers-ryuk")));
+//
+//        log.info("Current container status: main service with prefix ({}) and label ({}) running: {}, testcontainers running: {}",  CONTAINER_NAME_PREFIX, CONTAINER_MAIN_LABEL, mainContainerPresent, testContainersPresent);
+//
+//        return !(mainContainerPresent && !testContainersPresent);
+        return true;
     }
 
     public static void captureDockerContainerPorts(DockerClient dockerClient) {
@@ -127,7 +129,7 @@ public final class DockerManager {
      */
     private static void findContainerAndMapPort(DockerClient dockerClient, String resourceName, boolean enabled, int port) {
         ListContainersCmd listContainersCmd = dockerClient.listContainersCmd();
-        String containerName = CONTAINER_NAME_PREFIX + "-" + resourceName;
+        String containerName = CONTAINER_NAME_PREFIX + "-" + resourceName+"-"+ CONTAINER_SET_UNIQUE_ID;
         log.info("Discovering host and mapping port for container {}", containerName);
         List<Container> containers = listContainersCmd.withNameFilter(singletonList(containerName)).exec();
         if(containers.size()>1) {

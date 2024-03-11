@@ -228,7 +228,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 });
 
         SERVICE_ADDITIONAL_FILESYSTEM_BINDS.keySet().forEach(source -> container.withFileSystemBind(source, SERVICE_ADDITIONAL_FILESYSTEM_BINDS.get(source), BindMode.READ_ONLY));
@@ -261,7 +261,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(name)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+name);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+name+"-"+ CONTAINER_SET_UNIQUE_ID);
                 })
                 .withReuse(true)
                 .waitingFor(Wait.forHttp("/actuator/health")
@@ -286,7 +286,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(POSTGRES_HOST_NAME)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 })
                 .withReuse(true)
                 .withExposedPorts(POSTGRES_PORT);
@@ -304,7 +304,7 @@ public final class TestcontainersManager {
                 .withNetworkAliases(containerName)
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 });
         if(MONGODB_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
@@ -322,7 +322,7 @@ public final class TestcontainersManager {
                 .withNetworkAliases(containerName)
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 });
         container = configureCommonKafkaContainerEnv(container, instance);
         if(KAFKA_CONTAINER_LOGGING_ENABLED) {
@@ -352,7 +352,7 @@ public final class TestcontainersManager {
                 .withEnv("CONFLUENT_METRICS_ENABLE", "true")
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 });
                 container.withEnv("KAFKA_METRIC_REPORTERS", "io.confluent.metrics.reporter.ConfluentMetricsReporter");
         container = configureCommonKafkaContainerEnv(container, instance);
@@ -410,7 +410,7 @@ public final class TestcontainersManager {
                 .withEnv("ZOOKEEPER_CLIENT_PORT", "2181")
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-zookeeper");
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-zookeeper-"+ CONTAINER_SET_UNIQUE_ID);
                 });
     }
 
@@ -424,7 +424,7 @@ public final class TestcontainersManager {
                 .dependsOn(kafkaContainers.get(0))
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 });
         if(DEBEZIUM_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
@@ -438,7 +438,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 })
                 .withExposedPorts(KAFKA_SCHEMA_REGISTRY_PORT)
                 .withEnv("SCHEMA_REGISTRY_HOST_NAME", containerName)
@@ -523,7 +523,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 })
                 .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
                 .withEnv("GATEWAY_HOST", CONDUKTORGATEWAY.toString())
@@ -547,7 +547,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 })
                 .withClasspathResourceMapping("/wiremock", "/home/wiremock/mappings", BindMode.READ_WRITE)
                 .withExposedPorts(WIREMOCK_PORT)
@@ -565,7 +565,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 })
                 .withEnv("SERVICES", LOCALSTACK_SERVICES)
                 .withReuse(true)
@@ -590,7 +590,7 @@ public final class TestcontainersManager {
                 .withEnv("xpack.security.enabled", "false")
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName);
+                    cmd.withName(CONTAINER_NAME_PREFIX+"-"+containerName+"-"+ CONTAINER_SET_UNIQUE_ID);
                 });
         if(ELASTICSEARCH_PASSWORD != null && !ELASTICSEARCH_PASSWORD.isBlank()) {
             // This sets "xpack.security.enabled" to true

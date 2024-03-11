@@ -6,11 +6,20 @@ import java.util.stream.Collectors;
 import dev.lydtech.component.framework.management.AdditionalContainer;
 import lombok.extern.slf4j.Slf4j;
 
+import static java.util.UUID.randomUUID;
+
 @Slf4j
 public final class TestcontainersConfiguration {
 
-    // Label key for the Docker container housing the service.
+    /**
+     * Label key for the Docker container housing the service.
+     */
     public static final String CONTAINER_MAIN_LABEL_KEY = "dev.lydtech.main-container-label";
+
+    /**
+     * A unique Id to optionally apply to docker container names to distinguish container sets between concurrent test runs.
+     */
+    public static final String CONTAINER_SET_UNIQUE_ID = randomUUID().toString().substring(0, 8);
 
     /**
      * Service default configuration.
