@@ -20,10 +20,11 @@ import org.testcontainers.DockerClientFactory;
 
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_GROUP_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_GROUP_UNIQUE_ID;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_NAME_PREFIX;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_SET_UNIQUE_ID;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_ENABLED;
@@ -72,24 +73,29 @@ public final class DockerManager {
      * Skip Testcontainers setup if:
      *
      * - Main container is running (it has the expected prefix and label) AND
-     * - Testcontainers container is not running
+     * - Testcontainers container is not running.
+     *
+     * If the system parameter container.group.enabled is true, then Testcontainers set up is always performed, as that
+     * property is used to enable a group of containers to be run concurrently for multiple component test runs (and
+     * the group of container names include a unique id to identify the group).
      */
     public static boolean shouldPerformSetup(DockerClient dockerClient) {
-//        List<Container> containers = dockerClient.listContainersCmd().exec();
-//        boolean mainContainerPresent = containers.stream()
-//                    .filter(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/" + CONTAINER_NAME_PREFIX + "-")))
-//                    .anyMatch(container -> container.getLabels()
-//                            .entrySet()
-//                            .stream()
-//                            .anyMatch(entry ->
-//                                    entry.getKey().equals(CONTAINER_MAIN_LABEL_KEY) && entry.getValue().equals(CONTAINER_MAIN_LABEL)
-//                            ));
-//        boolean testContainersPresent = containers.stream().anyMatch(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/testcontainers-ryuk")));
-//
-//        log.info("Current container status: main service with prefix ({}) and label ({}) running: {}, testcontainers running: {}",  CONTAINER_NAME_PREFIX, CONTAINER_MAIN_LABEL, mainContainerPresent, testContainersPresent);
-//
-//        return !(mainContainerPresent && !testContainersPresent);
-        return true;
+        if(CONTAINER_GROUP_ENABLED) return true;
+
+        List<Container> containers = dockerClient.listContainersCmd().exec();
+        boolean mainContainerPresent = containers.stream()
+                    .filter(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/" + CONTAINER_NAME_PREFIX + "-")))
+                    .anyMatch(container -> container.getLabels()
+                            .entrySet()
+                            .stream()
+                            .anyMatch(entry ->
+                                    entry.getKey().equals(CONTAINER_MAIN_LABEL_KEY) && entry.getValue().equals(CONTAINER_MAIN_LABEL)
+                            ));
+        boolean testContainersPresent = containers.stream().anyMatch(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/testcontainers-ryuk")));
+
+        log.info("Current container status: main service with prefix ({}) and label ({}) running: {}, testcontainers running: {}",  CONTAINER_NAME_PREFIX, CONTAINER_MAIN_LABEL, mainContainerPresent, testContainersPresent);
+
+        return !(mainContainerPresent && !testContainersPresent);
     }
 
     public static void captureDockerContainerPorts(DockerClient dockerClient) {
@@ -129,7 +135,7 @@ public final class DockerManager {
      */
     private static void findContainerAndMapPort(DockerClient dockerClient, String resourceName, boolean enabled, int port) {
         ListContainersCmd listContainersCmd = dockerClient.listContainersCmd();
-        String containerName = CONTAINER_NAME_PREFIX + "-" + resourceName+"-"+ CONTAINER_SET_UNIQUE_ID;
+        String containerName = CONTAINER_GROUP_ENABLED?CONTAINER_NAME_PREFIX + "-" + resourceName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + resourceName;
         log.info("Discovering host and mapping port for container {}", containerName);
         List<Container> containers = listContainersCmd.withNameFilter(singletonList(containerName)).exec();
         if(containers.size()>1) {
