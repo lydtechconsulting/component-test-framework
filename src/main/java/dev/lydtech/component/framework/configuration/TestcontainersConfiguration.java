@@ -26,7 +26,7 @@ public final class TestcontainersConfiguration {
 
 
     private static final String DEFAULT_CONTAINERS_STAYUP = "false";
-    private static final String DEFAULT_CONTAINER_GROUP_ENABLED = "false";
+    private static final String DEFAULT_CONCURRENT_TEST_RUNS_ENABLED = "false";
 
     /**
      * Service default configuration.
@@ -179,7 +179,7 @@ public final class TestcontainersConfiguration {
     public static boolean CONTAINERS_STAYUP;
     public static String CONTAINER_NAME_PREFIX;
     public static String CONTAINER_MAIN_LABEL;
-    public static boolean CONTAINER_GROUP_ENABLED;
+    public static boolean CONCURRENT_TEST_RUNS_ENABLED;
     public static String SERVICE_NAME;
     public static int SERVICE_INSTANCE_COUNT;
     public static int SERVICE_PORT;
@@ -283,7 +283,7 @@ public final class TestcontainersConfiguration {
         CONTAINERS_STAYUP = Boolean.parseBoolean(System.getenv("TESTCONTAINERS_REUSE_ENABLE")!=null?System.getenv("TESTCONTAINERS_REUSE_ENABLE"):DEFAULT_CONTAINERS_STAYUP);
         CONTAINER_NAME_PREFIX = System.getProperty("container.name.prefix", DEFAULT_CONTAINER_NAME_PREFIX);
         CONTAINER_MAIN_LABEL = System.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL);
-        CONTAINER_GROUP_ENABLED = Boolean.parseBoolean(System.getProperty("container.group.enabled", DEFAULT_CONTAINER_GROUP_ENABLED));
+        CONCURRENT_TEST_RUNS_ENABLED = Boolean.parseBoolean(System.getProperty("concurrent.test.runs.enabled", DEFAULT_CONCURRENT_TEST_RUNS_ENABLED));
 
         SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME);
         SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
@@ -453,8 +453,8 @@ public final class TestcontainersConfiguration {
         log.info("containers.stayup: " + CONTAINERS_STAYUP);
         log.info("container.name.prefix: " + CONTAINER_NAME_PREFIX);
         log.info("container.main.label: " + CONTAINER_MAIN_LABEL);
-        log.info("container.group.enabled: " + CONTAINER_GROUP_ENABLED);
-        if(CONTAINER_GROUP_ENABLED) {
+        log.info("concurrent.test.runs.enabled: " + CONCURRENT_TEST_RUNS_ENABLED);
+        if(CONCURRENT_TEST_RUNS_ENABLED) {
             log.info("container group unique id: " + CONTAINER_GROUP_UNIQUE_ID);
         }
 

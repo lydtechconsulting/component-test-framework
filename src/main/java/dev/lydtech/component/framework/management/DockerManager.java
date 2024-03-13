@@ -20,7 +20,7 @@ import org.testcontainers.DockerClientFactory;
 
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_GROUP_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONCURRENT_TEST_RUNS_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_GROUP_UNIQUE_ID;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
@@ -75,12 +75,12 @@ public final class DockerManager {
      * - Main container is running (it has the expected prefix and label) AND
      * - Testcontainers container is not running.
      *
-     * If the system parameter container.group.enabled is true, then Testcontainers set up is always performed, as that
-     * property is used to enable a group of containers to be run concurrently for multiple component test runs (and
-     * the group of container names include a unique id to identify the group).
+     * If the system parameter concurrent.test.runs.enabled is true, then Testcontainers set up is always performed, as
+     * that property is used to enable a group of containers to be run concurrently for multiple component test runs
+     * (and the group of container names include a unique id to identify the group).
      */
     public static boolean shouldPerformSetup(DockerClient dockerClient) {
-        if(CONTAINER_GROUP_ENABLED) return true;
+        if(CONCURRENT_TEST_RUNS_ENABLED) return true;
 
         List<Container> containers = dockerClient.listContainersCmd().exec();
         boolean mainContainerPresent = containers.stream()
@@ -135,7 +135,7 @@ public final class DockerManager {
      */
     private static void findContainerAndMapPort(DockerClient dockerClient, String resourceName, boolean enabled, int port) {
         ListContainersCmd listContainersCmd = dockerClient.listContainersCmd();
-        String containerName = CONTAINER_GROUP_ENABLED?CONTAINER_NAME_PREFIX + "-" + resourceName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + resourceName;
+        String containerName = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + resourceName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + resourceName;
         log.info("Discovering host and mapping port for container {}", containerName);
         List<Container> containers = listContainersCmd.withNameFilter(singletonList(containerName)).exec();
         if(containers.size()>1) {
