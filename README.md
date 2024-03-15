@@ -163,6 +163,10 @@ https://github.com/lydtechconsulting/micronaut-postgres-java - demonstrates a Mi
 
 https://github.com/lydtechconsulting/micronaut-postgres-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Postgres as the database for reading and writing items.
 
+https://github.com/lydtechconsulting/micronaut-kafka-java - demonstrates a Micronaut application written in Java, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
+
+https://github.com/lydtechconsulting/micronaut-kafka-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
+
 [[Back To Top](README.md#component-test-framework)]
 
 # Upgrading From Previous Versions
