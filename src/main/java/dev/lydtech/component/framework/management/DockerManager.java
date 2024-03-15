@@ -20,8 +20,8 @@ import org.testcontainers.DockerClientFactory;
 
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONCURRENT_TEST_RUNS_ENABLED;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_GROUP_UNIQUE_ID;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_APPEND_GROUP_ID;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_GROUP_ID;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_NAME_PREFIX;
@@ -80,7 +80,7 @@ public final class DockerManager {
      * (and the group of container names include a unique id to identify the group).
      */
     public static boolean shouldPerformSetup(DockerClient dockerClient) {
-        if(CONCURRENT_TEST_RUNS_ENABLED) return true;
+        if(CONTAINER_APPEND_GROUP_ID) return true;
 
         List<Container> containers = dockerClient.listContainersCmd().exec();
         boolean mainContainerPresent = containers.stream()
@@ -135,7 +135,7 @@ public final class DockerManager {
      */
     private static void findContainerAndMapPort(DockerClient dockerClient, String resourceName, boolean enabled, int port) {
         ListContainersCmd listContainersCmd = dockerClient.listContainersCmd();
-        String containerName = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + resourceName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + resourceName;
+        String containerName = CONTAINER_APPEND_GROUP_ID?CONTAINER_NAME_PREFIX + "-" + resourceName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + resourceName;
         log.info("Discovering host and mapping port for container {}", containerName);
         List<Container> containers = listContainersCmd.withNameFilter(singletonList(containerName)).exec();
         if(containers.size()>1) {

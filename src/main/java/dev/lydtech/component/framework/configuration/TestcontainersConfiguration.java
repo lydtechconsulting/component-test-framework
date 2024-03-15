@@ -20,13 +20,13 @@ public final class TestcontainersConfiguration {
     public static final String CONTAINER_MAIN_LABEL_KEY = "dev.lydtech.main-container-label";
 
     /**
-     * A unique Id to optionally apply to docker container names to distinguish the group of containers for each test during concurrent test runs.
+     * A unique Id to optionally apply to docker container names to distinguish the group of containers for each test run.
      */
-    public static final String CONTAINER_GROUP_UNIQUE_ID = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+    public static final String CONTAINER_GROUP_ID = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
 
 
     private static final String DEFAULT_CONTAINERS_STAYUP = "false";
-    private static final String DEFAULT_CONCURRENT_TEST_RUNS_ENABLED = "false";
+    private static final String DEFAULT_CONTAINER_APPEND_GROUP_ID = "false";
 
     /**
      * Service default configuration.
@@ -179,7 +179,7 @@ public final class TestcontainersConfiguration {
     public static boolean CONTAINERS_STAYUP;
     public static String CONTAINER_NAME_PREFIX;
     public static String CONTAINER_MAIN_LABEL;
-    public static boolean CONCURRENT_TEST_RUNS_ENABLED;
+    public static boolean CONTAINER_APPEND_GROUP_ID;
     public static String SERVICE_NAME;
     public static int SERVICE_INSTANCE_COUNT;
     public static int SERVICE_PORT;
@@ -283,7 +283,7 @@ public final class TestcontainersConfiguration {
         CONTAINERS_STAYUP = Boolean.parseBoolean(System.getenv("TESTCONTAINERS_REUSE_ENABLE")!=null?System.getenv("TESTCONTAINERS_REUSE_ENABLE"):DEFAULT_CONTAINERS_STAYUP);
         CONTAINER_NAME_PREFIX = System.getProperty("container.name.prefix", DEFAULT_CONTAINER_NAME_PREFIX);
         CONTAINER_MAIN_LABEL = System.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL);
-        CONCURRENT_TEST_RUNS_ENABLED = Boolean.parseBoolean(System.getProperty("concurrent.test.runs.enabled", DEFAULT_CONCURRENT_TEST_RUNS_ENABLED));
+        CONTAINER_APPEND_GROUP_ID = Boolean.parseBoolean(System.getProperty("container.append.group.id", DEFAULT_CONTAINER_APPEND_GROUP_ID));
 
         SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME);
         SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
@@ -453,9 +453,9 @@ public final class TestcontainersConfiguration {
         log.info("containers.stayup: " + CONTAINERS_STAYUP);
         log.info("container.name.prefix: " + CONTAINER_NAME_PREFIX);
         log.info("container.main.label: " + CONTAINER_MAIN_LABEL);
-        log.info("concurrent.test.runs.enabled: " + CONCURRENT_TEST_RUNS_ENABLED);
-        if(CONCURRENT_TEST_RUNS_ENABLED) {
-            log.info("container group unique id: " + CONTAINER_GROUP_UNIQUE_ID);
+        log.info("container.append.group.id: " + CONTAINER_APPEND_GROUP_ID);
+        if(CONTAINER_APPEND_GROUP_ID) {
+            log.info("container group unique id: " + CONTAINER_GROUP_ID);
         }
 
         log.info("service.name: " + SERVICE_NAME);

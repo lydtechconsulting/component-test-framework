@@ -76,7 +76,7 @@ public final class TestcontainersManager {
 
     private void createContainers() {
 
-        if(CONTAINERS_STAYUP && CONCURRENT_TEST_RUNS_ENABLED) {
+        if(CONTAINERS_STAYUP && CONTAINER_APPEND_GROUP_ID) {
             throw new RuntimeException("Either configure containers to stayup or enable concurrent test runs.");
         }
         if (SERVICE_INSTANCE_COUNT < 1) {
@@ -232,7 +232,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 });
 
@@ -266,7 +266,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(name)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + name + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + name;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + name + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + name;
                     cmd.withName(containerCmdModifier);
                 })
                 .withReuse(true)
@@ -292,7 +292,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(POSTGRES_HOST_NAME)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 })
                 .withReuse(true)
@@ -311,7 +311,7 @@ public final class TestcontainersManager {
                 .withNetworkAliases(containerName)
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 });
         if(MONGODB_CONTAINER_LOGGING_ENABLED) {
@@ -330,7 +330,7 @@ public final class TestcontainersManager {
                 .withNetworkAliases(containerName)
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 });
         container = configureCommonKafkaContainerEnv(container, instance);
@@ -361,7 +361,7 @@ public final class TestcontainersManager {
                 .withEnv("CONFLUENT_METRICS_ENABLE", "true")
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 });
                 container.withEnv("KAFKA_METRIC_REPORTERS", "io.confluent.metrics.reporter.ConfluentMetricsReporter");
@@ -420,7 +420,7 @@ public final class TestcontainersManager {
                 .withEnv("ZOOKEEPER_CLIENT_PORT", "2181")
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-zookeeper-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-zookeeper";
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-zookeeper-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-zookeeper";
                     cmd.withName(containerCmdModifier);
                 });
     }
@@ -435,7 +435,7 @@ public final class TestcontainersManager {
                 .dependsOn(kafkaContainers.get(0))
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 });
         if(DEBEZIUM_CONTAINER_LOGGING_ENABLED) {
@@ -450,7 +450,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 })
                 .withExposedPorts(KAFKA_SCHEMA_REGISTRY_PORT)
@@ -467,7 +467,7 @@ public final class TestcontainersManager {
 
     private GenericContainer createControlCenterContainer() {
         String containerName = KAFKA_CONTROL_CENTER.toString().replace("_", "-");
-        String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+        String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
         Consumer<CreateContainerCmd> cmd = e -> {
             // Force host port to be KAFKA_CONTROL_CENTER_PORT.
             e.withHostConfig(e.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(CONDUKTOR_PORT),
@@ -501,7 +501,7 @@ public final class TestcontainersManager {
     private GenericContainer createConduktorContainer() {
         String containerName = CONDUKTOR.toString();
         int containerExposedPort = 8080;
-        String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+        String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
         Consumer<CreateContainerCmd> cmd = e -> {
             // Force host port to be CONDUKTOR_PORT.
             e.withHostConfig(e.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(CONDUKTOR_PORT),
@@ -543,7 +543,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 })
                 .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
@@ -568,7 +568,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 })
                 .withClasspathResourceMapping("/wiremock", "/home/wiremock/mappings", BindMode.READ_WRITE)
@@ -587,7 +587,7 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 })
                 .withEnv("SERVICES", LOCALSTACK_SERVICES)
@@ -613,7 +613,7 @@ public final class TestcontainersManager {
                 .withEnv("xpack.security.enabled", "false")
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
-                    String containerCmdModifier = CONCURRENT_TEST_RUNS_ENABLED ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_UNIQUE_ID:CONTAINER_NAME_PREFIX + "-" + containerName;
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 });
         if(ELASTICSEARCH_PASSWORD != null && !ELASTICSEARCH_PASSWORD.isBlank()) {
