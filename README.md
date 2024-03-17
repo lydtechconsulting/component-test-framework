@@ -163,6 +163,10 @@ https://github.com/lydtechconsulting/micronaut-postgres-java - demonstrates a Mi
 
 https://github.com/lydtechconsulting/micronaut-postgres-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Postgres as the database for reading and writing items.
 
+https://github.com/lydtechconsulting/micronaut-kafka-java - demonstrates a Micronaut application written in Java, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
+
+https://github.com/lydtechconsulting/micronaut-kafka-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
+
 [[Back To Top](README.md#component-test-framework)]
 
 # Upgrading From Previous Versions
@@ -190,9 +194,10 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 
 | Property                                        | Usage                                                                                                                                                                                                                                                                                                                                                                           | Default                                           |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|
-| containers.stayup                               | Whether the Docker containers should remain up after a test run.                                                                                                                                                                                                                                                                                                                | false                                             |
-| container.name.prefix                           | The Docker container prefix name to use.  A namespace for the component test containers.                                                                                                                                                                                                                                                                                        | ct                                                |
+| containers.stayup                               | Whether the Docker containers should remain up after a test run.  This should be used to set the environment variable `TESTCONTAINERS_REUSE_ENABLE`.  Cannot be set to `true` if `container.append.group.id` is also `true`.                                                                                                                                                    | false                                             |
+| container.name.prefix                           | The Docker container prefix name to use.  A namespace for the component test containers.  Using different prefixes means that multiple component test runs can run concurrently without conflict.                                                                                                                                                                               | ct                                                |
 | container.main.label                            | The Docker containers housing the service instances has this label applied.  This is used as part of the `containers.stayup` check, along with the `container.name.prefix`, to determine if the containers are already running.  It is recommended to leave this as the default value, so that subsequent test runs from an IDE do not need to set a system parameter override. | main-container                                    | 
+| container.append.group.id                       | Whether to enable grouping the set of containers in the component test via a unique identifier that is appended to the container name.  This helps identify the group of containers in the given test run.  If set to `true` it means that multiple component test runs can run concurrently without conflict, but cannot be used if `containers.stayup` is set to `true`.      | false                                             |
 | service.name                                    | The name of the service, used in the service Docker container name.                                                                                                                                                                                                                                                                                                             | app                                               |
 | service.instance.count                          | The number of instances of the service under test to start.                                                                                                                                                                                                                                                                                                                     | 1                                                 |
 | service.image.tag                               | The tagged image of the service Docker container to use.                                                                                                                                                                                                                                                                                                                        | latest                                            |
@@ -201,7 +206,7 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 | service.debug.suspend                           | Use suspend=y for remote debugging params. Useful for diagnosing service startup issues.                                                                                                                                                                                                                                                                                        | false                                             |
 | service.envvars                                 | A comma-separated list of key=value pairs to pass as environment variables for the service container, e.g. ARG1=value1,ARG2=value2".                                                                                                                                                                                                                                            |                                                   |
 | service.additional.filesystem.binds             | A comma-separated list of key=value pairs to use as additional filesystem binds for the service container, where key=sourcePath and value=containerPath e.g. ./src/test/resources/myDirectory=./myDirectory".                                                                                                                                                                   |                                                   |
- | service.config.files.system.property            | The name of the system property that denotes the location of additional properties files (as specified in `service.application.yml.path`) for the application.                                                                                                                                                                                                                  | spring.config.additional-location                 |
+| service.config.files.system.property            | The name of the system property that denotes the location of additional properties files (as specified in `service.application.yml.path`) for the application.                                                                                                                                                                                                                  | spring.config.additional-location                 |
 | service.application.yml.path                    | Path to the application config file for property overrides (yml format for the service under test).                                                                                                                                                                                                                                                                             | src/test/resources/application-component-test.yml |
 | service.startup.health.endpoint                 | The log health endpoint to wait for on startup.  Defaults to the Spring Actuator health endpoint.  If `service.startup.log.message` is set then this setting is ignored.                                                                                                                                                                                                        | /actuator/health                                  |
 | service.startup.log.message                     | The log message to wait for on startup. If set, instead of waiting for the health endpoint to return healthy, the container is not considered started until this regex is present in its logs.                                                                                                                                                                                  |                                                   |
@@ -528,6 +533,39 @@ Changes to system properties are only respected when containers are being brough
 To manually stop the containers, see the Docker commands section below.
 
 The `containers.stayup` property drives the `TESTCONTAINERS_REUSE_ENABLE` environment property.  This is a Testcontainers library property it uses to determine whether it should automatically clean up the Docker containers at the end of the test run.
+
+## Running Concurrent Component Test Runs
+
+In may be required to run multiple component tests concurrently in the same environment.  This may happen in the CI pipeline for example, where perhaps the `main` branch is being built and tested at the same time as one or more `PR` branches.  To facilitate this, there are two alternative approaches that can be adopted.
+
+### Container Name Prefix
+
+Set the `container.name.prefix` to a unique value for the test run.  For example, two concurrent test runs could be executed by building the two containers, and running the component tests with the different prefixes:
+```
+docker build -t ct1/kafka-springboot-consume-produce:latest .
+docker build -t ct2/kafka-springboot-consume-produce:latest .
+
+mvn test -Pcomponent -Dcontainer.name.prefix=ct1
+mvn test -Pcomponent -Dcontainer.name.prefix=ct2
+```
+
+The following screenshot shows two component test runs executing simultaneously, with prefixes `ct1` and `ct2`. Each group of containers is managed by a `testcontainers-ryuk` container.
+
+<div style="text-align:center; width: 600px;"><img src="ctf-container-name-prefix.png" /></div>
+<p style="text-align: center;"><I>Figure 3: Concurrent component test runs using container.name.prefix</I></p>
+
+This has the advantage that one or both groups of containers could be left up between test runs and reused on a subsequent test execution, using the `containers.stayup` property.
+
+### Container Append Group Id
+
+Set the `container.append.group.id` property to `true`.  This appends an eight character unique Id to the names of all the containers spun up in the component test run.  This means that when another test run is started the container names do not conflict, and this subsequent test run can execute concurrently with the first.
+
+Note that either the `containers.stayup` property or the `container.append.group.id` property can be set to `true` but not both.  This is because the configuration is allowing either the existing containers that are left up between test runs to be reused for the next test run, or for multiple groups of containers to be run concurrently.
+
+The following screenshot shows three component test runs executing simultaneously.  Each group of containers is managed by a `testcontainers-ryuk` container.
+
+<div style="text-align:center; width: 600px;"><img src="ctf-container-append-group-id.png" /></div>
+<p style="text-align: center;"><I>Figure 4: Concurrent component test runs using container.append.group.id</I></p>
 
 ## Running Component Tests Within The IDE
 

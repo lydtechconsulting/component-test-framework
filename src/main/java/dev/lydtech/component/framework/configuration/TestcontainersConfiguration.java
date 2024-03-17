@@ -5,12 +5,28 @@ import java.util.stream.Collectors;
 
 import dev.lydtech.component.framework.management.AdditionalContainer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 
 @Slf4j
 public final class TestcontainersConfiguration {
 
-    // Label key for the Docker container housing the service.
+    /**
+     * Container configuration.
+     */
+
+    /**
+     * Label key for the Docker container housing the service.
+     */
     public static final String CONTAINER_MAIN_LABEL_KEY = "dev.lydtech.main-container-label";
+
+    /**
+     * A unique Id to optionally apply to docker container names to distinguish the group of containers for each test run.
+     */
+    public static final String CONTAINER_GROUP_ID = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+
+
+    private static final String DEFAULT_CONTAINERS_STAYUP = "false";
+    private static final String DEFAULT_CONTAINER_APPEND_GROUP_ID = "false";
 
     /**
      * Service default configuration.
@@ -160,9 +176,10 @@ public final class TestcontainersConfiguration {
      * The runtime configuration.
      */
 
+    public static boolean CONTAINERS_STAYUP;
     public static String CONTAINER_NAME_PREFIX;
     public static String CONTAINER_MAIN_LABEL;
-
+    public static boolean CONTAINER_APPEND_GROUP_ID;
     public static String SERVICE_NAME;
     public static int SERVICE_INSTANCE_COUNT;
     public static int SERVICE_PORT;
@@ -262,8 +279,12 @@ public final class TestcontainersConfiguration {
     }
 
     protected static void configure() {
+
+        CONTAINERS_STAYUP = Boolean.parseBoolean(System.getenv("TESTCONTAINERS_REUSE_ENABLE")!=null?System.getenv("TESTCONTAINERS_REUSE_ENABLE"):DEFAULT_CONTAINERS_STAYUP);
         CONTAINER_NAME_PREFIX = System.getProperty("container.name.prefix", DEFAULT_CONTAINER_NAME_PREFIX);
         CONTAINER_MAIN_LABEL = System.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL);
+        CONTAINER_APPEND_GROUP_ID = Boolean.parseBoolean(System.getProperty("container.append.group.id", DEFAULT_CONTAINER_APPEND_GROUP_ID));
+
         SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME);
         SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
         SERVICE_PORT = Integer.parseInt(System.getProperty("service.port", DEFAULT_SERVICE_PORT));
@@ -429,9 +450,13 @@ public final class TestcontainersConfiguration {
     static {
         log.info("Testcontainers Configuration:");
 
-        log.info("containers.stayup: " + System.getProperty("containers.stayup", Boolean.FALSE.toString()));
+        log.info("containers.stayup: " + CONTAINERS_STAYUP);
         log.info("container.name.prefix: " + CONTAINER_NAME_PREFIX);
         log.info("container.main.label: " + CONTAINER_MAIN_LABEL);
+        log.info("container.append.group.id: " + CONTAINER_APPEND_GROUP_ID);
+        if(CONTAINER_APPEND_GROUP_ID) {
+            log.info("container group unique id: " + CONTAINER_GROUP_ID);
+        }
 
         log.info("service.name: " + SERVICE_NAME);
         log.info("service.instance.count: " + SERVICE_INSTANCE_COUNT);
