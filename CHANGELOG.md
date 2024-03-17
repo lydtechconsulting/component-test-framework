@@ -1,8 +1,8 @@
 # Changelog
 
-## [2.13.0] - 2024-03-12
+## [2.13.0] - 2024-03-17
 ### Added
-- Support container groups for concurrent component test runs.
+- Support addition of container group id for concurrent component test runs.
 
 ## [2.12.0] - 2024-03-08
 ### Added
