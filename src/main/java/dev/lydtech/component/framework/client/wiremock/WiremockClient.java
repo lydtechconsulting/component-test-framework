@@ -30,7 +30,7 @@ public class WiremockClient {
     private WiremockClient(){
         String wiremockHost = Optional.ofNullable(System.getProperty("docker.host")).orElse("localhost");
         String wiremockPort = Optional.ofNullable(System.getProperty("wiremock.mapped.port"))
-                .orElseThrow(() -> new RuntimeException("wiremock.port property not found"));
+                .orElseThrow(() -> new RuntimeException("wiremock.mapped.port property not found"));
         String baseUrl = "http://" + wiremockHost + ":" + wiremockPort;
         log.info("Wiremock base URL is: " + baseUrl);
         requestSpec = new RequestSpecBuilder()
