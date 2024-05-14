@@ -1,9 +1,5 @@
 # Changelog
 
-## [3.0.0] - 2024-05-14
-### Changed
-- Default port for services changed from 9001 to 8080.
-
 ## [2.13.0] - 2024-03-17
 ### Added
 - Support addition of container group id for concurrent component test runs.
