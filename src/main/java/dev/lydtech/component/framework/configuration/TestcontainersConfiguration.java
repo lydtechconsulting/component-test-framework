@@ -34,7 +34,7 @@ public final class TestcontainersConfiguration {
 
     private static final String DEFAULT_SERVICE_NAME = "app";
     private static final String DEFAULT_SERVICE_INSTANCE_COUNT = "1";
-    private static final String DEFAULT_SERVICE_PORT = "9001";
+    private static final String DEFAULT_SERVICE_PORT = "8080";
     private static final String DEFAULT_SERVICE_DEBUG_PORT = "5001";
     private static final String DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS = "180";
     private static final String DEFAULT_SERVICE_CONFIG_FILES_SYSTEM_PROPERTY = "spring.config.additional-location";

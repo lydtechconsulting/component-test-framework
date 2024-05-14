@@ -125,7 +125,7 @@ public class TestcontainersConfigurationTest {
         assertThat(CONTAINER_APPEND_GROUP_ID, equalTo(false));
         assertThat(SERVICE_NAME, equalTo("app"));
         assertThat(SERVICE_INSTANCE_COUNT, equalTo(1));
-        assertThat(SERVICE_PORT, equalTo(9001));
+        assertThat(SERVICE_PORT, equalTo(8080));
         assertThat(SERVICE_DEBUG_PORT, equalTo(5001));
         assertThat(SERVICE_STARTUP_TIMEOUT_SECONDS, equalTo(180));
         assertThat(SERVICE_STARTUP_HEALTH_ENDPOINT, equalTo("/actuator/health"));

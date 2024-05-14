@@ -201,7 +201,7 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 | service.name                                    | The name of the service, used in the service Docker container name.                                                                                                                                                                                                                                                                                                             | app                                               |
 | service.instance.count                          | The number of instances of the service under test to start.                                                                                                                                                                                                                                                                                                                     | 1                                                 |
 | service.image.tag                               | The tagged image of the service Docker container to use.                                                                                                                                                                                                                                                                                                                        | latest                                            |
-| service.port                                    | The service port number.                                                                                                                                                                                                                                                                                                                                                        | 9001                                              |
+| service.port                                    | The service port number.                                                                                                                                                                                                                                                                                                                                                        | 8080                                              |
 | service.debug.port                              | The port for remote debugging the service.                                                                                                                                                                                                                                                                                                                                      | 5001                                              |
 | service.debug.suspend                           | Use suspend=y for remote debugging params. Useful for diagnosing service startup issues.                                                                                                                                                                                                                                                                                        | false                                             |
 | service.envvars                                 | A comma-separated list of key=value pairs to pass as environment variables for the service container, e.g. ARG1=value1,ARG2=value2".                                                                                                                                                                                                                                            |                                                   |
@@ -327,7 +327,7 @@ Add the Maven Surefire Plugin to the pom of the service under test with the foll
                         </environmentVariables>
                         <systemPropertyVariables>
                             <service.instance.count>3</service.instance.count>
-                            <service.port>9001</service.port>
+                            <service.port>8080</service.port>
                             <service.debug.port>5001</service.debug.port>
                             <kafka.enabled>true</kafka.enabled>
                             <kafka.broker.count>3</kafka.broker.count>
@@ -433,7 +433,7 @@ For the default Micronaut health endpoint configure this to `/health`.  Ensure t
 
 Alternatively the presence of a startup log message can be used to determine whether the service has successfully started, using the `service.startup.log.message` configuration.  Set this to the regex String to match on.  For example, set this property to `.*Startup completed.*` to match the following log message from a Micronaut application:
 ```
-2024-02-27 14:05:46 INFO  i.m.r.Micronaut - Startup completed in 31ms. Server Running: http://d911af15be07:9001
+2024-02-27 14:05:46 INFO  i.m.r.Micronaut - Startup completed in 31ms. Server Running: http://d911af15be07:8080
 ```
 
 If this property is set it will be used instead of the startup health endpoint property.
@@ -597,7 +597,7 @@ Execute a test run, leaving the containers up, with `containers.stayup`.  Now re
 The mapped debug port can be discovered by listing the Docker containers with `docker ps` and viewing the mapping.
 ```
 CONTAINER ID   IMAGE                           COMMAND                   CREATED          STATUS          PORTS                                                        NAMES
-19b474ec03e8   ct/ctf-example-service:latest   "sh -c 'java ${JAVA_…"    6 seconds ago    Up 5 seconds    0.0.0.0:57583->5001/tcp, 0.0.0.0:57584->9001/tcp             ct-ctf-example-service-1
+19b474ec03e8   ct/ctf-example-service:latest   "sh -c 'java ${JAVA_…"    6 seconds ago    Up 5 seconds    0.0.0.0:57583->5001/tcp, 0.0.0.0:57584->8080/tcp             ct-ctf-example-service-1
 ```
 
 As the configured debug port by default is `5001`, then the mapped port can be seen to be `57583`.
