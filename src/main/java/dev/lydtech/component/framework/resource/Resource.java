@@ -13,7 +13,8 @@ public enum Resource {
     WIREMOCK,
     LOCALSTACK,
     MONGODB,
-    ELASTICSEARCH;
+    ELASTICSEARCH,
+    MARIADB;
 
     @Override
     public String toString() {

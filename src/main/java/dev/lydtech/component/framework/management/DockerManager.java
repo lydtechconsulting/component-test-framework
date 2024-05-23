@@ -39,6 +39,8 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MONGODB_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_PORT;
@@ -50,6 +52,7 @@ import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REG
 import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
 import static dev.lydtech.component.framework.resource.Resource.MONGODB;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
+import static dev.lydtech.component.framework.resource.Resource.MARIADB;
 import static dev.lydtech.component.framework.resource.Resource.SERVICE;
 import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
 import static java.util.Collections.singletonList;
@@ -115,6 +118,7 @@ public final class DockerManager {
 
         findContainerAndMapPort(dockerClient, POSTGRES.toString(), POSTGRES_ENABLED, POSTGRES_PORT);
         findContainerAndMapPort(dockerClient, MONGODB.toString(), MONGODB_ENABLED, MONGODB_PORT);
+        findContainerAndMapPort(dockerClient, MARIADB.toString(), MARIADB_ENABLED, MARIADB_PORT);
         // Just need to map the port of one of the Kafka servers.
         findContainerAndMapPort(dockerClient, KAFKA.toString(), KAFKA_ENABLED, KAFKA_PORT);
         findContainerAndMapPort(dockerClient, DEBEZIUM.toString(), DEBEZIUM_ENABLED, DEBEZIUM_PORT);

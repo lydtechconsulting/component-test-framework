@@ -26,6 +26,7 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -42,6 +43,7 @@ import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REG
 import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
 import static dev.lydtech.component.framework.resource.Resource.MONGODB;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
+import static dev.lydtech.component.framework.resource.Resource.MARIADB;
 import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
 
 @Slf4j
@@ -51,6 +53,7 @@ public final class TestcontainersManager {
     private List<GenericContainer> serviceContainers = new ArrayList<>(1);
     private List<GenericContainer> additionalContainers;
     private GenericContainer postgresContainer;
+    private MariaDBContainer mariaDBContainer;
     private MongoDBContainer mongoDbContainer;
     private List<KafkaContainer> kafkaContainers;
     private GenericContainer zookeeperContainer;
@@ -88,6 +91,9 @@ public final class TestcontainersManager {
         }
         if (MONGODB_ENABLED) {
             mongoDbContainer = createMongoDBContainer();
+        }
+        if (MARIADB_ENABLED) {
+            mariaDBContainer = createMariaDBContainer();
         }
         if (KAFKA_ENABLED) {
             if(KAFKA_TOPIC_REPLICATION_FACTOR > KAFKA_BROKER_COUNT) {
@@ -176,6 +182,9 @@ public final class TestcontainersManager {
             }
             if(MONGODB_ENABLED) {
                 mongoDbContainer.start();
+            }
+            if(MARIADB_ENABLED) {
+                mariaDBContainer.start();
             }
             if(KAFKA_ENABLED) {
                 if(KAFKA_BROKER_COUNT>1) {
@@ -315,6 +324,23 @@ public final class TestcontainersManager {
                     cmd.withName(containerCmdModifier);
                 });
         if(MONGODB_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    private MariaDBContainer createMariaDBContainer() {
+        String containerName = MARIADB.toString();
+
+        var container = new MariaDBContainer<>("mariadb:" + MARIADB_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withReuse(true)
+                .withCreateContainerCmdModifier(cmd -> {
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
+                    cmd.withName(containerCmdModifier);
+                });
+        if(MARIADB_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;

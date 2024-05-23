@@ -76,6 +76,21 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
+     * MariaDB configuration.
+     */
+
+    private static final String DEFAULT_MARIADB_ENABLED = "false";
+    private static final String DEFAULT_MARIADB_IMAGE_TAG = "10.6";
+    private static final String DEFAULT_MARIADB_HOST_NAME = "mariadb-host";
+    private static final String DEFAULT_MARIADB_PORT = "3306";
+    private static final String DEFAULT_MARIADB_DATABASE_NAME = "mariadb-db";
+    private static final String DEFAULT_MARIADB_SCHEMA_NAME = "test";
+    private static final String DEFAULT_MARIADB_USERNAME = "user";
+    private static final String DEFAULT_MARIADB_PASSWORD = "password";
+    private static final String DEFAULT_MARIADB_CONTAINER_LOGGING_ENABLED = "false";
+
+
+    /**
      * Kafka default configuration.
      */
 
@@ -212,6 +227,16 @@ public final class TestcontainersConfiguration {
     public static Integer MONGODB_PORT;
     public static boolean MONGODB_CONTAINER_LOGGING_ENABLED;
 
+    public static boolean MARIADB_ENABLED;
+    public static String MARIADB_IMAGE_TAG;
+    public static String MARIADB_HOST_NAME;
+    public static int MARIADB_PORT;
+    public static String MARIADB_DATABASE_NAME;
+    public static String MARIADB_SCHEMA_NAME;
+    public static String MARIADB_USERNAME;
+    public static String MARIADB_PASSWORD;
+    public static boolean MARIADB_CONTAINER_LOGGING_ENABLED;
+
     public static boolean KAFKA_ENABLED;
     public static int KAFKA_BROKER_COUNT;
     public static String KAFKA_CONFLUENT_IMAGE_TAG;
@@ -317,6 +342,16 @@ public final class TestcontainersConfiguration {
         // Port cannot be overridden in the MongoDB Testcontainer.
         MONGODB_PORT = Integer.parseInt(DEFAULT_MONGODB_PORT);
         MONGODB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mongodb.container.logging.enabled", DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED));
+
+        MARIADB_ENABLED = Boolean.valueOf(System.getProperty("mariadb.enabled", DEFAULT_MARIADB_ENABLED));
+        MARIADB_IMAGE_TAG = System.getProperty("mariadb.image.tag", DEFAULT_MARIADB_IMAGE_TAG);
+        MARIADB_HOST_NAME = System.getProperty("mariadb.host.name", DEFAULT_MARIADB_HOST_NAME);
+        MARIADB_PORT = Integer.parseInt(System.getProperty("mariadb.port", DEFAULT_MARIADB_PORT));
+        MARIADB_DATABASE_NAME = System.getProperty("mariadb.database.name", DEFAULT_MARIADB_DATABASE_NAME);
+        MARIADB_SCHEMA_NAME = System.getProperty("mariadb.schema.name", DEFAULT_MARIADB_SCHEMA_NAME);
+        MARIADB_USERNAME = System.getProperty("mariadb.username", DEFAULT_MARIADB_USERNAME);
+        MARIADB_PASSWORD = System.getProperty("mariadb.password", DEFAULT_MARIADB_PASSWORD);
+        MARIADB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mariadb.container.logging.enabled", DEFAULT_MARIADB_CONTAINER_LOGGING_ENABLED));
 
         KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
         KAFKA_BROKER_COUNT = Integer.parseInt(System.getProperty("kafka.broker.count", DEFAULT_KAFKA_BROKER_COUNT));
