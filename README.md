@@ -744,7 +744,7 @@ spring:
     password: password
 ```
 
-Use the `MariaDbClient` utility class to get a `MariaDbClient` that can be used to run queries against the database:
+Use the `MariaDbClient` utility class to get a `Connection` that can be used to run queries against the database:
 ```
 import dev.lydtech.component.framework.client.database.MariaDbClient;
 import java.sql.Connection;
