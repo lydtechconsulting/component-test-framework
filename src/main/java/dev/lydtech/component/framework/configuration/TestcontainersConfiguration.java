@@ -84,7 +84,6 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_MARIADB_HOST_NAME = "mariadb-host";
     private static final String DEFAULT_MARIADB_PORT = "3306";
     private static final String DEFAULT_MARIADB_DATABASE_NAME = "mariadb-db";
-    private static final String DEFAULT_MARIADB_SCHEMA_NAME = "test";
     private static final String DEFAULT_MARIADB_USERNAME = "user";
     private static final String DEFAULT_MARIADB_PASSWORD = "password";
     private static final String DEFAULT_MARIADB_CONTAINER_LOGGING_ENABLED = "false";
@@ -232,7 +231,6 @@ public final class TestcontainersConfiguration {
     public static String MARIADB_HOST_NAME;
     public static int MARIADB_PORT;
     public static String MARIADB_DATABASE_NAME;
-    public static String MARIADB_SCHEMA_NAME;
     public static String MARIADB_USERNAME;
     public static String MARIADB_PASSWORD;
     public static boolean MARIADB_CONTAINER_LOGGING_ENABLED;
@@ -348,7 +346,6 @@ public final class TestcontainersConfiguration {
         MARIADB_HOST_NAME = System.getProperty("mariadb.host.name", DEFAULT_MARIADB_HOST_NAME);
         MARIADB_PORT = Integer.parseInt(System.getProperty("mariadb.port", DEFAULT_MARIADB_PORT));
         MARIADB_DATABASE_NAME = System.getProperty("mariadb.database.name", DEFAULT_MARIADB_DATABASE_NAME);
-        MARIADB_SCHEMA_NAME = System.getProperty("mariadb.schema.name", DEFAULT_MARIADB_SCHEMA_NAME);
         MARIADB_USERNAME = System.getProperty("mariadb.username", DEFAULT_MARIADB_USERNAME);
         MARIADB_PASSWORD = System.getProperty("mariadb.password", DEFAULT_MARIADB_PASSWORD);
         MARIADB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mariadb.container.logging.enabled", DEFAULT_MARIADB_CONTAINER_LOGGING_ENABLED));

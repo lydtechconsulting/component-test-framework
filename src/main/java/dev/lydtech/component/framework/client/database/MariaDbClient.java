@@ -8,13 +8,12 @@ import java.util.Optional;
 
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_DATABASE_NAME;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_PASSWORD;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_SCHEMA_NAME;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_USERNAME;
 
 @Slf4j
 public class MariaDbClient {
 
-        private static dev.lydtech.component.framework.client.database.MariaDbClient instance;
+        private static MariaDbClient instance;
         private static String dbHostAndPortUrl;
 
         private MariaDbClient(){
@@ -27,7 +26,7 @@ public class MariaDbClient {
 
         public synchronized static MariaDbClient getInstance() {
             if(instance==null) {
-                instance = new dev.lydtech.component.framework.client.database.MariaDbClient();
+                instance = new MariaDbClient();
             }
             return instance;
         }
@@ -36,7 +35,7 @@ public class MariaDbClient {
          * Connect to MariaDB with the database properties as set in System properties.
          */
         public static Connection getConnection() throws Exception {
-            return getConnection(MARIADB_DATABASE_NAME, MARIADB_SCHEMA_NAME, MARIADB_USERNAME, MARIADB_PASSWORD);
+            return getConnection(MARIADB_DATABASE_NAME, MARIADB_USERNAME, MARIADB_PASSWORD);
         }
 
         /**
@@ -45,8 +44,8 @@ public class MariaDbClient {
          * This is useful when re-running component tests with the containers left up between runs and not wanting to set
          * the system properties for each test run.
          */
-        public static Connection getConnection(String databaseName, String schemaName, String username, String password) throws Exception {
-            String dbUrl = dbHostAndPortUrl + databaseName + "?currentSchema=" + schemaName;
+        public static Connection getConnection(String databaseName, String username, String password) throws Exception {
+            String dbUrl = dbHostAndPortUrl + databaseName;
             Connection connection = DriverManager.getConnection(dbUrl, username, password);
             log.debug("Connected to MariaDB at: "+dbUrl);
             return connection;

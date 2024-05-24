@@ -729,6 +729,48 @@ MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
 MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoClientSettings), "demo");
 ```
 
+# MariaDB Database
+
+Enable the MariaDB database via the property `mariadb.enabled`.  The database is available on port `3306`.
+
+Override the main configuration in the application's `application-component-test.yml` file to connect to the Dockerised MongoDB, for example:
+
+```
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/database
+    username: username
+    password: password
+```
+
+Use the `MariaDbClient` utility class to get a `MariaDbClient` that can be used to run queries against the database:
+```
+import dev.lydtech.component.framework.client.database.MariaDbClient;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+Connection connection = MariaDbClient.getInstance().getConnection();
+
+try (PreparedStatement statement = connection.prepareStatement("SELECT version()")) {
+    ResultSet resultSet = statement.executeQuery();
+    while (resultSet.next()) {
+        LOG.info("resultset: " + resultSet.getString(1));
+    }
+}
+```
+
+Close the connection at the end of the test:
+```
+MariaDbClient.getInstance().close(dbConnection);
+```
+
+The DB URL with the host and port can be obtained with the following call:
+```
+String dbUrl = MariaDbClient.getInstance().getMariaDbClient().getDbHostAndPortUrl();
+```
+
 [[Back To Top](README.md#component-test-framework)]
 
 # Kafka
