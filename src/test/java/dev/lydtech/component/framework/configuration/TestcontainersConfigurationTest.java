@@ -52,6 +52,14 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("mongodb.replica.set");
         System.clearProperty("mongodb.container.logging.enabled");
 
+        System.clearProperty("mariadb.enabled");
+        System.clearProperty("mariadb.image.tag");
+        System.clearProperty("mariadb.port");
+        System.clearProperty("mariadb.database.name");
+        System.clearProperty("mariadb.username");
+        System.clearProperty("mariadb.password");
+        System.clearProperty("mariadb.container.logging.enabled");
+
         System.clearProperty("kafka.enabled");
         System.clearProperty("kafka.broker.count");
         System.clearProperty("kafka.confluent.image.tag");
@@ -243,6 +251,14 @@ public class TestcontainersConfigurationTest {
         System.setProperty("mongodb.image.tag", "mongodb-override");
         System.setProperty("mongodb.container.logging.enabled", "true");
 
+        System.setProperty("mariadb.enabled", "true");
+        System.setProperty("mariadb.image.tag", "mariadb-override");
+        System.setProperty("mariadb.port", "1234");
+        System.setProperty("mariadb.database.name", "mariadb-db-override");
+        System.setProperty("mariadb.username", "mariadb-user-override");
+        System.setProperty("mariadb.password", "mariadb-password-override");
+        System.setProperty("mariadb.container.logging.enabled", "true");
+
         System.setProperty("kafka.enabled", "true");
         System.setProperty("kafka.broker.count", "12");
         System.setProperty("kafka.confluent.image.tag", "kafka-override");
@@ -342,6 +358,13 @@ public class TestcontainersConfigurationTest {
         assertThat(MONGODB_PORT, equalTo(27017));
         assertThat(MONGODB_IMAGE_TAG, equalTo("mongodb-override"));
         assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(true));
+        assertThat(MARIADB_ENABLED, equalTo(true));
+        assertThat(MARIADB_IMAGE_TAG, equalTo("mariadb-override"));
+        assertThat(MARIADB_PORT, equalTo(1234));
+        assertThat(MARIADB_DATABASE_NAME, equalTo("mariadb-db-override"));
+        assertThat(MARIADB_USERNAME, equalTo("mariadb-user-override"));
+        assertThat(MARIADB_PASSWORD, equalTo("mariadb-password-override"));
+        assertThat(MARIADB_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(KAFKA_ENABLED, equalTo(true));
         assertThat(KAFKA_BROKER_COUNT, equalTo(12));
         assertThat(KAFKA_CONFLUENT_IMAGE_TAG, equalTo("kafka-override"));
