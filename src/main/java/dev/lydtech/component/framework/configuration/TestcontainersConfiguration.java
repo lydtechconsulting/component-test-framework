@@ -530,6 +530,17 @@ public final class TestcontainersConfiguration {
             log.info("mongodb.container.logging.enabled: " + MONGODB_CONTAINER_LOGGING_ENABLED);
         }
 
+        log.info("mariadb.enabled: " + MARIADB_ENABLED);
+        if(MARIADB_ENABLED) {
+            log.info("mariadb.image.tag: " + MARIADB_IMAGE_TAG);
+            log.info("mariadb.host.name: " + MARIADB_HOST_NAME);
+            log.info("mariadb.port: " + MARIADB_PORT);
+            log.info("mariadb.database.name: " + MARIADB_DATABASE_NAME);
+            log.info("mariadb.username: " + MARIADB_USERNAME);
+            log.info("mariadb.password: " + MARIADB_PASSWORD);
+            log.info("mariadb.container.logging.enabled: " + MARIADB_CONTAINER_LOGGING_ENABLED);
+        }
+
         log.info("kafka.enabled: " + KAFKA_ENABLED);
         if(KAFKA_ENABLED) {
             log.info("kafka.confluent.image.tag: " + KAFKA_CONFLUENT_IMAGE_TAG);
