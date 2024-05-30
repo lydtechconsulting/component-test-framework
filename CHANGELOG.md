@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.1.0] - 2024-05-30
+### Added
+- Supports MariaDB.
+
 ## [3.0.0] - 2024-05-14
 ### Changed
 - Default port for services changed from 9001 to 8080.
