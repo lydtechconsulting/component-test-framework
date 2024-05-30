@@ -743,7 +743,7 @@ MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoClientS
 
 Enable the MariaDB database via the property `mariadb.enabled`.  The database is available on port `3306`.
 
-Override the main configuration in the application's `application-component-test.yml` file to connect to the Dockerised MongoDB, for example:
+Override the main configuration in the application's `application-component-test.yml` file to connect to the Dockerised MariaDB, for example:
 
 ```
 spring:
