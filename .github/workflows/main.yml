@@ -24,7 +24,6 @@ jobs:
         gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
         gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-
     - name: Build with Maven
       run: mvn package
 
@@ -77,38 +76,3 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-    - name: Remove GPG Key
-      if: always()
-      run: |
-        echo "Listing secret keys:"
-        gpg --list-secret-keys --with-colons
-        
-        echo "Listing public keys:"
-        gpg --list-keys --with-colons
-        
-        echo "Deleting secret keys:"
-        SECRET_KEYS=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}')
-        if [ -n "$SECRET_KEYS" ]; then
-          for key in $SECRET_KEYS; do
-            echo "Deleting secret key $key"
-            gpg --batch --yes --delete-secret-keys "$key" || echo "Failed to delete secret key $key"
-          done
-        else
-          echo "No secret keys found to delete."
-        fi
-        
-        echo "Deleting public keys:"
-        PUBLIC_KEYS=$(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}')
-        if [ -n "$PUBLIC_KEYS" ]; then
-          for key in $PUBLIC_KEYS; do
-            echo "Deleting public key $key"
-            gpg --batch --yes --delete-keys "$key" || echo "Failed to delete public key $key"
-          done
-        else
-          echo "No public keys found to delete."
-        fi
-
-        echo "Cleaning up keyring and agents."
-        gpgconf --kill all
-        rm -rf ~/.gnupg
