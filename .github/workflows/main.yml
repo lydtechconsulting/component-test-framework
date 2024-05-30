@@ -84,9 +84,7 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor --output pom.xml.asc pom.xml
-          mvn deploy -Prelease
+        run: mvn deploy -Prelease
 
 #      - name: Remove GPG Key
 #        if: always()
