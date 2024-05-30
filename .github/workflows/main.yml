@@ -83,10 +83,10 @@ jobs:
       run: |
         echo "Listing secret keys:"
         gpg --list-secret-keys --with-colons
-
+        
         echo "Listing public keys:"
         gpg --list-keys --with-colons
-
+        
         echo "Deleting secret keys:"
         SECRET_KEYS=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}')
         if [ -n "$SECRET_KEYS" ]; then
@@ -97,7 +97,7 @@ jobs:
         else
           echo "No secret keys found to delete."
         fi
-
+        
         echo "Deleting public keys:"
         PUBLIC_KEYS=$(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}')
         if [ -n "$PUBLIC_KEYS" ]; then
