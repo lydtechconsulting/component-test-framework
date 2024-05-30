@@ -10,76 +10,69 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: 'temurin'
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: 'temurin'
+        server-id: ossrh
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
+        gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+        gpg-passphrase: GPG_PASSPHRASE
 
-      - name: Import GPG Key
-        env:
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          echo "$GPG_SIGNING_KEY" | base64 --decode > private.key
-          gpg --batch --import private.key
-          rm private.key
-          echo "use-agent" > ~/.gnupg/gpg.conf
-          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
-          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
-          gpg-connect-agent reloadagent /bye
+    - name: Build with Maven
+      run: mvn package
 
-      - name: Build with Maven
-        run: mvn package
+    - name: Determine Version Change
+      id: determine_version_change
+      run: |
+        # Extract the commit message of the latest commit on the main branch
+        COMMIT_MSG=$(git log -1 --pretty=format:%s)
+        if [[ "$COMMIT_MSG" =~ (BREAKING CHANGE:|major:|major!) ]]; then
+        echo "version_change=major" 
+        elif [[ "$COMMIT_MSG" =~ (feat:|feat!) ]]; then
+        echo "version_change=minor"
+        else
+        echo "version_change=patch"
+        fi >> $GITHUB_OUTPUT
 
-      - name: Determine Version Change
-        id: determine_version_change
-        run: |
-          # Extract the commit message of the latest commit on the main branch
-          COMMIT_MSG=$(git log -1 --pretty=format:%s)
-          if [[ "$COMMIT_MSG" =~ (BREAKING CHANGE:|major:|major!) ]]; then
-          echo "version_change=major" >> $GITHUB_OUTPUT
-          elif [[ "$COMMIT_MSG" =~ (feat:|feat!) ]]; then
-          echo "version_change=minor" >> $GITHUB_OUTPUT
-          else
-          echo "version_change=patch" >> $GITHUB_OUTPUT
-          fi
+    - name: Increment Version
+      run: |
+        echo "Version change: ${{steps.determine_version_change.outputs.version_change}}"
+        
+        version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        case "${{ steps.determine_version_change.outputs.version_change }}" in
+        major) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.nextMajorVersion}.0.0 versions:commit ;;
+        minor) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}.0 versions:commit ;;
+        *) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} versions:commit ;;
+        esac
+        
+        git config --global user.email "$(git log -1 --pretty=format:'%ae')"
+        git config --global user.name "$(git log -1 --pretty=format:'%an')"com
+        git add .
+        git commit -m "Updated version in pom.xml"
+        git push
+        echo "Updated version to: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
-      - name: Increment Version
-        run: |
-          echo "Version change: ${{ steps.determine_version_change.outputs.version_change }}"
-          
-          version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          case "${{ steps.determine_version_change.outputs.version_change }}" in
-          major) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.nextMajorVersion}.0.0 versions:commit ;;
-          minor) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}.0 versions:commit ;;
-          *) mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion} versions:commit ;;
-          esac
-          
-          git config --global user.email "$(git log -1 --pretty=format:'%ae')"
-          git config --global user.name "$(git log -1 --pretty=format:'%an')"
-          git add .
-          git commit -m "Updated version in pom.xml"
-          git push
-          echo "Updated version to: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+    - name: Create Git Tag
+      run: |
+        export version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Tagging with: v${version}"
+        git config --global user.email "$(git log -1 --pretty=format:'%ae')"
+        git config --global user.name "$(git log -1 --pretty=format:'%an')"
+        git tag v${version}
+        git push origin v${version}
+        echo "Tagged: v${version}"
 
-      - name: Create Git Tag
-        run: |
-          export version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "Tagging with: v${version}"
-          git config --global user.email "$(git log -1 --pretty=format:'%ae')"
-          git config --global user.name "$(git log -1 --pretty=format:'%an')"
-          git tag v${version}
-          git push origin v${version}
-          echo "Tagged: v${version}"
-
-      - name: Publish to Maven
-        run: |
-          mvn deploy -Prelease
-        env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    - name: Publish to Maven
+      run: | 
+        mvn deploy -Prelease
+      env:
+        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+        GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
