@@ -76,3 +76,9 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Remove GPG Key
+      if: always()
+      run: |
+        gpg --batch --yes --delete-secret-keys "$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}')"
+        gpg --batch --yes --delete-keys "$(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}')"
