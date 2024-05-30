@@ -80,5 +80,13 @@ jobs:
     - name: Remove GPG Key
       if: always()
       run: |
-        gpg --batch --yes --delete-secret-keys "$(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}')"
-        gpg --batch --yes --delete-keys "$(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}')"
+        echo "Listing secret keys:"
+        gpg --list-secret-keys --with-colons
+        echo "Listing public keys:"
+        gpg --list-keys --with-colons
+        
+        echo "Deleting secret keys:"
+        gpg --batch --yes --delete-secret-keys $(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}')
+        
+        echo "Deleting public keys:"
+        gpg --batch --yes --delete-keys $(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}')
