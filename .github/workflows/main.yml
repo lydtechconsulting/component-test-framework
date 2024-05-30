@@ -13,6 +13,12 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    - name: Cleanup Existing GPG Keys
+      run: |
+        echo "Cleaning up any existing GPG keys..."
+        gpg --batch --yes --delete-secret-keys $(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}')
+        gpg --batch --yes --delete-keys $(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}')
+
     - name: Import GPG Key
       env:
         GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
@@ -82,3 +88,10 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Remove GPG Key
+      if: always()
+      run: |
+        echo "Removing GPG keys..."
+        gpg --batch --yes --delete-secret-keys $(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}')
+        gpg --batch --yes --delete-keys $(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}')
