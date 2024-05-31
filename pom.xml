@@ -294,8 +294,8 @@
 										<arg>loopback</arg>
 										<arg>--no-tty</arg>
 									</gpgArguments>
-<!--									<useAgent>false</useAgent>-->
-<!--									<passphrase>${env.GPG_PASSPHRASE}</passphrase>-->
+									<useAgent>false</useAgent>
+									<passphrase>${env.GPG_PASSPHRASE}</passphrase>
 								</configuration>
 							</execution>
 						</executions>
