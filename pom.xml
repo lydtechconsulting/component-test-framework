@@ -295,7 +295,7 @@
 										<arg>--no-tty</arg>
 									</gpgArguments>
 									<useAgent>false</useAgent>
-									<passphrase>${env.GPG_PASSPHRASE}</passphrase>
+<!--									<passphrase>${env.GPG_PASSPHRASE}</passphrase>-->
 								</configuration>
 							</execution>
 						</executions>
