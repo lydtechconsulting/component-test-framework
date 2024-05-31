@@ -91,6 +91,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mvn -B -Dgpg.executable=gpg \
+              -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
               -Dgpg.homedir=$HOME/.gnupg \
               -Dgpg.useagent=false \
               deploy -Prelease
