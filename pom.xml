@@ -37,14 +37,8 @@
 
 	<developers>
 		<developer>
-			<name>Rob Golder</name>
-			<email>rob.golder@lydtechconsulting.com</email>
-			<organization>Lydtech Consulting</organization>
-			<organizationUrl>http://www.lydtechconsulting.com</organizationUrl>
-		</developer>
-		<developer>
-			<name>James Powell</name>
-			<email>james.powell@lydtechconsulting.com</email>
+			<name>Lydtech Team</name>
+			<email>contact@lydtechconsulting.com</email>
 			<organization>Lydtech Consulting</organization>
 			<organizationUrl>http://www.lydtechconsulting.com</organizationUrl>
 		</developer>

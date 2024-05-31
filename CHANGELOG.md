@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.2.0] - 2024-05-30
+## [3.2.0] - 2024-05-31
 ### Added
 - Supports MariaDB.
 
