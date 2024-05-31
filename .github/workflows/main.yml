@@ -101,7 +101,11 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: |
-          mvn deploy -Prelease
+          mvn -B -Dgpg.executable=gpg \
+              -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
+              -Dgpg.homedir=$HOME/.gnupg \
+              -Dgpg.useagent=false \
+              deploy -Prelease
 
 #        run: |
 #          mvn -B -Dgpg.executable=gpg \
