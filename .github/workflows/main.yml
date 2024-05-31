@@ -95,10 +95,10 @@ jobs:
               -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
               -Dgpg.homedir=$HOME/.gnupg \
               -Dgpg.useagent=false \
-              -Dossrh.username="${{ secrets.OSSRH_USERNAME }}" \
-              -Dossrh.password="${{ secrets.OSSRH_PASSWORD }}" \
               deploy -Prelease
 
+#              -Dossrh.username="${{ secrets.OSSRH_USERNAME }}" \
+#              -Dossrh.password="${{ secrets.OSSRH_PASSWORD }}" \
 #              -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} \
 #      - name: Remove GPG Key
 #        if: always()
