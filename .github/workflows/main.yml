@@ -13,11 +13,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-#      - name: Cleanup Existing GPG Keys
-#        run: |
-#          echo "Cleaning up any existing GPG keys..."
-#          gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}' | xargs -I {} gpg --batch --yes --delete-secret-keys {}
-#          gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}' | xargs -I {} gpg --batch --yes --delete-keys {}
+      - name: Cleanup Existing GPG Keys
+        run: |
+          echo "Cleaning up any existing GPG keys..."
+          for key in $(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}'); do
+            gpg --batch --yes --delete-secret-keys "$key"
+          done
+          for key in $(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}'); do
+            gpg --batch --yes --delete-keys "$key"
+          done
 
       - name: Import GPG Key
         env:
@@ -31,13 +35,14 @@ jobs:
           java-version: 17
           distribution: 'temurin'
           server-id: ossrh
-#          server-username: ${{ secrets.OSSRH_USERNAME }}
-#          server-password: ${{ secrets.OSSRH_PASSWORD }}
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg-passphrase: GPG_PASSPHRASE
           overwrite-settings: true
+
+          #          server-username: ${{ secrets.OSSRH_USERNAME }}
+          #          server-password: ${{ secrets.OSSRH_PASSWORD }}
 
       - name: Debug Environment Variables
         run: env | grep GPG
@@ -95,7 +100,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: |
-          mvn deploy -Prelease
+          mvn -B deploy -Prelease
 
 #        run: |
 #          mvn -B -Dgpg.executable=gpg \
