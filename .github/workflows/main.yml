@@ -30,10 +30,10 @@ jobs:
         with:
           java-version: 17
           distribution: 'temurin'
-#          server-id: ossrh
-#          server-username: ${{ secrets.OSSRH_USERNAME }}
-#          server-password: ${{ secrets.OSSRH_PASSWORD }}
-#          overwrite-settings: true
+          server-id: ossrh
+          server-username: ${{ secrets.OSSRH_USERNAME }}
+          server-password: ${{ secrets.OSSRH_PASSWORD }}
+          overwrite-settings: true
 
       - name: Debug Environment Variables
         run: env | grep GPG
@@ -89,6 +89,7 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: |
           mvn -B -Dgpg.executable=gpg \
               -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
