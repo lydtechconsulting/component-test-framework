@@ -79,6 +79,9 @@ jobs:
           git push origin v${version}
           echo "Tagged: v${version}"
 
+      - name: Debug Environment Variables
+        run: env | grep GPG
+
       - name: Publish to Maven
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
