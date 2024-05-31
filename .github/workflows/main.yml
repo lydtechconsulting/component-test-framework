@@ -30,10 +30,15 @@ jobs:
         with:
           java-version: 17
           distribution: 'temurin'
-          server-id: ossrh
-          server-username: ${{ secrets.OSSRH_USERNAME }}
-          server-password: ${{ secrets.OSSRH_PASSWORD }}
-          overwrite-settings: true
+#          server-id: ossrh
+#          server-username: ${{ secrets.OSSRH_USERNAME }}
+#          server-password: ${{ secrets.OSSRH_PASSWORD }}
+#          overwrite-settings: true
+
+      - name: Debug Environment Variables
+        run: env | grep GPG
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Build with Maven
         run: mvn package
@@ -78,9 +83,6 @@ jobs:
           git tag v${version}
           git push origin v${version}
           echo "Tagged: v${version}"
-
-      - name: Debug Environment Variables
-        run: env | grep GPG
 
       - name: Publish to Maven
         env:
