@@ -292,7 +292,7 @@
 									<gpgArguments>
 										<arg>--pinentry-mode</arg>
 										<arg>loopback</arg>
-<!--										<arg>&#45;&#45;no-tty</arg>-->
+										<arg>--no-tty</arg>
 									</gpgArguments>
 <!--									<useAgent>false</useAgent>-->
 <!--									<passphrase>${env.GPG_PASSPHRASE}</passphrase>-->
