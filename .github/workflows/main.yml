@@ -13,11 +13,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      #      - name: Cleanup Existing GPG Keys
-      #        run: |
-      #          echo "Cleaning up any existing GPG keys..."
-      #          gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}' | xargs -I {} gpg --batch --yes --delete-secret-keys {}
-      #          gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}' | xargs -I {} gpg --batch --yes --delete-keys {}
+      - name: Cleanup Existing GPG Keys
+        run: |
+          echo "Cleaning up any existing GPG keys..."
+          gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}' | xargs -I {} gpg --batch --yes --delete-secret-keys {}
+          gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}' | xargs -I {} gpg --batch --yes --delete-keys {}
 
       - name: Import GPG Key
         env:
@@ -90,18 +90,18 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          mvn deploy -Prelease \
-              -Dgpg.executable=gpg \
+          mvn -B -Dgpg.executable=gpg \
               -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} \
               -Dgpg.homedir=$HOME/.gnupg \
-              -Dgpg.useagent=false
+              -Dgpg.useagent=false \
+              deploy -Prelease
 
-#      - name: Remove GPG Key
-#        if: always()
-#        run: |
-#          echo "Cleaning up GPG keys..."
-#          gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}' | xargs -I {} gpg --batch --yes --delete-secret-keys {}
-#          gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}' | xargs -I {} gpg --batch --yes --delete-keys {}
-#          echo "Cleaning up keyring and agents."
-#          gpgconf --kill all
-#          rm -rf ~/.gnupg
+      - name: Remove GPG Key
+        if: always()
+        run: |
+          echo "Cleaning up GPG keys..."
+          gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}' | xargs -I {} gpg --batch --yes --delete-secret-keys {}
+          gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}' | xargs -I {} gpg --batch --yes --delete-keys {}
+          echo "Cleaning up keyring and agents."
+          gpgconf --kill all
+          rm -rf ~/.gnupg
