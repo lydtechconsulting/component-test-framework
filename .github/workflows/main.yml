@@ -94,6 +94,8 @@ jobs:
               -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
               -Dgpg.homedir=$HOME/.gnupg \
               -Dgpg.useagent=false \
+              -Dossrh.username="${MAVEN_USERNAME}" \
+              -Dossrh.password="${MAVEN_PASSWORD}" \
               deploy -Prelease
 
 #              -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} \
