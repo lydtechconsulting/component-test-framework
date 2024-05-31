@@ -101,7 +101,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: |
-          mvn -B deploy -Prelease
+          mvn deploy -Prelease
 
 #        run: |
 #          mvn -B -Dgpg.executable=gpg \
