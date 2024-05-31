@@ -84,7 +84,7 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: mvn deploy -Prelease
 
 #      - name: Remove GPG Key
