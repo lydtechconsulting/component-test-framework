@@ -13,12 +13,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-#      - name: Import GPG Key
-#        env:
-#          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-#        run: |
-#          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
-
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
