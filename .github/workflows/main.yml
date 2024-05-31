@@ -13,23 +13,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Cleanup Existing GPG Keys
-        run: |
-          echo "Cleaning up any existing GPG keys..."
-          for key in $(gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}'); do
-            gpg --batch --yes --delete-secret-keys "$key"
-          done
-          for key in $(gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}'); do
-            gpg --batch --yes --delete-keys "$key"
-          done
-
-      - name: Import GPG Key
-        env:
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-        run: |
-          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
-          gpg --list-keys
-
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
@@ -38,17 +21,7 @@ jobs:
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-#          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
-#          gpg-passphrase: GPG_PASSPHRASE
           overwrite-settings: true
-
-          #          server-username: ${{ secrets.OSSRH_USERNAME }}
-          #          server-password: ${{ secrets.OSSRH_PASSWORD }}
-
-      - name: Debug Environment Variables
-        run: env | grep GPG
-        env:
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Build with Maven
         run: mvn package
@@ -106,23 +79,3 @@ jobs:
               -Dgpg.homedir=$HOME/.gnupg \
               -Dgpg.useagent=false \
               deploy -Prelease
-
-#        run: |
-#          mvn -B -Dgpg.executable=gpg \
-#              -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
-#              -Dgpg.homedir=$HOME/.gnupg \
-#              -Dgpg.useagent=false \
-#              deploy -Prelease
-
-#              -Dossrh.username="${{ secrets.OSSRH_USERNAME }}" \
-#              -Dossrh.password="${{ secrets.OSSRH_PASSWORD }}" \
-#              -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} \
-#      - name: Remove GPG Key
-#        if: always()
-#        run: |
-#          echo "Cleaning up GPG keys..."
-#          gpg --list-secret-keys --with-colons | awk -F: '/^sec/{print $5}' | xargs -I {} gpg --batch --yes --delete-secret-keys {}
-#          gpg --list-keys --with-colons | awk -F: '/^pub/{print $5}' | xargs -I {} gpg --batch --yes --delete-keys {}
-#          echo "Cleaning up keyring and agents."
-#          gpgconf --kill all
-#          rm -rf ~/.gnupg
