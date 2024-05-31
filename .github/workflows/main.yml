@@ -91,11 +91,11 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mvn -B -Dgpg.executable=gpg \
-#              -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} \
               -Dgpg.homedir=$HOME/.gnupg \
               -Dgpg.useagent=false \
               deploy -Prelease
 
+#              -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }} \
 #      - name: Remove GPG Key
 #        if: always()
 #        run: |
