@@ -599,6 +599,7 @@ public final class TestcontainersManager {
                 })
                 .withClasspathResourceMapping("/wiremock", "/home/wiremock/mappings", BindMode.READ_WRITE)
                 .withExposedPorts(WIREMOCK_PORT)
+                .withEnv("WIREMOCK_OPTIONS", WIREMOCK_OPTIONS)
                 .withReuse(true)
                 .waitingFor(Wait.forHttp("/health").forStatusCode(204));
         if(WIREMOCK_CONTAINER_LOGGING_ENABLED) {
