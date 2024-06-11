@@ -1,9 +1,13 @@
 # Changelog
 
+## [3.3.0] - 2024-06-11
+### Changed
+- Update kafka-avro-serializer to 7.5.3.
+
 ## [3.2.0] - 2024-05-31
 ### Changed
 - Support passing in WIREMOCK_OPTIONS environment variable.
-- Update default Wiremock tag to 3.6.0
+- Update default Wiremock tag to 3.6.0.
 
 ## [3.1.0] - 2024-05-31
 ### Added
