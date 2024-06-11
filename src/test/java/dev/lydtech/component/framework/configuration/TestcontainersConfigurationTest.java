@@ -106,6 +106,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("wiremock.image.tag");
         System.clearProperty("wiremock.port");
         System.clearProperty("wiremock.container.logging.enabled");
+        System.clearProperty("wiremock.options");
 
         System.clearProperty("localstack.enabled");
         System.clearProperty("localstack.image.tag");
@@ -196,9 +197,10 @@ public class TestcontainersConfigurationTest {
         assertThat(DEBEZIUM_PORT, equalTo(8083));
         assertThat(DEBEZIUM_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(WIREMOCK_ENABLED, equalTo(false));
-        assertThat(WIREMOCK_IMAGE_TAG, equalTo("2.35.0"));
+        assertThat(WIREMOCK_IMAGE_TAG, equalTo("3.6.0"));
         assertThat(WIREMOCK_PORT, equalTo(8080));
         assertThat(WIREMOCK_CONTAINER_LOGGING_ENABLED, equalTo(false));
+        assertThat(WIREMOCK_OPTIONS, equalTo(""));
         assertThat(LOCALSTACK_ENABLED, equalTo(false));
         assertThat(LOCALSTACK_IMAGE_TAG, equalTo("0.14.3"));
         assertThat(LOCALSTACK_PORT, equalTo(4566));
@@ -305,6 +307,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("wiremock.image.tag", "wiremock-override");
         System.setProperty("wiremock.port", "8081");
         System.setProperty("wiremock.container.logging.enabled", "true");
+        System.setProperty("wiremock.options", "wiremock-options-override");
 
         System.setProperty("localstack.enabled", "true");
         System.setProperty("localstack.image.tag", "localstack-override");
@@ -405,6 +408,7 @@ public class TestcontainersConfigurationTest {
         assertThat(WIREMOCK_IMAGE_TAG, equalTo("wiremock-override"));
         assertThat(WIREMOCK_PORT, equalTo(8081));
         assertThat(WIREMOCK_CONTAINER_LOGGING_ENABLED, equalTo(true));
+        assertThat(WIREMOCK_OPTIONS, equalTo("wiremock-options-override"));
         assertThat(LOCALSTACK_ENABLED, equalTo(true));
         assertThat(LOCALSTACK_IMAGE_TAG, equalTo("localstack-override"));
         assertThat(LOCALSTACK_PORT, equalTo(4567));

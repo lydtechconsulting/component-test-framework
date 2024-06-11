@@ -1,5 +1,10 @@
 # Changelog
 
+## [3.2.0] - 2024-05-31
+### Changed
+- Support passing in WIREMOCK_OPTIONS environment variable.
+- Update default Wiremock tag to 3.6.0
+
 ## [3.1.0] - 2024-05-31
 ### Added
 - Supports MariaDB.

@@ -159,9 +159,10 @@ public final class TestcontainersConfiguration {
      */
 
     private static final String DEFAULT_WIREMOCK_ENABLED = "false";
-    private static final String DEFAULT_WIREMOCK_IMAGE_TAG = "2.35.0";
+    private static final String DEFAULT_WIREMOCK_IMAGE_TAG = "3.6.0";
     private static final String DEFAULT_WIREMOCK_PORT = "8080";
     private static final String DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_WIREMOCK_OPTIONS = "";
 
     /**
      * Localstack (AWS) default configuration.
@@ -281,6 +282,7 @@ public final class TestcontainersConfiguration {
     public static String WIREMOCK_IMAGE_TAG;
     public static int WIREMOCK_PORT;
     public static boolean WIREMOCK_CONTAINER_LOGGING_ENABLED;
+    public static String WIREMOCK_OPTIONS;
 
     public static boolean LOCALSTACK_ENABLED;
     public static String LOCALSTACK_IMAGE_TAG;
@@ -396,6 +398,7 @@ public final class TestcontainersConfiguration {
         WIREMOCK_IMAGE_TAG = System.getProperty("wiremock.image.tag", DEFAULT_WIREMOCK_IMAGE_TAG);
         WIREMOCK_PORT = Integer.parseInt(System.getProperty("wiremock.port", DEFAULT_WIREMOCK_PORT));
         WIREMOCK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("wiremock.container.logging.enabled", DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED));
+        WIREMOCK_OPTIONS = System.getProperty("wiremock.options", DEFAULT_WIREMOCK_OPTIONS);
 
         LOCALSTACK_ENABLED = Boolean.valueOf(System.getProperty("localstack.enabled", DEFAULT_LOCALSTACK_ENABLED));
         LOCALSTACK_IMAGE_TAG = System.getProperty("localstack.image.tag", DEFAULT_LOCALSTACK_IMAGE_TAG);
@@ -605,6 +608,7 @@ public final class TestcontainersConfiguration {
             log.info("wiremock.image.tag: " + WIREMOCK_IMAGE_TAG);
             log.info("wiremock.port: " + WIREMOCK_PORT);
             log.info("wiremock.container.logging.enabled: " + WIREMOCK_CONTAINER_LOGGING_ENABLED);
+            log.info("wiremock.options: " + WIREMOCK_OPTIONS);
         }
 
         log.info("localstack.enabled: " + LOCALSTACK_ENABLED);
