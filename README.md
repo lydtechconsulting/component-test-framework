@@ -173,12 +173,24 @@ https://github.com/lydtechconsulting/micronaut-kafka-kotlin - demonstrates a Mic
 
 # Upgrading From Previous Versions
 
+## Upgrading To 3.x From 2.x
+
+### Application Default Port
+
+The default port that the Component Test Framework uses for the application under test has changed from `9001` to `8080`.
+
+If using port `9001` for the application either specify this port in the configuration:
+
+e.g. in the pom.xml add `<service.port>9001</service.port>`
+
+Or change the application port to be `8080` in order to leave the Component Test Framework using the default port.
+
 ## Upgrading To 2.6.0 From Any Previous Version
 
-- JUnit Extension Class
+### JUnit Extension Class
 The JUnit extension class `dev.lydtech.component.framework.extension.TestContainersSetupExtension` has been deprecated.  Instead use `dev.lydtech.component.framework.extension.ComponentTestExtension`.  e.g. `@ExtendWith(ComponentTestExtension.class)`.
 
-- Testcontainers Environment Variable
+### Testcontainers Environment Variable
 The Testcontainers environment variable `TESTCONTAINERS_RYUK_DISABLED` used for keeping containers up between test runs has changed to `TESTCONTAINERS_REUSE_ENABLE`.  In the maven pom component test profile, change to use this variable:
 ```
 <environmentVariables>
