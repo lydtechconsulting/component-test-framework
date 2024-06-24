@@ -1,5 +1,9 @@
 # Changelog
 
+## [4.0.0] - 2024-06-24
+### Changed
+- Default Conduktor version increased
+
 ## [3.3.0] - 2024-06-11
 ### Changed
 - Update kafka-avro-serializer to 7.5.3.
