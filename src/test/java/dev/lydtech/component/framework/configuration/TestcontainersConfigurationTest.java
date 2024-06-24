@@ -183,7 +183,7 @@ public class TestcontainersConfigurationTest {
         assertThat(KAFKA_CONTROL_CENTER_PORT, equalTo(9021));
         assertThat(KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(CONDUKTOR_ENABLED, equalTo(false));
-        assertThat(CONDUKTOR_IMAGE_TAG, equalTo("1.15.0"));
+        assertThat(CONDUKTOR_IMAGE_TAG, equalTo("1.23.0"));
         assertThat(CONDUKTOR_LICENSE_KEY, nullValue());
         assertThat(CONDUKTOR_PORT, equalTo(8088));
         assertThat(CONDUKTOR_CONTAINER_LOGGING_ENABLED, equalTo(false));

@@ -138,10 +138,14 @@ public final class TestcontainersConfiguration {
      * Conduktor configuration.
      */
 
-    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.15.0";
+    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.23.0";
     private static final String DEFAULT_CONDUKTOR_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_PORT = "8088";
+    public static final String DEFAULT_CONDUKTOR_POSTGRES_IMAGE_TAG = "postgres:14";
+    public static final String DEFAULT_CONDUKTOR_POSTGRES_DB = "conduktor-console";
+    public static final String DEFAULT_CONDUKTOR_POSTGRES_USER = "conduktor";
+    public static final String DEFAULT_CONDUKTOR_POSTGRES_PASSWORD = "POSTGRES_PASSWORD";
 
     /**
      * Conduktor Gateway configuration.

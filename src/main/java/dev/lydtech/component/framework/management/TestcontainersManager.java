@@ -62,6 +62,7 @@ public final class TestcontainersManager {
     private GenericContainer wiremockContainer;
     private GenericContainer localstackContainer;
     private GenericContainer controlCenterContainer;
+    private GenericContainer conduktorPostgresContainer;
     private GenericContainer conduktorContainer;
     private GenericContainer conduktorGatewayContainer;
     private GenericContainer elasticSearchContainer;
@@ -150,6 +151,7 @@ public final class TestcontainersManager {
             if (!KAFKA_ENABLED) {
                 throw new RuntimeException("Kafka must be enabled in order to use Conduktor.");
             }
+            conduktorPostgresContainer = createConduktorPostgresContainer();
             conduktorContainer = createConduktorContainer();
         }
         if (CONDUKTOR_GATEWAY_ENABLED) {
@@ -204,6 +206,7 @@ public final class TestcontainersManager {
                 controlCenterContainer.start();
             }
             if(CONDUKTOR_ENABLED) {
+                conduktorPostgresContainer.start();
                 conduktorContainer.start();
             }
             if(CONDUKTOR_GATEWAY_ENABLED) {
@@ -524,6 +527,26 @@ public final class TestcontainersManager {
         return container;
     }
 
+    private GenericContainer createConduktorPostgresContainer() {
+        String containerName = CONDUKTOR + "-postgres";
+        String containerCmdModifier =
+                CONTAINER_APPEND_GROUP_ID ? CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID
+                        : CONTAINER_NAME_PREFIX + "-" + containerName;
+        Consumer<CreateContainerCmd> cmd = e -> {
+            e.withName(containerCmdModifier);
+        };
+
+        return new GenericContainer<>(DEFAULT_CONDUKTOR_POSTGRES_IMAGE_TAG) // todo parameterise
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withCreateContainerCmdModifier(cmd)
+                .withEnv("POSTGRES_DB", DEFAULT_CONDUKTOR_POSTGRES_DB)
+                .withEnv("POSTGRES_USER", DEFAULT_CONDUKTOR_POSTGRES_USER)
+                .withEnv("POSTGRES_PASSWORD", DEFAULT_CONDUKTOR_POSTGRES_PASSWORD)
+                .withEnv("POSTGRES_HOST_AUTH_METHOD", "scram-sha-256")
+                .withReuse(true);
+    }
+
     private GenericContainer createConduktorContainer() {
         String containerName = CONDUKTOR.toString();
         int containerExposedPort = 8080;
@@ -544,16 +567,18 @@ public final class TestcontainersManager {
                 .withEnv("CDK_ADMIN_PASSWORD", "admin")
                 .withEnv("CDK_CLUSTERS_0_ID", "CTF")
                 .withEnv("CDK_CLUSTERS_0_NAME", "Local Cluster")
-                .withEnv("CDK_CLUSTERS_0_BOOTSTRAPSERVERS", KAFKA.toString()+":9092")
+                .withEnv("CDK_CLUSTERS_0_BOOTSTRAPSERVERS", KAFKA + ":9092")
+                .withEnv("CDK_DATABASE_URL", "postgresql://" + DEFAULT_CONDUKTOR_POSTGRES_USER + ":" + DEFAULT_CONDUKTOR_POSTGRES_PASSWORD + "@" + CONDUKTOR + "-postgres" + ":5432/" + DEFAULT_CONDUKTOR_POSTGRES_DB)
                 .withReuse(true)
                 .withExposedPorts(containerExposedPort);
-        if(CONDUKTOR_LICENSE_KEY != null) {
+        if (CONDUKTOR_LICENSE_KEY != null) {
             container.withEnv("LICENSE_KEY", CONDUKTOR_LICENSE_KEY);
         }
-        if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
-            container.withEnv("SCHEMA_REGISTRY_URL", "http://"+KAFKA_SCHEMA_REGISTRY.toString().replace("_", "-")+":"+KAFKA_SCHEMA_REGISTRY_PORT);
+        if (KAFKA_SCHEMA_REGISTRY_ENABLED) {
+            container.withEnv("CDK_CLUSTERS_0_SCHEMAREGISTRY_URL",
+                    "http://" + KAFKA_SCHEMA_REGISTRY.toString().replace("_", "-") + ":" + KAFKA_SCHEMA_REGISTRY_PORT);
         }
-        if(CONDUKTOR_CONTAINER_LOGGING_ENABLED) {
+        if (CONDUKTOR_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;
