@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0] - 2024-06-24
+## [3.3.1] - 2024-06-24
 ### Changed
 - Default Conduktor version increased
 
