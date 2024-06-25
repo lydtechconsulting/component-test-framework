@@ -1021,6 +1021,9 @@ password: admin
 
 Launch the `Console` application in order to view the broker, topics, messages, and schema registry data. 
 
+Note: Conduktor requires a Postgres Database instance. By choosing to enable Conduktor, the Component Test Framework will also 
+start a Postgres container and configure Conduktor to use that for its persistence.
+
 [[Back To Top](README.md#component-test-framework)]
 
 # Conduktor Gateway

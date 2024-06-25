@@ -536,7 +536,7 @@ public final class TestcontainersManager {
             e.withName(containerCmdModifier);
         };
 
-        return new GenericContainer<>(DEFAULT_CONDUKTOR_POSTGRES_IMAGE_TAG) // todo parameterise
+        return new GenericContainer<>(DEFAULT_CONDUKTOR_POSTGRES_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd)
