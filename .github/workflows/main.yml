@@ -79,4 +79,4 @@ jobs:
               -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
               -Dgpg.homedir=$HOME/.gnupg \
               -Dgpg.useagent=false \
-              deploy -Prelease
+              deploy -Prelease -X
