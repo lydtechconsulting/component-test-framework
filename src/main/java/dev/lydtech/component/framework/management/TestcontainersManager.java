@@ -499,7 +499,7 @@ public final class TestcontainersManager {
         String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
         Consumer<CreateContainerCmd> cmd = e -> {
             // Force host port to be KAFKA_CONTROL_CENTER_PORT.
-            e.withHostConfig(e.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(CONDUKTOR_PORT),
+            e.withHostConfig(e.getHostConfig().withPortBindings(new PortBinding(Ports.Binding.bindPort(KAFKA_CONTROL_CENTER_PORT),
                             new ExposedPort(KAFKA_CONTROL_CENTER_PORT))))
                     .withName(containerCmdModifier);
         };
