@@ -133,9 +133,9 @@ https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb - includ
 
 https://github.com/lydtechconsulting/kafka-schema-registry-avro - a multi-module maven project demonstrating using the Confluent Schema Registry, and demonstrates using Confluent Control Center and Conduktor Platform with Confluent Schema Registry integration.
 
-https://github.com/lydtechconsulting/kafka-metrics - demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform)
+https://github.com/lydtechconsulting/kafka-metrics - demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform).
 
-https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka to consume and produce events, and observe events using Confluent Control Center.
+https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka to consume and produce events, and observe events using Confluent Control Center and Conduktor.
 
 https://github.com/lydtechconsulting/kafka-streams - demonstrates using Kafka with the Kafka Streams API. 
 
