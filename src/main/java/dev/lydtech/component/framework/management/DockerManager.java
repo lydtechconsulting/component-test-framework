@@ -30,6 +30,8 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ELASTICSEARCH_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_NATIVE_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_NATIVE_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.KAFKA_SCHEMA_REGISTRY_PORT;
@@ -119,8 +121,12 @@ public final class DockerManager {
         findContainerAndMapPort(dockerClient, POSTGRES.toString(), POSTGRES_ENABLED, POSTGRES_PORT);
         findContainerAndMapPort(dockerClient, MONGODB.toString(), MONGODB_ENABLED, MONGODB_PORT);
         findContainerAndMapPort(dockerClient, MARIADB.toString(), MARIADB_ENABLED, MARIADB_PORT);
-        // Just need to map the port of one of the Kafka servers.
-        findContainerAndMapPort(dockerClient, KAFKA.toString(), KAFKA_ENABLED, KAFKA_PORT);
+        // Just need to map the port of one of the Kafka servers, and either look up using the Kafka or the Kafka native port.
+        if (KAFKA_ENABLED) {
+            findContainerAndMapPort(dockerClient, KAFKA.toString(), KAFKA_ENABLED, KAFKA_PORT);
+        } else {
+            findContainerAndMapPort(dockerClient, KAFKA.toString(), KAFKA_NATIVE_ENABLED, KAFKA_NATIVE_PORT);
+        }
         findContainerAndMapPort(dockerClient, DEBEZIUM.toString(), DEBEZIUM_ENABLED, DEBEZIUM_PORT);
         findContainerAndMapPort(dockerClient, KAFKA_SCHEMA_REGISTRY.toString().replace("_", "."), KAFKA_SCHEMA_REGISTRY_ENABLED, KAFKA_SCHEMA_REGISTRY_PORT);
         findContainerAndMapPort(dockerClient, WIREMOCK.toString(), WIREMOCK_ENABLED, WIREMOCK_PORT);

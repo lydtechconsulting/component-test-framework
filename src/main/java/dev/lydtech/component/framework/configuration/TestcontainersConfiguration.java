@@ -94,9 +94,10 @@ public final class TestcontainersConfiguration {
      */
 
     private static final String DEFAULT_KAFKA_ENABLED = "false";
+    private static final String DEFAULT_KAFKA_NATIVE_ENABLED = "false";
     private static final String DEFAULT_KAFKA_BROKER_COUNT = "1";
     private static final String DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG = "7.3.2";
-    private static final String DEFAULT_KAFKA_PORT = "9093";
+    private static final String DEFAULT_KAFKA_APACHE_NATIVE_IMAGE_TAG = "3.8.0";
     private static final String DEFAULT_KAFKA_TOPIC_PARTITION_COUNT = "1";
     private static final String DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR = "1";
@@ -151,7 +152,7 @@ public final class TestcontainersConfiguration {
      * Conduktor Gateway configuration.
      */
 
-    private static final String DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG = "2.1.5";
+    private static final String DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG = "3.2.1";
 
     private static final String DEFAULT_CONDUKTOR_GATEWAY_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED = "false";
@@ -241,9 +242,19 @@ public final class TestcontainersConfiguration {
     public static boolean MARIADB_CONTAINER_LOGGING_ENABLED;
 
     public static boolean KAFKA_ENABLED;
+    public static boolean KAFKA_NATIVE_ENABLED;
     public static int KAFKA_BROKER_COUNT;
     public static String KAFKA_CONFLUENT_IMAGE_TAG;
-    public static int KAFKA_PORT;
+    public static String KAFKA_APACHE_NATIVE_IMAGE_TAG;
+
+    // These ports are hardcoded in org.testcontainers.containers.KafkaContainer (Standard) and org.testcontainers.kafka.KafkaContainer (Native) respectively.
+    // PORT is the port for calls made from outside the Docker network (e.g. to 'localhost').
+    // INTERNAL_PORT is the port for calls between services within the Docker network (e.g. to the 'kafka' container).
+    public static int KAFKA_PORT = 9093;
+    public static int KAFKA_INTERNAL_PORT = 9092;
+    public static int KAFKA_NATIVE_PORT = 9092;
+    public static int KAFKA_NATIVE_INTERNAL_PORT = 9093;
+
     public static List<String> KAFKA_TOPICS;
     public static int KAFKA_TOPIC_PARTITION_COUNT;
     public static boolean KAFKA_CONTAINER_LOGGING_ENABLED;
@@ -357,9 +368,10 @@ public final class TestcontainersConfiguration {
         MARIADB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mariadb.container.logging.enabled", DEFAULT_MARIADB_CONTAINER_LOGGING_ENABLED));
 
         KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
+        KAFKA_NATIVE_ENABLED = Boolean.valueOf(System.getProperty("kafka.native.enabled", DEFAULT_KAFKA_NATIVE_ENABLED));
         KAFKA_BROKER_COUNT = Integer.parseInt(System.getProperty("kafka.broker.count", DEFAULT_KAFKA_BROKER_COUNT));
         KAFKA_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.confluent.image.tag", DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG);
-        KAFKA_PORT = Integer.parseInt(System.getProperty("kafka.port", DEFAULT_KAFKA_PORT));
+        KAFKA_APACHE_NATIVE_IMAGE_TAG = System.getProperty("kafka.apache.native.image.tag", DEFAULT_KAFKA_APACHE_NATIVE_IMAGE_TAG);
         KAFKA_TOPICS = parseKafkaTopics();
         KAFKA_TOPIC_PARTITION_COUNT = Integer.parseInt(System.getProperty("kafka.topic.partition.count", DEFAULT_KAFKA_TOPIC_PARTITION_COUNT));
         KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
@@ -549,10 +561,15 @@ public final class TestcontainersConfiguration {
         }
 
         log.info("kafka.enabled: " + KAFKA_ENABLED);
+        log.info("kafka.native.enabled: " + KAFKA_NATIVE_ENABLED);
         if(KAFKA_ENABLED) {
             log.info("kafka.confluent.image.tag: " + KAFKA_CONFLUENT_IMAGE_TAG);
+        }
+        if(KAFKA_NATIVE_ENABLED) {
+            log.info("kafka.apache.native.image.tag: " + KAFKA_APACHE_NATIVE_IMAGE_TAG);
+        }
+        if(KAFKA_ENABLED || KAFKA_NATIVE_ENABLED) {
             log.info("kafka.broker.count: " + KAFKA_BROKER_COUNT);
-            log.info("kafka.port: " + KAFKA_PORT);
             log.info("kafka.topics: " + KAFKA_TOPICS);
             log.info("kafka.topic.partition.count: " + KAFKA_TOPIC_PARTITION_COUNT);
             log.info("kafka.topic.replication.factor: " + KAFKA_TOPIC_REPLICATION_FACTOR);

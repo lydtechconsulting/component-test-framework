@@ -60,7 +60,7 @@ This test is available in the repository [here](https://github.com/lydtechconsul
 
 - Configurable number of instances of the service under test.
 - Additional containers (simulators/services)
-- Kafka broker (configurable number of nodes in the cluster)
+- Kafka broker (standard or native build)
 - Kafka Schema Registry
 - Postgres database
 - MongoDB database
@@ -135,7 +135,7 @@ https://github.com/lydtechconsulting/kafka-schema-registry-avro - a multi-module
 
 https://github.com/lydtechconsulting/kafka-metrics - demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform).
 
-https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka to consume and produce events, and observe events using Confluent Control Center and Conduktor.
+https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka (either standard or native build) to consume and produce events, and observe events using Confluent Control Center and Conduktor.
 
 https://github.com/lydtechconsulting/kafka-streams - demonstrates using Kafka with the Kafka Streams API. 
 
@@ -247,7 +247,8 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 | mariadb.username                                | The MariaDB username.                                                                                                                                                                                                                                                                                                                                                           | user                                              |
 | mariadb.password                                | The MariaDB password.                                                                                                                                                                                                                                                                                                                                                           | password                                          |
 | mariadb.container.logging.enabled               | Whether to output the MariaDB Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | false                                             |
-| kafka.enabled                                   | Whether a Docker Kafka container should be started.                                                                                                                                                                                                                                                                                                                             | false                                             |
+| kafka.enabled                                   | Whether a Docker Kafka container (standard build) should be started.  Cannot be `true` if `kafka.native.enabled` is `true`.  Set the application's Kafka `bootstrap-servers` to `kafka:9092` in the `application-component.yml` to connect.                                                                                                                                     | false                                             |
+| kafka.native.enabled                            | Whether a Docker Kafka container (native build) should be started.  Cannot be `true` if `kafka.enabled` is `true`.  Set the application's Kafka `bootstrap-servers` to `kafka:9093` in the `application-component.yml` to connect.                                                                                                                                              | false                                             |
 | kafka.broker.count                              | The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be 'kafka', then subsequent will have an instance suffix, e.g. 'kafka-2'.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).                                       | 1                                                 |
 | kafka.confluent.image.tag                       | The image tag of the Confluent Kafka Docker container to use.                                                                                                                                                                                                                                                                                                                   | 7.3.2                                             |
 | kafka.port                                      | The port of the Kafka Docker container.                                                                                                                                                                                                                                                                                                                                         | 9093                                              |
@@ -799,7 +800,15 @@ String dbUrl = MariaDbClient.getInstance().getMariaDbClient().getDbHostAndPortUr
 # Kafka
 ## Kafka Configuration
 
-If the Kafka messaging broker is enabled via `kafka.enabled`, a number of broker and topic configurations can be applied.  These include setting the number of broker nodes in the cluster (`kafka.broker.count`), the topic replication factor (`kafka.topic.replication.factor`), and the minimum number of brokers that must be in-sync to accept a producer write (`kafka.min.insync.replicas`).  Any topics that should be created upfront can be declared in a comma separated list (`kafka.topics`), and the default topic partition count can be configured (`kafka.topic.partition.count`).
+The Kafka messaging broker is enabled by either setting `kafka.enabled` to `true`, to start a standard (Confluent) Kafka broker, or by setting `kafka.native.enabled` to `true`, to start a native (Apache) Kafka broker.  But flags cannot be enabled at the same time.
+
+When running a standard broker, set the application's Kafka `bootstrap-servers` to `kafka:9092` in the `application-component.yml` to connect.
+
+When running a native broker, Set the application's Kafka `bootstrap-servers` to `kafka:9093` in the `application-component.yml` to connect.  The native build boasts very fast start up time, which will aid overall test time.
+
+Both flavours of the broker support integrating with Schema Registry, Debezium, Conduktor Platform, Conduktor Gateway, and Confluent Control Center.  No additional configuration is required to those resources for integration, they work seamlessly whether the standard or native Kafka broker are enabled.
+
+A configurable number of broker and topic configurations can be applied.  These include setting the number of broker nodes in the cluster (`kafka.broker.count`), the topic replication factor (`kafka.topic.replication.factor`), and the minimum number of brokers that must be in-sync to accept a producer write (`kafka.min.insync.replicas`).  Any topics that should be created upfront can be declared in a comma separated list (`kafka.topics`), and the default topic partition count can be configured (`kafka.topic.partition.count`).
 
 ## Kafka Client
 

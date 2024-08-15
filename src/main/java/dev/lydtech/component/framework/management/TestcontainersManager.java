@@ -55,7 +55,8 @@ public final class TestcontainersManager {
     private GenericContainer postgresContainer;
     private MariaDBContainer mariaDBContainer;
     private MongoDBContainer mongoDbContainer;
-    private List<KafkaContainer> kafkaContainers;
+    private List<GenericContainer> kafkaContainers;
+    private List<GenericContainer> kafkaNativeContainers;
     private GenericContainer zookeeperContainer;
     private DebeziumContainer debeziumContainer;
     private GenericContainer kafkaSchemaRegistryContainer;
@@ -96,7 +97,10 @@ public final class TestcontainersManager {
         if (MARIADB_ENABLED) {
             mariaDBContainer = createMariaDBContainer();
         }
-        if (KAFKA_ENABLED) {
+        if (KAFKA_ENABLED && KAFKA_NATIVE_ENABLED) {
+            throw new RuntimeException("Cannot enable both kafka and kafka native:  kafka.enabled: "+KAFKA_ENABLED+" - kafka.native.enabled: "+KAFKA_NATIVE_ENABLED);
+        }
+        if (KAFKA_ENABLED || KAFKA_NATIVE_ENABLED) {
             if(KAFKA_TOPIC_REPLICATION_FACTOR > KAFKA_BROKER_COUNT) {
                 throw new RuntimeException("kafka.topic.replication.factor: "+KAFKA_TOPIC_REPLICATION_FACTOR+" - must not be greater than kafka.broker.count: "+KAFKA_BROKER_COUNT);
             }
@@ -106,31 +110,34 @@ public final class TestcontainersManager {
             if(KAFKA_MIN_INSYNC_REPLICAS > KAFKA_TOPIC_REPLICATION_FACTOR) {
                 throw new RuntimeException("kafka.min.insync.replicas: "+KAFKA_MIN_INSYNC_REPLICAS+" - must not be greater than kafka.topic.replication.factor: "+KAFKA_TOPIC_REPLICATION_FACTOR);
             }
-            if(KAFKA_BROKER_COUNT>1) {
-                // As there are multiple Kafka instances they need to use the same external Zookeeper.
+            if(KAFKA_ENABLED && KAFKA_BROKER_COUNT>1) {
+                // As there are multiple standard Kafka instances they need to use the same external Zookeeper.
                 zookeeperContainer = createZookeeperContainer();
             }
 
-            if(KAFKA_CONTROL_CENTER_ENABLED && KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED) {
+            if(KAFKA_ENABLED && KAFKA_CONTROL_CENTER_ENABLED && KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED) {
                 // To support exporting metrics for Confluent Control Center, use the Confluent cp-server container.
                 kafkaContainers = IntStream.range(1, KAFKA_BROKER_COUNT +1)
                     .mapToObj(this::createKafkaServerContainer)
                     .collect(Collectors.toList());
-
-            } else {
+            } else if(KAFKA_ENABLED) {
                 kafkaContainers = IntStream.range(1, KAFKA_BROKER_COUNT +1)
                     .mapToObj(this::createKafkaContainer)
+                    .collect(Collectors.toList());
+            } else if(KAFKA_NATIVE_ENABLED){
+                kafkaNativeContainers = IntStream.range(1, KAFKA_BROKER_COUNT +1)
+                    .mapToObj(this::createNativeKafkaContainer)
                     .collect(Collectors.toList());
             }
         }
         if (DEBEZIUM_ENABLED) {
-            if(!KAFKA_ENABLED) {
+            if(!KAFKA_ENABLED && !KAFKA_NATIVE_ENABLED) {
                 throw new RuntimeException("Kafka must be enabled in order to use Debezium.");
             }
             debeziumContainer = createDebeziumContainer();
         }
         if (KAFKA_SCHEMA_REGISTRY_ENABLED) {
-            if(!KAFKA_ENABLED) {
+            if(!KAFKA_ENABLED && !KAFKA_NATIVE_ENABLED) {
                 throw new RuntimeException("Kafka must be enabled in order to use Kafka schema registry.");
             }
             kafkaSchemaRegistryContainer = createKafkaSchemaRegistryContainer();
@@ -142,20 +149,20 @@ public final class TestcontainersManager {
             localstackContainer = createLocalstackContainer();
         }
         if (KAFKA_CONTROL_CENTER_ENABLED) {
-            if (!KAFKA_ENABLED) {
+            if (!KAFKA_ENABLED && !KAFKA_NATIVE_ENABLED) {
                 throw new RuntimeException("Kafka must be enabled in order to use Control Center.");
             }
             controlCenterContainer = createControlCenterContainer();
         }
         if (CONDUKTOR_ENABLED) {
-            if (!KAFKA_ENABLED) {
+            if (!KAFKA_ENABLED && !KAFKA_NATIVE_ENABLED) {
                 throw new RuntimeException("Kafka must be enabled in order to use Conduktor.");
             }
             conduktorPostgresContainer = createConduktorPostgresContainer();
             conduktorContainer = createConduktorContainer();
         }
         if (CONDUKTOR_GATEWAY_ENABLED) {
-            if (!KAFKA_ENABLED) {
+            if (!KAFKA_ENABLED && !KAFKA_NATIVE_ENABLED) {
                 throw new RuntimeException("Kafka must be enabled in order to use Conduktor Gateway.");
             }
             conduktorGatewayContainer = createConduktorGatewayContainer();
@@ -194,6 +201,9 @@ public final class TestcontainersManager {
                     zookeeperContainer.start();
                 }
                 kafkaContainers.stream().forEach(container -> container.start());
+                createTopics();
+            } else if(KAFKA_NATIVE_ENABLED) {
+                kafkaNativeContainers.stream().forEach(container -> container.start());
                 createTopics();
             }
             if(DEBEZIUM_ENABLED) {
@@ -352,9 +362,9 @@ public final class TestcontainersManager {
     /**
      * Standard Kafka and Zookeeper.
      */
-    private KafkaContainer createKafkaContainer(int instance) {
-        final String containerName = instance==1?KAFKA.toString():KAFKA.toString()+"-"+instance;
-        KafkaContainer container = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_CONFLUENT_IMAGE_TAG))
+    private GenericContainer createKafkaContainer(int instance) {
+        final String containerName = instance==1?KAFKA.toString():KAFKA+"-"+instance;
+       GenericContainer container = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_CONFLUENT_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withReuse(true)
@@ -362,6 +372,32 @@ public final class TestcontainersManager {
                     String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 });
+        container = configureCommonKafkaContainerEnv(container, instance);
+        if(KAFKA_BROKER_COUNT>1) {
+            // As there are multiple Kafka instances they need to use the same external Zookeeper.
+            ((KafkaContainer)container).withExternalZookeeper("zookeeper:2181");
+        }
+        if(KAFKA_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    /**
+     * Native Kafka.
+     */
+    private GenericContainer createNativeKafkaContainer(int instance) {
+        final String containerName = instance==1?KAFKA.toString():KAFKA+"-"+instance;
+        DockerImageName nativeImage = DockerImageName.parse("apache/kafka-native").asCompatibleSubstituteFor("apache/kafka");
+        GenericContainer container = new org.testcontainers.kafka.KafkaContainer(nativeImage.withTag(KAFKA_APACHE_NATIVE_IMAGE_TAG))
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withReuse(true)
+                .withCreateContainerCmdModifier(cmd -> {
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
+                    cmd.withName(containerCmdModifier);
+                })
+                .withEnv("KAFKA_PROCESS_ROLES", "broker,controller");
         container = configureCommonKafkaContainerEnv(container, instance);
         if(KAFKA_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
@@ -374,17 +410,17 @@ public final class TestcontainersManager {
      *
      * The main project must depend on Confluent's kafka-clients community package (e.g. 7.3.2-ccs) and monitoring-interceptors (e.g. 7.3.2) libraries.
      */
-    private KafkaContainer createKafkaServerContainer(int instance) {
-        final String containerName = instance==1?KAFKA.toString():KAFKA.toString()+"-"+instance;
+    private GenericContainer createKafkaServerContainer(int instance) {
+        final String containerName = instance==1?KAFKA.toString():KAFKA+"-"+instance;
         DockerImageName cpServerImage = DockerImageName.parse("confluentinc/cp-server").asCompatibleSubstituteFor("confluentinc/cp-kafka");
-        KafkaContainer container = new KafkaContainer(cpServerImage.withTag(KAFKA_CONFLUENT_IMAGE_TAG))
+        GenericContainer container = new KafkaContainer(cpServerImage.withTag(KAFKA_CONFLUENT_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withEnv("KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR", "1")
                 .withEnv("KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR", "1")
                 .withEnv("KAFKA_JMX_PORT", KAFKA_CONTROL_CENTER_JMX_PORT)
                 .withEnv("KAFKA_JMX_HOSTNAME", "localhost")
-                .withEnv("CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS", containerName+":9092")
+                .withEnv("CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS", containerName+":"+KAFKA_INTERNAL_PORT)
                 .withEnv("CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS", "1")
                 .withEnv("KAFKA_METRIC_REPORTERS", "io.confluent.metrics.reporter.ConfluentMetricsReporter")
                 .withEnv("CONFLUENT_METRICS_ENABLE", "true")
@@ -395,6 +431,10 @@ public final class TestcontainersManager {
                 });
                 container.withEnv("KAFKA_METRIC_REPORTERS", "io.confluent.metrics.reporter.ConfluentMetricsReporter");
         container = configureCommonKafkaContainerEnv(container, instance);
+        if(KAFKA_BROKER_COUNT>1) {
+            // As there are multiple Kafka instances they need to use the same external Zookeeper.
+            ((KafkaContainer)container).withExternalZookeeper("zookeeper:2181");
+        }
         if(KAFKA_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
@@ -404,11 +444,7 @@ public final class TestcontainersManager {
     /**
      * Set up the Env that is the same for both the Confluent cp-kafka and cp-server container types.
      */
-    private KafkaContainer configureCommonKafkaContainerEnv(KafkaContainer kafkaContainer, int instance) {
-        if(KAFKA_BROKER_COUNT>1) {
-            // As there are multiple Kafka instances they need to use the same external Zookeeper.
-            kafkaContainer.withExternalZookeeper("zookeeper:2181");
-        }
+    private GenericContainer configureCommonKafkaContainerEnv(GenericContainer kafkaContainer, int instance) {
         if(KAFKA_SASL_PLAIN_ENABLED) {
             if(KAFKA_SASL_PLAIN_USERNAME == null || KAFKA_SASL_PLAIN_USERNAME.isBlank() ||
                     KAFKA_SASL_PLAIN_PASSWORD == null || KAFKA_SASL_PLAIN_PASSWORD.isBlank()) {
@@ -432,6 +468,7 @@ public final class TestcontainersManager {
 
         return kafkaContainer
                 .withEnv("KAFKA_BROKER_ID", String.valueOf(instance))
+                .withEnv("KAFKA_NODE_ID", String.valueOf(instance))
                 .withEnv("KAFKA_NUM_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
                 .withEnv("KAFKA_DEFAULT_REPLICATION_FACTOR", String.valueOf(KAFKA_TOPIC_REPLICATION_FACTOR))
                 .withEnv("KAFKA_MIN_INSYNC_REPLICAS", String.valueOf(KAFKA_MIN_INSYNC_REPLICAS))
@@ -456,12 +493,13 @@ public final class TestcontainersManager {
 
     private DebeziumContainer createDebeziumContainer() {
         String containerName = DEBEZIUM.toString();
+        int kafkaInternalPort = KAFKA_ENABLED?KAFKA_INTERNAL_PORT:KAFKA_NATIVE_INTERNAL_PORT;
         DebeziumContainer container = new DebeziumContainer(DockerImageName.parse("debezium/connect").withTag(DEBEZIUM_IMAGE_TAG))
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
-                .withKafka(kafkaContainers.get(0))
+                .withKafka(network, KAFKA+":"+kafkaInternalPort)
                 .withExposedPorts(DEBEZIUM_PORT)
-                .dependsOn(kafkaContainers.get(0))
+                .dependsOn(KAFKA_ENABLED?kafkaContainers.get(0):kafkaNativeContainers.get(0))
                 .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
                     String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
@@ -475,6 +513,7 @@ public final class TestcontainersManager {
 
     private GenericContainer createKafkaSchemaRegistryContainer() {
         String containerName = KAFKA_SCHEMA_REGISTRY.toString().replace("_", "-");
+        int kafkaInternalPort = KAFKA_ENABLED?KAFKA_INTERNAL_PORT:KAFKA_NATIVE_INTERNAL_PORT;
         GenericContainer container = new GenericContainer<>("confluentinc/cp-schema-registry:" + KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
@@ -484,10 +523,10 @@ public final class TestcontainersManager {
                 })
                 .withExposedPorts(KAFKA_SCHEMA_REGISTRY_PORT)
                 .withEnv("SCHEMA_REGISTRY_HOST_NAME", containerName)
-                .withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", KAFKA+":"+kafkaInternalPort)
                 .withEnv("SCHEMA_REGISTRY_LISTENERS", "http://0.0.0.0:"+KAFKA_SCHEMA_REGISTRY_PORT)
                 .withReuse(true)
-                .dependsOn(kafkaContainers.get(0));
+                .dependsOn(KAFKA_ENABLED?kafkaContainers.get(0):kafkaNativeContainers.get(0));
         if(KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
@@ -504,11 +543,12 @@ public final class TestcontainersManager {
                     .withName(containerCmdModifier);
         };
 
+        int kafkaInternalPort = KAFKA_ENABLED?KAFKA_INTERNAL_PORT:KAFKA_NATIVE_INTERNAL_PORT;
         GenericContainer container = new GenericContainer<>("confluentinc/cp-enterprise-control-center:" + KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd)
-                .withEnv("CONTROL_CENTER_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("CONTROL_CENTER_BOOTSTRAP_SERVERS", KAFKA+":"+kafkaInternalPort)
                 .withEnv("CONTROL_CENTER_REPLICATION_FACTOR", "1")
                 .withEnv("CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
                 .withEnv("CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS", String.valueOf(KAFKA_TOPIC_PARTITION_COUNT))
@@ -558,6 +598,7 @@ public final class TestcontainersManager {
                     .withName(containerCmdModifier);
         };
 
+        int kafkaInternalPort = KAFKA_ENABLED?KAFKA_INTERNAL_PORT:KAFKA_NATIVE_INTERNAL_PORT;
         GenericContainer container = new GenericContainer<>("conduktor/conduktor-platform:" + CONDUKTOR_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
@@ -567,7 +608,7 @@ public final class TestcontainersManager {
                 .withEnv("CDK_ADMIN_PASSWORD", "admin")
                 .withEnv("CDK_CLUSTERS_0_ID", "CTF")
                 .withEnv("CDK_CLUSTERS_0_NAME", "Local Cluster")
-                .withEnv("CDK_CLUSTERS_0_BOOTSTRAPSERVERS", KAFKA + ":9092")
+                .withEnv("CDK_CLUSTERS_0_BOOTSTRAPSERVERS", KAFKA + ":" + kafkaInternalPort)
                 .withEnv("CDK_DATABASE_URL", "postgresql://" + DEFAULT_CONDUKTOR_POSTGRES_USER + ":" + DEFAULT_CONDUKTOR_POSTGRES_PASSWORD + "@" + CONDUKTOR + "-postgres" + ":5432/" + DEFAULT_CONDUKTOR_POSTGRES_DB)
                 .withReuse(true)
                 .withExposedPorts(containerExposedPort);
@@ -590,6 +631,7 @@ public final class TestcontainersManager {
     private GenericContainer createConduktorGatewayContainer() {
         String containerName = CONDUKTORGATEWAY.toString();
 
+        int kafkaInternalPort = KAFKA_ENABLED?KAFKA_INTERNAL_PORT:KAFKA_NATIVE_INTERNAL_PORT;
         GenericContainer container = new GenericContainer<>("conduktor/conduktor-gateway:" + CONDUKTOR_GATEWAY_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
@@ -597,7 +639,7 @@ public final class TestcontainersManager {
                     String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 })
-                .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA.toString()+":9092")
+                .withEnv("KAFKA_BOOTSTRAP_SERVERS", KAFKA+":"+ kafkaInternalPort)
                 .withEnv("GATEWAY_HOST", CONDUKTORGATEWAY.toString())
                 .withEnv("GATEWAY_PORT_RANGE", CONDUKTOR_GATEWAY_PROXY_PORT+":"+CONDUKTOR_GATEWAY_PROXY_PORT)
                 .withEnv("HTTP_PORT", String.valueOf(CONDUKTOR_GATEWAY_HTTP_PORT))
@@ -680,8 +722,15 @@ public final class TestcontainersManager {
 
     private void createTopics() {
         if(!KAFKA_TOPICS.isEmpty()) {
+
+            String bootstrapServers;
+            if(KAFKA_ENABLED) {
+                bootstrapServers = ((KafkaContainer)kafkaContainers.get(0)).getBootstrapServers();
+            } else {
+                bootstrapServers = ((org.testcontainers.kafka.KafkaContainer)kafkaNativeContainers.get(0)).getBootstrapServers();
+            }
             Properties properties = new Properties();
-            properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainers.get(0).getBootstrapServers());
+            properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             if(KAFKA_SASL_PLAIN_ENABLED) {
                 properties.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
                 properties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
