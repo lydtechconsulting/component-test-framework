@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.0] - 2024-08-15
+### Added
+- Supports Kafka native.
+### Changed
+- Update Conduktor Gateway version to 3.2.1
+- Update Testcontainers version to 1.20.1
+
 ## [3.4.1] - 2024-06-24
 ### Changed
 - Default Conduktor version increased

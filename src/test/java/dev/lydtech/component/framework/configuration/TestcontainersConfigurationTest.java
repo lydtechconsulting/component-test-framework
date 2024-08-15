@@ -61,9 +61,10 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("mariadb.container.logging.enabled");
 
         System.clearProperty("kafka.enabled");
+        System.clearProperty("kafka.native.enabled");
         System.clearProperty("kafka.broker.count");
         System.clearProperty("kafka.confluent.image.tag");
-        System.clearProperty("kafka.port");
+        System.clearProperty("kafka.apache.native.image.tag");
         System.clearProperty("kafka.topics");
         System.clearProperty("kafka.topic.partition.count");
         System.clearProperty("kafka.container.logging.enabled");
@@ -161,9 +162,12 @@ public class TestcontainersConfigurationTest {
         assertThat(MONGODB_IMAGE_TAG, equalTo("7.0.2"));
         assertThat(MONGODB_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(KAFKA_ENABLED, equalTo(false));
+        assertThat(KAFKA_NATIVE_ENABLED, equalTo(false));
         assertThat(KAFKA_BROKER_COUNT, equalTo(1));
         assertThat(KAFKA_CONFLUENT_IMAGE_TAG, equalTo("7.3.2"));
+        assertThat(KAFKA_APACHE_NATIVE_IMAGE_TAG, equalTo("3.8.0"));
         assertThat(KAFKA_PORT, equalTo(9093));
+        assertThat(KAFKA_NATIVE_PORT, equalTo(9092));
         assertThat(KAFKA_TOPICS, equalTo(new ArrayList<>()));
         assertThat(KAFKA_TOPIC_PARTITION_COUNT, equalTo(1));
         assertThat(KAFKA_CONTAINER_LOGGING_ENABLED, equalTo(false));
@@ -188,7 +192,7 @@ public class TestcontainersConfigurationTest {
         assertThat(CONDUKTOR_PORT, equalTo(8088));
         assertThat(CONDUKTOR_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(CONDUKTOR_GATEWAY_ENABLED, equalTo(false));
-        assertThat(CONDUKTOR_GATEWAY_IMAGE_TAG, equalTo("2.1.5"));
+        assertThat(CONDUKTOR_GATEWAY_IMAGE_TAG, equalTo("3.2.1"));
         assertThat(CONDUKTOR_GATEWAY_PROXY_PORT, equalTo(6969));
         assertThat(CONDUKTOR_GATEWAY_HTTP_PORT, equalTo(8888));
         assertThat(CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED, equalTo(false));
@@ -262,9 +266,10 @@ public class TestcontainersConfigurationTest {
         System.setProperty("mariadb.container.logging.enabled", "true");
 
         System.setProperty("kafka.enabled", "true");
+        System.setProperty("kafka.native.enabled", "true");
         System.setProperty("kafka.broker.count", "12");
         System.setProperty("kafka.confluent.image.tag", "kafka-override");
-        System.setProperty("kafka.port", "9094");
+        System.setProperty("kafka.apache.native.image.tag", "kafka-native-override");
         System.setProperty("kafka.topics", "topic-1");
         System.setProperty("kafka.topic.partition.count", "2");
         System.setProperty("kafka.container.logging.enabled", "true");
@@ -369,9 +374,12 @@ public class TestcontainersConfigurationTest {
         assertThat(MARIADB_PASSWORD, equalTo("mariadb-password-override"));
         assertThat(MARIADB_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(KAFKA_ENABLED, equalTo(true));
+        assertThat(KAFKA_NATIVE_ENABLED, equalTo(true));
         assertThat(KAFKA_BROKER_COUNT, equalTo(12));
         assertThat(KAFKA_CONFLUENT_IMAGE_TAG, equalTo("kafka-override"));
-        assertThat(KAFKA_PORT, equalTo(9094));
+        assertThat(KAFKA_APACHE_NATIVE_IMAGE_TAG, equalTo("kafka-native-override"));
+        assertThat(KAFKA_PORT, equalTo(9093));
+        assertThat(KAFKA_NATIVE_PORT, equalTo(9092));
         assertThat(KAFKA_TOPICS, equalTo(Arrays.asList("topic-1")));
         assertThat(KAFKA_TOPIC_PARTITION_COUNT, equalTo(2));
         assertThat(KAFKA_CONTAINER_LOGGING_ENABLED, equalTo(true));
