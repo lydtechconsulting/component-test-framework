@@ -171,6 +171,8 @@ https://github.com/lydtechconsulting/micronaut-kafka-java - demonstrates a Micro
 
 https://github.com/lydtechconsulting/micronaut-kafka-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
 
+https://github.com/lydtechconsulting/flink-kafka-connector - demonstrates a Flink application using Kafka as the source and sink for streaming data.
+
 [[Back To Top](README.md#component-test-framework)]
 
 # Upgrading From Previous Versions
