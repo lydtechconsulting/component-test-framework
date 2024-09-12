@@ -243,7 +243,6 @@ public final class TestcontainersManager {
         String containerName = SERVICE_NAME+"-"+instance;
         String suspendFlag = SERVICE_DEBUG_SUSPEND ? "y" : "n";
         String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -D"+SERVICE_CONFIG_FILES_SYSTEM_PROPERTY+"=file:/application.yml";
-
         SERVICE_ENV_VARS.put("JAVA_OPTS", javaOpts);
 
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+SERVICE_NAME+":" + SERVICE_IMAGE_TAG)
@@ -253,25 +252,25 @@ public final class TestcontainersManager {
                 .withExposedPorts(SERVICE_PORT, SERVICE_DEBUG_PORT)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
+                .withReuse(true)
                 .withCreateContainerCmdModifier(cmd -> {
                     String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
                 });
 
         SERVICE_ADDITIONAL_FILESYSTEM_BINDS.keySet().forEach(source -> container.withFileSystemBind(source, SERVICE_ADDITIONAL_FILESYSTEM_BINDS.get(source), BindMode.READ_ONLY));
-
-            container
-                .withReuse(true);
-            if (SERVICE_STARTUP_LOG_MESSAGE != null) {
-                container.waitingFor(Wait.forLogMessage(SERVICE_STARTUP_LOG_MESSAGE, 1))
-                        .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS));
-            } else {
-                container.waitingFor(Wait.forHttp(SERVICE_STARTUP_HEALTH_ENDPOINT)
-                        .forPort(SERVICE_PORT)
-                        .forStatusCode(200)
-                        .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));
-            }
-
+        if(SERVICE_APPLICATION_ARGS != null) {
+            container.withEnv("APP_ARGS", SERVICE_APPLICATION_ARGS);
+        }
+        if (SERVICE_STARTUP_LOG_MESSAGE != null) {
+            container.waitingFor(Wait.forLogMessage(SERVICE_STARTUP_LOG_MESSAGE, 1))
+                    .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS));
+        } else {
+            container.waitingFor(Wait.forHttp(SERVICE_STARTUP_HEALTH_ENDPOINT)
+                    .forPort(SERVICE_PORT)
+                    .forStatusCode(200)
+                    .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));
+        }
         if(SERVICE_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }

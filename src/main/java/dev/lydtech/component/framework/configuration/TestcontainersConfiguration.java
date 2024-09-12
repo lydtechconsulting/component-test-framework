@@ -44,6 +44,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_SERVICE_IMAGE_TAG = "latest";
     private static final String DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_SERVICE_DEBUG_SUSPEND = "false";
+    private static final String DEFAULT_SERVICE_APPLICATION_ARGS = null;
 
     /**
      * Container configuration.
@@ -214,6 +215,7 @@ public final class TestcontainersConfiguration {
     public static String SERVICE_STARTUP_LOG_MESSAGE;
     public static String SERVICE_IMAGE_TAG;
     public static boolean SERVICE_CONTAINER_LOGGING_ENABLED;
+    public static String SERVICE_APPLICATION_ARGS;
 
     public static List<AdditionalContainer> ADDITIONAL_CONTAINERS;
 
@@ -339,6 +341,7 @@ public final class TestcontainersConfiguration {
         SERVICE_STARTUP_LOG_MESSAGE = System.getProperty("service.startup.log.message", DEFAULT_SERVICE_STARTUP_LOG_MESSAGE);
         SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
         SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
+        SERVICE_APPLICATION_ARGS = System.getProperty("service.application.args", DEFAULT_SERVICE_APPLICATION_ARGS);
 
         ADDITIONAL_CONTAINERS = parseAdditionalContainers();
 
@@ -524,6 +527,11 @@ public final class TestcontainersConfiguration {
             serviceStartupLogMessage = "";
         }
         log.info("service.startup.log.message: " + serviceStartupLogMessage);
+        String serviceApplicationArgs = SERVICE_APPLICATION_ARGS;
+        if(SERVICE_APPLICATION_ARGS == null) {
+            serviceApplicationArgs = "";
+        }
+        log.info("service.application.args: " + serviceApplicationArgs);
         log.info("service.startup.timeout.seconds: " + SERVICE_STARTUP_TIMEOUT_SECONDS);
         log.info("service.image.tag: " + SERVICE_IMAGE_TAG);
         log.info("service.container.logging.enabled: " + SERVICE_CONTAINER_LOGGING_ENABLED);

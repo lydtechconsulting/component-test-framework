@@ -34,6 +34,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("service.config.files.system.property");
         System.clearProperty("service.application.yml.path");
         System.clearProperty("service.additional.filesystem.binds");
+        System.clearProperty("service.application.args");
 
         System.clearProperty("additional.containers");
 
@@ -147,6 +148,7 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_ADDITIONAL_FILESYSTEM_BINDS, equalTo(new HashMap<>()));
         assertThat(SERVICE_CONFIG_FILES_SYSTEM_PROPERTY, equalTo("spring.config.additional-location"));
         assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("src/test/resources/application-component-test.yml"));
+        assertThat(SERVICE_APPLICATION_ARGS, equalTo(null));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(new ArrayList<>()));
         assertThat(POSTGRES_ENABLED, equalTo(false));
         assertThat(POSTGRES_IMAGE_TAG, equalTo("14-alpine"));
@@ -240,6 +242,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("service.additional.filesystem.binds", "./src/test/resources/myDirectory=./myDirectory");
         System.setProperty("service.config.files.system.property", "config.location.override");
         System.setProperty("service.application.yml.path", "./other/path/to/application.yml");
+        System.setProperty("service.application.args", "args-override");
 
         System.setProperty("additional.containers", "third-party-simulator,9002,5002,latest,false");
 
@@ -352,6 +355,7 @@ public class TestcontainersConfigurationTest {
         assertThat(SERVICE_ADDITIONAL_FILESYSTEM_BINDS, equalTo(expectedFileSystemBinds));
         assertThat(SERVICE_CONFIG_FILES_SYSTEM_PROPERTY, equalTo("config.location.override"));
         assertThat(SERVICE_APPLICATION_YML_PATH, equalTo("./other/path/to/application.yml"));
+        assertThat(SERVICE_APPLICATION_ARGS, equalTo("args-override"));
         assertThat(ADDITIONAL_CONTAINERS, equalTo(Arrays.asList(new AdditionalContainer("third-party-simulator", 9002, 5002, "latest", false))));
         assertThat(POSTGRES_ENABLED, equalTo(true));
         assertThat(POSTGRES_IMAGE_TAG, equalTo("postgres-override"));

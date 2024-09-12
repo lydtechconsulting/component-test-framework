@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.6.0] - 2024-09-12
+### Added
+- Supports passing service application arguments.
+### Removed
+- Deleted the deprecated TestContainersSetupExtension.
+
 ## [3.5.0] - 2024-08-15
 ### Added
 - Supports Kafka native.
@@ -9,7 +15,7 @@
 
 ## [3.4.1] - 2024-06-24
 ### Changed
-- Default Conduktor version increased
+- Default Conduktor version increased.
 
 ## [3.3.0] - 2024-06-11
 ### Changed
