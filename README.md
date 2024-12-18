@@ -513,12 +513,12 @@ public static void main(String[] args) {
 The `dev.lydtech.component.framework.client.service.ServiceClient` provides a static `getBaseUrl` method to get the base URL, enabling REST calls to be made.
 e.g. if using RestAssured as the HTTP client in the test:
 ```
-RestAssured.baseURI = ServiceClient.getBaseUrl();
+RestAssured.baseURI = ServiceClient.getInstance().getBaseUrl();
 ```
 
 Querying using RestAssured:
 ```
-RestAssured.get("/v1/my-service).then().assertThat().statusCode(202)
+RestAssured.get("/v1/my-service").then().assertThat().statusCode(202)
 ```
 
 [[Back To Top](README.md#component-test-framework)]
