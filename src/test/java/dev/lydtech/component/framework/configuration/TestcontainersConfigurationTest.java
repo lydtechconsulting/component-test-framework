@@ -46,6 +46,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("postgres.schema.name");
         System.clearProperty("postgres.username");
         System.clearProperty("postgres.password");
+        System.clearProperty("postgres.schema.file.path");
         System.clearProperty("postgres.container.logging.enabled");
 
         System.clearProperty("mongodb.enabled");
@@ -263,6 +264,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("postgres.schema.name", "postgres-schema-override");
         System.setProperty("postgres.username", "postgres-user-override");
         System.setProperty("postgres.password", "postgres-password-override");
+        System.setProperty("postgres.schema.file.path", "postgres-schema-file-path-override");
         System.setProperty("postgres.container.logging.enabled", "true");
 
         System.setProperty("mongodb.enabled", "true");
@@ -379,6 +381,7 @@ public class TestcontainersConfigurationTest {
         assertThat(POSTGRES_SCHEMA_NAME, equalTo("postgres-schema-override"));
         assertThat(POSTGRES_USERNAME, equalTo("postgres-user-override"));
         assertThat(POSTGRES_PASSWORD, equalTo("postgres-password-override"));
+        assertThat(POSTGRES_SCHEMA_FILE_PATH, equalTo("postgres-schema-file-path-override"));
         assertThat(POSTGRES_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(MONGODB_ENABLED, equalTo(true));
         assertThat(MONGODB_PORT, equalTo(27017));

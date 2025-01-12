@@ -329,6 +329,9 @@ public final class TestcontainersManager {
         if(POSTGRES_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
+        if(POSTGRES_SCHEMA_FILE_PATH != null) {
+            ((PostgreSQLContainer)container).withInitScript(POSTGRES_SCHEMA_FILE_PATH);
+        }
         return container;
     }
 

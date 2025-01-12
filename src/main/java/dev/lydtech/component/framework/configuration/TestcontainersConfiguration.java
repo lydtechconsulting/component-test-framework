@@ -65,6 +65,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_POSTGRES_SCHEMA_NAME = "test";
     private static final String DEFAULT_POSTGRES_USERNAME = "user";
     private static final String DEFAULT_POSTGRES_PASSWORD = "password";
+    private static final String DEFAULT_POSTGRES_SCHEMA_FILE_PATH = null;
     private static final String DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
@@ -236,6 +237,7 @@ public final class TestcontainersConfiguration {
     public static String POSTGRES_SCHEMA_NAME;
     public static String POSTGRES_USERNAME;
     public static String POSTGRES_PASSWORD;
+    public static String POSTGRES_SCHEMA_FILE_PATH;
     public static boolean POSTGRES_CONTAINER_LOGGING_ENABLED;
 
     public static boolean MONGODB_ENABLED;
@@ -367,6 +369,7 @@ public final class TestcontainersConfiguration {
         POSTGRES_SCHEMA_NAME = System.getProperty("postgres.schema.name", DEFAULT_POSTGRES_SCHEMA_NAME);
         POSTGRES_USERNAME = System.getProperty("postgres.username", DEFAULT_POSTGRES_USERNAME);
         POSTGRES_PASSWORD = System.getProperty("postgres.password", DEFAULT_POSTGRES_PASSWORD);
+        POSTGRES_SCHEMA_FILE_PATH = System.getProperty("postgres.schema.file.path", DEFAULT_POSTGRES_SCHEMA_FILE_PATH);
         POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
 
         MONGODB_ENABLED = Boolean.valueOf(System.getProperty("mongodb.enabled", DEFAULT_MONGODB_ENABLED));
@@ -566,6 +569,11 @@ public final class TestcontainersConfiguration {
             log.info("postgres.schema.name: " + POSTGRES_SCHEMA_NAME);
             log.info("postgres.username: " + POSTGRES_USERNAME);
             log.info("postgres.password: " + POSTGRES_PASSWORD);
+            String postgresSchemaFilePath = POSTGRES_SCHEMA_FILE_PATH;
+            if(POSTGRES_SCHEMA_FILE_PATH == null) {
+                postgresSchemaFilePath = "";
+            }
+            log.info("postgres.schema.file.path: " + postgresSchemaFilePath);
             log.info("postgres.container.logging.enabled: " + POSTGRES_CONTAINER_LOGGING_ENABLED);
         }
 
