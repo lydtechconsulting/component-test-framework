@@ -194,6 +194,15 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
+     * Ambar configuration.
+     */
+
+    private static final String DEFAULT_AMBAR_ENABLED = "false";
+    private static final String DEFAULT_AMBAR_IMAGE_TAG = "v1.8";
+    private static final String DEFAULT_AMBAR_CONTAINER_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_AMBAR_CONFIG_FILE_PATH = "src/test/resources/ambar-config.yaml";
+
+    /**
      * The runtime configuration.
      */
 
@@ -316,6 +325,11 @@ public final class TestcontainersConfiguration {
     public static String ELASTICSEARCH_DISCOVERY_TYPE;
     public static boolean ELASTICSEARCH_CONTAINER_LOGGING_ENABLED;
 
+    public static boolean AMBAR_ENABLED;
+    public static String AMBAR_IMAGE_TAG;
+    public static boolean AMBAR_CONTAINER_LOGGING_ENABLED;
+    public static String AMBAR_CONFIG_FILE_PATH;
+
     static {
         configure();
     }
@@ -434,6 +448,11 @@ public final class TestcontainersConfiguration {
         ELASTICSEARCH_CLUSTER_NAME = System.getProperty("elasticsearch.cluster.name", DEFAULT_ELASTICSEARCH_CLUSTER_NAME);
         ELASTICSEARCH_DISCOVERY_TYPE = System.getProperty("elasticsearch.discovery.type", DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE);
         ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("elasticsearch.container.logging.enabled", DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED));
+
+        AMBAR_ENABLED = Boolean.valueOf(System.getProperty("ambar.enabled", DEFAULT_AMBAR_ENABLED));
+        AMBAR_IMAGE_TAG = System.getProperty("ambar.image.tag", DEFAULT_AMBAR_IMAGE_TAG);
+        AMBAR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("ambar.container.logging.enabled", DEFAULT_AMBAR_CONTAINER_LOGGING_ENABLED));
+        AMBAR_CONFIG_FILE_PATH = System.getProperty("ambar.config.file.path", DEFAULT_AMBAR_CONFIG_FILE_PATH);
     }
 
     protected static List<AdditionalContainer> parseAdditionalContainers() {
@@ -656,6 +675,13 @@ public final class TestcontainersConfiguration {
             log.info("elasticsearch.cluster.name: " + ELASTICSEARCH_CLUSTER_NAME);
             log.info("elasticsearch.discovery.type: " + ELASTICSEARCH_DISCOVERY_TYPE);
             log.info("elasticsearch.container.logging.enabled: " + ELASTICSEARCH_CONTAINER_LOGGING_ENABLED);
+        }
+
+        log.info("ambar.enabled: " + AMBAR_ENABLED);
+        if(AMBAR_ENABLED) {
+            log.info("ambar.image.tag: " + AMBAR_IMAGE_TAG);
+            log.info("ambar.config.file.path: " + AMBAR_CONFIG_FILE_PATH);
+            log.info("ambar.container.logging.enabled: " + AMBAR_CONTAINER_LOGGING_ENABLED);
         }
     }
 }

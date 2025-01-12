@@ -28,6 +28,7 @@
 - [Wiremock](README.md#wiremock)
 - [Localstack (with DynamoDB)](README.md#localstack)
 - [Elasticsearch](README.md#elasticsearch)
+- [Ambar](README.md#ambar)
 - [Docker Commands](README.md#docker-commands)
 
 # Overview
@@ -74,6 +75,7 @@ This test is available in the repository [here](https://github.com/lydtechconsul
 - Conduktor Platform
 - Conduktor Gateway
 - Elasticsearch
+- Ambar (Event sourcing)
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -172,6 +174,8 @@ https://github.com/lydtechconsulting/micronaut-kafka-java - demonstrates a Micro
 https://github.com/lydtechconsulting/micronaut-kafka-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
 
 https://github.com/lydtechconsulting/flink-kafka-connector - demonstrates a Flink application using Kafka as the source and sink for streaming data.
+
+https://github.com/lydtechconsulting/event-sourcing-ambar - demonstrates event sourcing with Ambar.
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -305,6 +309,10 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 | elasticsearch.cluster.name                      | The name of the Elasticsearch cluster.                                                                                                                                                                                                                                                                                                                                          | `elasticsearch`                                     |
 | elasticsearch.discovery.type                    | Whether to form a single node or multi node Elasticsearch cluster.                                                                                                                                                                                                                                                                                                              | `single-node`                                       |
 | elasticsearch.container.logging.enabled         | Whether to output the Elasticsearch Docker logs to the console.                                                                                                                                                                                                                                                                                                                 | `false`                                             |
+| ambar.enabled                                   | Whether a Docker Ambar container should be started.                                                                                                                                                                                                                                                                                                                             | `false`                                             |
+| ambar.image.tag                                 | The image tag of the Ambar Docker container to use.                                                                                                                                                                                                                                                                                                                             | `v1.8`                                            |
+| ambar.config.file.path                          | The file path for the Ambar config.                                                                                                                                                                                                                                                                                                                                             | `src/test/resources/ambar-config.yaml`                                                    |
+| ambar.container.logging.enabled                 | Whether to output the Ambar Docker logs to the console.                                                                                                                                                                                                                                                                                                                         | `false`                                             |
 
 The configuration is logged at test execution time at INFO level.  Enable in `logback-test.xml` with:
 ```
@@ -1222,6 +1230,12 @@ GetResponse<Item> getResponse = esClient.get(s -> s
     .index("item")
     .id(location), Item.class);
 ```
+
+[[Back To Top](README.md#component-test-framework)]
+
+# Ambar
+
+Enable Ambar via the property `ambar.enabled`.
 
 [[Back To Top](README.md#component-test-framework)]
 
