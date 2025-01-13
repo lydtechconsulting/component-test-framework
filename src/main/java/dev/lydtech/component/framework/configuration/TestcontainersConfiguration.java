@@ -343,7 +343,7 @@ public final class TestcontainersConfiguration {
         CONTAINER_MAIN_LABEL = System.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL);
         CONTAINER_APPEND_GROUP_ID = Boolean.parseBoolean(System.getProperty("container.append.group.id", DEFAULT_CONTAINER_APPEND_GROUP_ID));
 
-        SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME);
+        SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME).toLowerCase();
         SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
         SERVICE_PORT = Integer.parseInt(System.getProperty("service.port", DEFAULT_SERVICE_PORT));
         SERVICE_DEBUG_SUSPEND = Boolean.parseBoolean(System.getProperty("service.debug.suspend", DEFAULT_SERVICE_DEBUG_SUSPEND));
