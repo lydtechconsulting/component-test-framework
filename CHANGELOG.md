@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.7.0] - 2025-01-15
+### Added
+- Supports event sourcing with Ambar.
+
 ## [3.6.0] - 2024-09-12
 ### Added
 - Supports passing service application arguments.
