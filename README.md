@@ -1335,3 +1335,4 @@ Every commit or merge to `main` will increment the version and release to Maven 
 - To increment the major version, start commit message with `major:` or `BREAKING CHANGE:`.
 - To increment the minor version, start commit message with `feat:`.
 - Otherwise the patch version is incremented.
+
