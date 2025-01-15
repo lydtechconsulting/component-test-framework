@@ -736,7 +736,6 @@ public final class TestcontainersManager {
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withFileSystemBind(AMBAR_CONFIG_FILE_PATH, "/opt/emulator/config/config.yaml", BindMode.READ_ONLY)
-//                .withFileSystemBind(AMBAR_DATA_VOLUME_PATH, "/root/.local/share/ambar-emulator", BindMode.READ_WRITE)
                 .withCreateContainerCmdModifier(cmd -> {
                     String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
                     cmd.withName(containerCmdModifier);
