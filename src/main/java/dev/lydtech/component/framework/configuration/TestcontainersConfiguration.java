@@ -65,6 +65,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_POSTGRES_SCHEMA_NAME = "test";
     private static final String DEFAULT_POSTGRES_USERNAME = "user";
     private static final String DEFAULT_POSTGRES_PASSWORD = "password";
+    private static final String DEFAULT_POSTGRES_SCHEMA_FILE_PATH = null;
     private static final String DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
@@ -194,6 +195,15 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = "false";
 
     /**
+     * Ambar configuration.
+     */
+
+    private static final String DEFAULT_AMBAR_ENABLED = "false";
+    private static final String DEFAULT_AMBAR_IMAGE_TAG = "v1.8";
+    private static final String DEFAULT_AMBAR_CONTAINER_LOGGING_ENABLED = "false";
+    private static final String DEFAULT_AMBAR_CONFIG_FILE_PATH = "src/test/resources/ambar-config.yaml";
+
+    /**
      * The runtime configuration.
      */
 
@@ -227,6 +237,7 @@ public final class TestcontainersConfiguration {
     public static String POSTGRES_SCHEMA_NAME;
     public static String POSTGRES_USERNAME;
     public static String POSTGRES_PASSWORD;
+    public static String POSTGRES_SCHEMA_FILE_PATH;
     public static boolean POSTGRES_CONTAINER_LOGGING_ENABLED;
 
     public static boolean MONGODB_ENABLED;
@@ -316,6 +327,11 @@ public final class TestcontainersConfiguration {
     public static String ELASTICSEARCH_DISCOVERY_TYPE;
     public static boolean ELASTICSEARCH_CONTAINER_LOGGING_ENABLED;
 
+    public static boolean AMBAR_ENABLED;
+    public static String AMBAR_IMAGE_TAG;
+    public static boolean AMBAR_CONTAINER_LOGGING_ENABLED;
+    public static String AMBAR_CONFIG_FILE_PATH;
+
     static {
         configure();
     }
@@ -327,7 +343,7 @@ public final class TestcontainersConfiguration {
         CONTAINER_MAIN_LABEL = System.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL);
         CONTAINER_APPEND_GROUP_ID = Boolean.parseBoolean(System.getProperty("container.append.group.id", DEFAULT_CONTAINER_APPEND_GROUP_ID));
 
-        SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME);
+        SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME).toLowerCase();
         SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
         SERVICE_PORT = Integer.parseInt(System.getProperty("service.port", DEFAULT_SERVICE_PORT));
         SERVICE_DEBUG_SUSPEND = Boolean.parseBoolean(System.getProperty("service.debug.suspend", DEFAULT_SERVICE_DEBUG_SUSPEND));
@@ -353,6 +369,7 @@ public final class TestcontainersConfiguration {
         POSTGRES_SCHEMA_NAME = System.getProperty("postgres.schema.name", DEFAULT_POSTGRES_SCHEMA_NAME);
         POSTGRES_USERNAME = System.getProperty("postgres.username", DEFAULT_POSTGRES_USERNAME);
         POSTGRES_PASSWORD = System.getProperty("postgres.password", DEFAULT_POSTGRES_PASSWORD);
+        POSTGRES_SCHEMA_FILE_PATH = System.getProperty("postgres.schema.file.path", DEFAULT_POSTGRES_SCHEMA_FILE_PATH);
         POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
 
         MONGODB_ENABLED = Boolean.valueOf(System.getProperty("mongodb.enabled", DEFAULT_MONGODB_ENABLED));
@@ -434,6 +451,11 @@ public final class TestcontainersConfiguration {
         ELASTICSEARCH_CLUSTER_NAME = System.getProperty("elasticsearch.cluster.name", DEFAULT_ELASTICSEARCH_CLUSTER_NAME);
         ELASTICSEARCH_DISCOVERY_TYPE = System.getProperty("elasticsearch.discovery.type", DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE);
         ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("elasticsearch.container.logging.enabled", DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED));
+
+        AMBAR_ENABLED = Boolean.valueOf(System.getProperty("ambar.enabled", DEFAULT_AMBAR_ENABLED));
+        AMBAR_IMAGE_TAG = System.getProperty("ambar.image.tag", DEFAULT_AMBAR_IMAGE_TAG);
+        AMBAR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("ambar.container.logging.enabled", DEFAULT_AMBAR_CONTAINER_LOGGING_ENABLED));
+        AMBAR_CONFIG_FILE_PATH = System.getProperty("ambar.config.file.path", DEFAULT_AMBAR_CONFIG_FILE_PATH);
     }
 
     protected static List<AdditionalContainer> parseAdditionalContainers() {
@@ -547,6 +569,11 @@ public final class TestcontainersConfiguration {
             log.info("postgres.schema.name: " + POSTGRES_SCHEMA_NAME);
             log.info("postgres.username: " + POSTGRES_USERNAME);
             log.info("postgres.password: " + POSTGRES_PASSWORD);
+            String postgresSchemaFilePath = POSTGRES_SCHEMA_FILE_PATH;
+            if(POSTGRES_SCHEMA_FILE_PATH == null) {
+                postgresSchemaFilePath = "";
+            }
+            log.info("postgres.schema.file.path: " + postgresSchemaFilePath);
             log.info("postgres.container.logging.enabled: " + POSTGRES_CONTAINER_LOGGING_ENABLED);
         }
 
@@ -656,6 +683,13 @@ public final class TestcontainersConfiguration {
             log.info("elasticsearch.cluster.name: " + ELASTICSEARCH_CLUSTER_NAME);
             log.info("elasticsearch.discovery.type: " + ELASTICSEARCH_DISCOVERY_TYPE);
             log.info("elasticsearch.container.logging.enabled: " + ELASTICSEARCH_CONTAINER_LOGGING_ENABLED);
+        }
+
+        log.info("ambar.enabled: " + AMBAR_ENABLED);
+        if(AMBAR_ENABLED) {
+            log.info("ambar.image.tag: " + AMBAR_IMAGE_TAG);
+            log.info("ambar.config.file.path: " + AMBAR_CONFIG_FILE_PATH);
+            log.info("ambar.container.logging.enabled: " + AMBAR_CONTAINER_LOGGING_ENABLED);
         }
     }
 }

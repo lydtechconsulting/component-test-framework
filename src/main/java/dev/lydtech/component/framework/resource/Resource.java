@@ -14,7 +14,8 @@ public enum Resource {
     LOCALSTACK,
     MONGODB,
     ELASTICSEARCH,
-    MARIADB;
+    MARIADB,
+    AMBAR;
 
     @Override
     public String toString() {

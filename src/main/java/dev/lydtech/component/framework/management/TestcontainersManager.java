@@ -33,6 +33,7 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.*;
+import static dev.lydtech.component.framework.resource.Resource.AMBAR;
 import static dev.lydtech.component.framework.resource.Resource.CONDUKTOR;
 import static dev.lydtech.component.framework.resource.Resource.CONDUKTORGATEWAY;
 import static dev.lydtech.component.framework.resource.Resource.DEBEZIUM;
@@ -67,6 +68,7 @@ public final class TestcontainersManager {
     private GenericContainer conduktorContainer;
     private GenericContainer conduktorGatewayContainer;
     private GenericContainer elasticSearchContainer;
+    private GenericContainer ambarContainer;
 
     private TestcontainersManager(){}
 
@@ -170,6 +172,9 @@ public final class TestcontainersManager {
         if (ELASTICSEARCH_ENABLED) {
             elasticSearchContainer = createElasticsearchContainer();
         }
+        if(AMBAR_ENABLED) {
+            ambarContainer = createAmbarContainer();
+        }
 
         serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT + 1)
                 .mapToObj(this::createServiceContainer)
@@ -230,6 +235,9 @@ public final class TestcontainersManager {
             }
             if(ELASTICSEARCH_ENABLED) {
                 elasticSearchContainer.start();
+            }
+            if(AMBAR_ENABLED) {
+                ambarContainer.start();
             }
             serviceContainers.stream().forEach(container -> container.start());
             additionalContainers.stream().forEach(container -> container.start());
@@ -304,9 +312,9 @@ public final class TestcontainersManager {
     private GenericContainer createPostgresContainer() {
         String containerName = POSTGRES.toString();
 
-        // Use of the Debezium / Postgres container. This allows use of Debezium (if enabled).  Without it it fails due
-        // to the wal_level property (logical vs replica).
-        GenericContainer container = new PostgreSQLContainer<>(DockerImageName.parse("debezium/postgres").asCompatibleSubstituteFor("postgres").withTag(POSTGRES_IMAGE_TAG))
+        // If Debezium is enabled, use the Debezium / Postgres container.  Without it Debezium fails due to the wal_level property (logical vs replica).
+        DockerImageName dockerImageName = DEBEZIUM_ENABLED?DockerImageName.parse("debezium/postgres").asCompatibleSubstituteFor("postgres"):DockerImageName.parse("postgres");
+        GenericContainer container = new PostgreSQLContainer<>(dockerImageName.withTag(POSTGRES_IMAGE_TAG))
                 .withDatabaseName(POSTGRES_DATABASE_NAME)
                 .withUsername(POSTGRES_USERNAME)
                 .withPassword(POSTGRES_PASSWORD)
@@ -320,6 +328,9 @@ public final class TestcontainersManager {
                 .withExposedPorts(POSTGRES_PORT);
         if(POSTGRES_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
+        }
+        if(POSTGRES_SCHEMA_FILE_PATH != null) {
+            ((PostgreSQLContainer)container).withInitScript(POSTGRES_SCHEMA_FILE_PATH);
         }
         return container;
     }
@@ -714,6 +725,24 @@ public final class TestcontainersManager {
             container.withPassword(ELASTICSEARCH_PASSWORD);
         }
         if(ELASTICSEARCH_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    private GenericContainer createAmbarContainer() {
+        String containerName = AMBAR.toString();
+        GenericContainer container = new GenericContainer<>("ambarltd/emulator:" + AMBAR_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withFileSystemBind(AMBAR_CONFIG_FILE_PATH, "/opt/emulator/config/config.yaml", BindMode.READ_ONLY)
+//                .withFileSystemBind(AMBAR_DATA_VOLUME_PATH, "/root/.local/share/ambar-emulator", BindMode.READ_WRITE)
+                .withCreateContainerCmdModifier(cmd -> {
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
+                    cmd.withName(containerCmdModifier);
+                })
+                .withReuse(true);
+        if(AMBAR_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;

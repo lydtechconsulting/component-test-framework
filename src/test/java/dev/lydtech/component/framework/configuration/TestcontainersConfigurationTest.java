@@ -46,6 +46,7 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("postgres.schema.name");
         System.clearProperty("postgres.username");
         System.clearProperty("postgres.password");
+        System.clearProperty("postgres.schema.file.path");
         System.clearProperty("postgres.container.logging.enabled");
 
         System.clearProperty("mongodb.enabled");
@@ -123,6 +124,11 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("elasticsearch.cluster.name");
         System.clearProperty("elasticsearch.discovery.type");
         System.clearProperty("elasticsearch.container.logging.enabled");
+
+        System.clearProperty("ambar.enabled");
+        System.clearProperty("ambar.image.tag");
+        System.clearProperty("ambar.config.file.path");
+        System.clearProperty("ambar.container.logging.enabled");
     }
 
     @Test
@@ -220,6 +226,10 @@ public class TestcontainersConfigurationTest {
         assertThat(ELASTICSEARCH_CLUSTER_NAME, equalTo("elasticsearch"));
         assertThat(ELASTICSEARCH_DISCOVERY_TYPE, equalTo("single-node"));
         assertThat(ELASTICSEARCH_CONTAINER_LOGGING_ENABLED, equalTo(false));
+        assertThat(AMBAR_ENABLED, equalTo(false));
+        assertThat(AMBAR_IMAGE_TAG, equalTo("v1.8"));
+        assertThat(AMBAR_CONFIG_FILE_PATH, equalTo("src/test/resources/ambar-config.yaml"));
+        assertThat(AMBAR_CONTAINER_LOGGING_ENABLED, equalTo(false));
     }
 
     @Test
@@ -254,6 +264,7 @@ public class TestcontainersConfigurationTest {
         System.setProperty("postgres.schema.name", "postgres-schema-override");
         System.setProperty("postgres.username", "postgres-user-override");
         System.setProperty("postgres.password", "postgres-password-override");
+        System.setProperty("postgres.schema.file.path", "postgres-schema-file-path-override");
         System.setProperty("postgres.container.logging.enabled", "true");
 
         System.setProperty("mongodb.enabled", "true");
@@ -331,6 +342,11 @@ public class TestcontainersConfigurationTest {
         System.setProperty("elasticsearch.discovery.type", "elasticsearch-discovery-override");
         System.setProperty("elasticsearch.container.logging.enabled", "true");
 
+        System.setProperty("ambar.enabled", "true");
+        System.setProperty("ambar.image.tag", "ambar-override");
+        System.setProperty("ambar.config.file.path", "/ambar-config-override.yaml");
+        System.setProperty("ambar.container.logging.enabled", "true");
+
         TestcontainersConfiguration.configure();
 
         assertThat(CONTAINER_NAME_PREFIX, equalTo("ct-override"));
@@ -365,6 +381,7 @@ public class TestcontainersConfigurationTest {
         assertThat(POSTGRES_SCHEMA_NAME, equalTo("postgres-schema-override"));
         assertThat(POSTGRES_USERNAME, equalTo("postgres-user-override"));
         assertThat(POSTGRES_PASSWORD, equalTo("postgres-password-override"));
+        assertThat(POSTGRES_SCHEMA_FILE_PATH, equalTo("postgres-schema-file-path-override"));
         assertThat(POSTGRES_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(MONGODB_ENABLED, equalTo(true));
         assertThat(MONGODB_PORT, equalTo(27017));
@@ -434,6 +451,10 @@ public class TestcontainersConfigurationTest {
         assertThat(ELASTICSEARCH_CLUSTER_NAME, equalTo("elasticsearch-cluster-override"));
         assertThat(ELASTICSEARCH_DISCOVERY_TYPE, equalTo("elasticsearch-discovery-override"));
         assertThat(ELASTICSEARCH_CONTAINER_LOGGING_ENABLED, equalTo(true));
+        assertThat(AMBAR_ENABLED, equalTo(true));
+        assertThat(AMBAR_IMAGE_TAG, equalTo("ambar-override"));
+        assertThat(AMBAR_CONFIG_FILE_PATH, equalTo("/ambar-config-override.yaml"));
+        assertThat(AMBAR_CONTAINER_LOGGING_ENABLED, equalTo(true));
     }
 
     @Test
