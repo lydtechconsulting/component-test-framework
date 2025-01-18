@@ -175,7 +175,7 @@ https://github.com/lydtechconsulting/micronaut-kafka-kotlin - demonstrates a Mic
 
 https://github.com/lydtechconsulting/flink-kafka-connector - demonstrates a Flink application using Kafka as the source and sink for streaming data.
 
-https://github.com/lydtechconsulting/event-sourcing-ambar - demonstrates event sourcing with Ambar.
+https://github.com/lydtechconsulting/ambar-event-sourcing - demonstrates event sourcing with Ambar.
 
 [[Back To Top](README.md#component-test-framework)]
 
