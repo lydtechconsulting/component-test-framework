@@ -8,6 +8,7 @@
 - [Maven Dependency](README.md#maven-dependency)
 - [Example Usage Projects](README.md#example-usage-projects)
 - [Upgrading From Previous Versions](README.md#upgrading-from-previous-versions)
+- [Docker Configuration](README.md#docker-configuration)
 - [Configuration Options](README.md#configuration-options)
 - [Using Maven](README.md#using-maven)
 - [Using Gradle](README.md#using-gradle)
@@ -30,6 +31,7 @@
 - [Elasticsearch](README.md#elasticsearch)
 - [Ambar](README.md#ambar)
 - [Docker Commands](README.md#docker-commands)
+- [Troubleshooting](README.md#troubleshooting)
 
 # Overview
 
@@ -211,6 +213,14 @@ environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup
 ```
 
 [[Back To Top](README.md#component-test-framework)]
+
+# Docker Configuration
+
+In order for the component test framework to interrogate the docker containers at test time, the `/var/run/docker.sock` must be available to use.  In Docker Desktop / `Advanced` check the following box:
+
+[[Back To Top](README.md#component-test-framework)]
+
+![Enable Docker Socket](resources/ctf-docker-socket.png)
 
 # Configuration Options
 
@@ -1328,6 +1338,25 @@ com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"c
 
 [[Back To Top](README.md#component-test-framework)]
 
+# Troubleshooting
+
+## Docker Communication Error
+
+**Error:**
+```
+[ERROR] eventsourcing.component.EndToEndCT -- Time elapsed: 0.394 s <<< ERROR!
+java.lang.RuntimeException: java.io.IOException: com.sun.jna.LastErrorException: [2] No such file or directory
+at com.github.dockerjava.httpclient5.ApacheDockerHttpClientImpl.execute(ApacheDockerHttpClientImpl.java:195)
+Caused by: java.io.IOException: com.sun.jna.LastErrorException: [2] No such file or directory
+```
+**Cause:**
+Docker needs to be able to use the `docker.sock` process but this is not available.
+
+**Resolution:**
+See the required configuration in the [[Docker Configuration](README.md#docker-configuration)] section. 
+
+[[Back To Top](README.md#component-test-framework)]
+
 ## Versioning & Release
 
 Every commit or merge to `main` will increment the version and release to Maven central.
@@ -1336,3 +1365,4 @@ Every commit or merge to `main` will increment the version and release to Maven 
 - To increment the minor version, start commit message with `feat:`.
 - Otherwise the patch version is incremented.
 
+[[Back To Top](README.md#component-test-framework)]
