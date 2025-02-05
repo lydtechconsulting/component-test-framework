@@ -39,4 +39,8 @@ public final class ServiceClient {
     public RequestSpecification getRequestSpecification() {
         return requestSpec;
     }
+
+    static void resetInstance() {
+        instance = null;
+    }
 }

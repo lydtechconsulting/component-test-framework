@@ -3,6 +3,7 @@ package dev.lydtech.component.framework.configuration;
 import java.util.*;
 
 import dev.lydtech.component.framework.management.AdditionalContainer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,15 @@ public class TestcontainersConfigurationTest {
 
     @BeforeEach
     public void setUp() {
+        clearProperties();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearProperties();
+    }
+
+    public void clearProperties() {
         System.clearProperty("containers.stayup");
         System.clearProperty("container.name.prefix");
         System.clearProperty("container.main.label");
@@ -129,6 +139,8 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("ambar.image.tag");
         System.clearProperty("ambar.config.file.path");
         System.clearProperty("ambar.container.logging.enabled");
+
+        TestcontainersConfiguration.configure();
     }
 
     @Test
