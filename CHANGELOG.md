@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.8.0] - 2025-02-08
+### Added
+- Supports client calls to additional containers using AdditionalContainerClient.
+
 ## [3.7.0] - 2025-01-15
 ### Added
 - Supports event sourcing with Ambar.

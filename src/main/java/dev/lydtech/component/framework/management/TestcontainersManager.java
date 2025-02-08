@@ -290,6 +290,7 @@ public final class TestcontainersManager {
 
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+name+":" + imageTag)
                 .withEnv("JAVA_OPTS", javaOpts)
+                .withLabel("additional-container-label", "additional-container")
                 .withFileSystemBind("./target/test-classes/"+name+"/application-component-test.yml", "/application.yml", BindMode.READ_ONLY)
                 .withExposedPorts(port, debugPort)
                 .withNetwork(network)

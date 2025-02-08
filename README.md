@@ -529,7 +529,7 @@ public static void main(String[] args) {
 
 ## Discovering The Service URL
 
-The `dev.lydtech.component.framework.client.service.ServiceClient` provides a static `getBaseUrl` method to get the base URL, enabling REST calls to be made.
+The `dev.lydtech.component.framework.client.service.ServiceClient` provides a static `getBaseUrl` method to get the base URL of the service under test, enabling REST calls to be made to it.
 e.g. if using RestAssured as the HTTP client in the test:
 ```
 RestAssured.baseURI = ServiceClient.getInstance().getBaseUrl();
@@ -683,7 +683,14 @@ Note that if the application code is changed then it must be rebuilt, and the se
 
 Any number of additional containers can be started as part of the test run, using the `additional.containers` parameter.  This enables spinning up of simulator services that take the place of real world third party services that the service under test calls.
 
-For each additional container to start provide the name, port, debug port, image tag, and whether the Docker container logs should log to the container.
+For each additional container to start provide the name, port, debug port, image tag, and whether the Docker container logs should log to the console.  The properties for each additional container should be comma separated, and each additional container's set of properties should be colon separated.  For example, to configure two additional containers, use the system property:
+```
+-Dadditional.containers=third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false
+```
+Or if defining in the `pom.xml`:
+```
+<additional.containers>third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false</additional.containers>
+```
 
 The additional service/simulator must have an `application.yml` with the required properties in its `src/main/resources` directory.  This will include the service port that is specified in the `additional.containers` property.
 
@@ -692,6 +699,19 @@ Within the component test directory/module declare a component test properties f
 src/test/resources/third-party-simulator/application-component-test.yml
 ```
 A remote debugger can be attached to these containers as per the main service.
+
+A client is provided that allows the test to call the REST API on the additional containers.  The required additional container can be looked up by exact or partial name match.  By default the container name will include the `ct-` prefix, so for example either `third-party-simulator` or `ct-third-party-simulator` could be used for the look up.
+
+```
+import dev.lydtech.component.framework.client.service.AdditionalContainerClient;
+
+String thirdPartyServiceBaseUrl = AdditionalContainerClient.getInstance().getBaseUrl("third-party-simulator");
+
+RestAssured.get(thirdPartyServiceBaseUrl+"/v1/thirdparty/pi/123-456")
+    .then()
+    .assertThat()
+    .statusCode(200);
+```
 
 Additional containers work well in a multi module project.  They are co-located with the service under test, but defined in their own module for clear separation.  An example of using additional containers can be seen in the accompanying `ctf-example-multi-module` project:
 

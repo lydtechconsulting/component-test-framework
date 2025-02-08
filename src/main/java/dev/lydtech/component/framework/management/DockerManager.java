@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.dockerjava.api.DockerClient;
@@ -18,6 +19,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.DockerClientFactory;
 
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.ADDITIONAL_CONTAINERS;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_APPEND_GROUP_ID;
@@ -108,16 +110,15 @@ public final class DockerManager {
         log.info("Container main label: "+CONTAINER_MAIN_LABEL);
         // To locate the service containers use the container prefix and main container label.  This decouples discovery
         // from the service name, so that subsequent runs do not need this overridden if changed each time.
-            List<Container> serviceContainers = dockerClient.listContainersCmd()
-                    .withNameFilter(singletonList(CONTAINER_NAME_PREFIX + "-"))
-                    .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL))
-                    .exec();
-            if (serviceContainers.size() > 0) {
-                mapPort(SERVICE.toString(), SERVICE_PORT, serviceContainers.get(0));
-            } else {
-                throw new RuntimeException("Service container not found");
-            }
-
+        List<Container> serviceContainers = dockerClient.listContainersCmd()
+                .withNameFilter(singletonList(CONTAINER_NAME_PREFIX + "-"))
+                .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL))
+                .exec();
+        if (serviceContainers.size() > 0) {
+            mapPort(SERVICE.toString(), SERVICE_PORT, serviceContainers.get(0));
+        } else {
+            throw new RuntimeException("Service container not found");
+        }
         findContainerAndMapPort(dockerClient, POSTGRES.toString(), POSTGRES_ENABLED, POSTGRES_PORT);
         findContainerAndMapPort(dockerClient, MONGODB.toString(), MONGODB_ENABLED, MONGODB_PORT);
         findContainerAndMapPort(dockerClient, MARIADB.toString(), MARIADB_ENABLED, MARIADB_PORT);
@@ -133,10 +134,37 @@ public final class DockerManager {
         findContainerAndMapPort(dockerClient, LOCALSTACK.toString(), LOCALSTACK_ENABLED, LOCALSTACK_PORT);
         findContainerAndMapPort(dockerClient, CONDUKTORGATEWAY.toString(), CONDUKTOR_GATEWAY_ENABLED, CONDUKTOR_GATEWAY_HTTP_PORT);
         findContainerAndMapPort(dockerClient, ELASTICSEARCH.toString(), ELASTICSEARCH_ENABLED, ELASTICSEARCH_PORT);
+        mapAdditionalContainersPorts(dockerClient);
 
         captureHost();
 
         log.info("Docker host and ports captured.");
+    }
+
+    private static void mapAdditionalContainersPorts(DockerClient dockerClient) {
+        List<Container> additionalContainers = dockerClient.listContainersCmd()
+                .withNameFilter(singletonList(CONTAINER_NAME_PREFIX + "-"))
+                .withLabelFilter(Collections.singletonMap("additional-container-label", "additional-container"))
+                .exec();
+
+        for (Container container : additionalContainers) {
+            String containerName = Arrays.stream(container.getNames())
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Container name not found"))
+                    .replaceFirst("^/", "");
+
+            Optional<AdditionalContainer> matchingAdditionalContainer = ADDITIONAL_CONTAINERS.stream()
+                    .filter(ac -> (CONTAINER_NAME_PREFIX+"-"+ac.getName()).equals(containerName))
+                    .findFirst();
+
+            if (matchingAdditionalContainer.isPresent()) {
+                AdditionalContainer additionalContainer = matchingAdditionalContainer.get();
+                int privatePort = additionalContainer.getPort();
+                mapPort("additional.container." + containerName, privatePort, container);
+            } else {
+                throw new RuntimeException("No matching additional container found for " + containerName);
+            }
+        }
     }
 
     /**
