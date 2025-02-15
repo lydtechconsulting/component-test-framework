@@ -13,21 +13,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ServiceClientTest {
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         System.setProperty("docker.host", "localhost");
         System.setProperty("service.mapped.port", "8080");
         ServiceClient.resetInstance();
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
         System.clearProperty("docker.host");
         System.clearProperty("service.mapped.port");
         ServiceClient.resetInstance();
     }
 
     @Test
-    void testGetBaseUrl() {
+    public void testGetBaseUrl() {
         String expectedBaseUrl = "http://localhost:8080";
         String actualBaseUrl = ServiceClient.getInstance().getBaseUrl();
 
@@ -35,14 +35,14 @@ public class ServiceClientTest {
     }
 
     @Test
-    void testGetRequestSpecification() {
+    public void testGetRequestSpecification() {
         RequestSpecification requestSpecification = ServiceClient.getInstance().getRequestSpecification();
 
         assertThat(requestSpecification, notNullValue());
     }
 
     @Test
-    void testThrowsExceptionWhenServicePortNotSet() {
+    public void testThrowsExceptionWhenServicePortNotSet() {
         System.clearProperty("service.mapped.port");
 
         Exception exception = assertThrows(RuntimeException.class, ServiceClient::getInstance);

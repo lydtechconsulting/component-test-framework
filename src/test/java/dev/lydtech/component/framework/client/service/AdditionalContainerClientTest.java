@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AdditionalContainerClientTest {
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         System.setProperty("docker.host", "localhost");
         System.setProperty("additional.container.ct-external-service-simulator.mapped.port", "55600");
         System.setProperty("additional.container.ct-third-party-simulator.mapped.port", "55594");
@@ -23,7 +23,7 @@ public class AdditionalContainerClientTest {
     }
 
     @AfterEach
-    void tearDown() {
+    public void tearDown() {
         System.clearProperty("docker.host");
         System.clearProperty("additional.container.ct-external-service-simulator.mapped.port");
         System.clearProperty("additional.container.ct-third-party-simulator.mapped.port");
@@ -31,19 +31,19 @@ public class AdditionalContainerClientTest {
     }
 
     @Test
-    void testExactMatchBaseUrl() {
+    public void testExactMatchBaseUrl() {
         String baseUrl = AdditionalContainerClient.getInstance().getBaseUrl("ct-third-party-simulator");
         assertThat(baseUrl, is(equalTo("http://localhost:55594")));
     }
 
     @Test
-    void testPartialMatchBaseUrl() {
+    public void testPartialMatchBaseUrl() {
         String baseUrl = AdditionalContainerClient.getInstance().getBaseUrl("third-party-simulator");
         assertThat(baseUrl, is(equalTo("http://localhost:55594")));
     }
 
     @Test
-    void testMultipleMatchesBaseUrlThrowsException() {
+    public void testMultipleMatchesBaseUrlThrowsException() {
         Exception exception = assertThrows(RuntimeException.class,
                 () -> AdditionalContainerClient.getInstance().getBaseUrl("simulator"));
 
@@ -51,7 +51,7 @@ public class AdditionalContainerClientTest {
     }
 
     @Test
-    void testNoMatchBaseUrlThrowsException() {
+    public void testNoMatchBaseUrlThrowsException() {
         Exception exception = assertThrows(RuntimeException.class,
                 () -> AdditionalContainerClient.getInstance().getBaseUrl("non-existent-service"));
 
@@ -59,17 +59,17 @@ public class AdditionalContainerClientTest {
     }
 
     @Test
-    void testExactMatchRequestSpecification() {
+    public void testExactMatchRequestSpecification() {
         assertThat(AdditionalContainerClient.getInstance().getRequestSpecification("ct-third-party-simulator"), is(notNullValue()));
     }
 
     @Test
-    void testPartialMatchRequestSpecification() {
+    public void testPartialMatchRequestSpecification() {
         assertThat(AdditionalContainerClient.getInstance().getRequestSpecification("third-party-simulator"), is(notNullValue()));
     }
 
     @Test
-    void testMultipleMatchesRequestSpecificationThrowsException() {
+    public void testMultipleMatchesRequestSpecificationThrowsException() {
         Exception exception = assertThrows(RuntimeException.class,
                 () -> AdditionalContainerClient.getInstance().getRequestSpecification("simulator"));
 
@@ -77,7 +77,7 @@ public class AdditionalContainerClientTest {
     }
 
     @Test
-    void testNoMatchRequestSpecificationThrowsException() {
+    public void testNoMatchRequestSpecificationThrowsException() {
         Exception exception = assertThrows(RuntimeException.class,
                 () -> AdditionalContainerClient.getInstance().getRequestSpecification("non-existent-service"));
 

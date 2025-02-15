@@ -24,7 +24,7 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONDUKTOR_GATEWAY_HTTP_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_APPEND_GROUP_ID;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_GROUP_ID;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL_NAME;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_MAIN_LABEL_KEY;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.CONTAINER_NAME_PREFIX;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.DEBEZIUM_ENABLED;
@@ -96,23 +96,23 @@ public final class DockerManager {
                             .entrySet()
                             .stream()
                             .anyMatch(entry ->
-                                    entry.getKey().equals(CONTAINER_MAIN_LABEL_KEY) && entry.getValue().equals(CONTAINER_MAIN_LABEL)
+                                    entry.getKey().equals(CONTAINER_MAIN_LABEL_KEY) && entry.getValue().equals(CONTAINER_MAIN_LABEL_NAME)
                             ));
         boolean testContainersPresent = containers.stream().anyMatch(container -> Arrays.stream(container.getNames()).anyMatch(name -> name.startsWith("/testcontainers-ryuk")));
 
-        log.info("Current container status: main service with prefix ({}) and label ({}) running: {}, testcontainers running: {}",  CONTAINER_NAME_PREFIX, CONTAINER_MAIN_LABEL, mainContainerPresent, testContainersPresent);
+        log.info("Current container status: main service with prefix ({}) and label ({}) running: {}, testcontainers running: {}",  CONTAINER_NAME_PREFIX, CONTAINER_MAIN_LABEL_NAME, mainContainerPresent, testContainersPresent);
 
         return !(mainContainerPresent && !testContainersPresent);
     }
 
     public static void captureDockerContainerPorts(DockerClient dockerClient) {
         log.info("Capturing Docker ports...");
-        log.info("Container main label: "+CONTAINER_MAIN_LABEL);
+        log.info("Container main label: "+ CONTAINER_MAIN_LABEL_NAME);
         // To locate the service containers use the container prefix and main container label.  This decouples discovery
         // from the service name, so that subsequent runs do not need this overridden if changed each time.
         List<Container> serviceContainers = dockerClient.listContainersCmd()
                 .withNameFilter(singletonList(CONTAINER_NAME_PREFIX + "-"))
-                .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL))
+                .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL_NAME))
                 .exec();
         if (serviceContainers.size() > 0) {
             mapPort(SERVICE.toString(), SERVICE_PORT, serviceContainers.get(0));

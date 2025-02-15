@@ -1,31 +1,43 @@
 package dev.lydtech.component.framework.configuration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import dev.lydtech.component.framework.management.AdditionalContainer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mockStatic;
 
-public class TestcontainersConfigurationTest {
+public class ConfigurationLoaderSystemPropertiesTest {
+    private MockedStatic<FileUtils> mockedStatic;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         clearProperties();
+
+        // Ensure that the default file is not found and loaded, so that the system properties are used.
+        mockedStatic = mockStatic(FileUtils.class);
+        mockedStatic.when(() -> FileUtils.loadConfigurationFile("component-test.properties"))
+                .thenReturn(null);
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         clearProperties();
+        mockedStatic.close();
     }
 
     public void clearProperties() {
+        System.clearProperty("component.test.configuration.filename");
+
         System.clearProperty("containers.stayup");
         System.clearProperty("container.name.prefix");
         System.clearProperty("container.main.label");
@@ -140,17 +152,17 @@ public class TestcontainersConfigurationTest {
         System.clearProperty("ambar.config.file.path");
         System.clearProperty("ambar.container.logging.enabled");
 
-        TestcontainersConfiguration.configure();
+        ConfigurationLoader.loadConfiguration();
     }
 
     @Test
-    public void testDefaultConfiguration() {
+    public void testLoadConfigurationWithNoSystemPropertyOverrides() {
 
-        TestcontainersConfiguration.configure();
+        ConfigurationLoader.loadConfiguration();
 
         assertThat(CONTAINERS_STAYUP, equalTo(false));
         assertThat(CONTAINER_NAME_PREFIX, equalTo("ct"));
-        assertThat(CONTAINER_MAIN_LABEL, equalTo("main-container"));
+        assertThat(CONTAINER_MAIN_LABEL_NAME, equalTo("main-container"));
         assertThat(CONTAINER_APPEND_GROUP_ID, equalTo(false));
         assertThat(SERVICE_NAME, equalTo("app"));
         assertThat(SERVICE_INSTANCE_COUNT, equalTo(1));
@@ -245,7 +257,7 @@ public class TestcontainersConfigurationTest {
     }
 
     @Test
-    public void testOverriddenConfiguration() {
+    public void testLoadConfigurationWithSystemPropertyOverrides() {
 
         System.setProperty("container.name.prefix", "ct-override");
         System.setProperty("container.main.label", "main-override");
@@ -359,10 +371,10 @@ public class TestcontainersConfigurationTest {
         System.setProperty("ambar.config.file.path", "/ambar-config-override.yaml");
         System.setProperty("ambar.container.logging.enabled", "true");
 
-        TestcontainersConfiguration.configure();
+        ConfigurationLoader.loadConfiguration();
 
         assertThat(CONTAINER_NAME_PREFIX, equalTo("ct-override"));
-        assertThat(CONTAINER_MAIN_LABEL, equalTo("main-override"));
+        assertThat(CONTAINER_MAIN_LABEL_NAME, equalTo("main-override"));
         assertThat(CONTAINER_APPEND_GROUP_ID, equalTo(true));
         assertThat(SERVICE_NAME, equalTo("app-override"));
         assertThat(SERVICE_INSTANCE_COUNT, equalTo(2));
@@ -467,49 +479,5 @@ public class TestcontainersConfigurationTest {
         assertThat(AMBAR_IMAGE_TAG, equalTo("ambar-override"));
         assertThat(AMBAR_CONFIG_FILE_PATH, equalTo("/ambar-config-override.yaml"));
         assertThat(AMBAR_CONTAINER_LOGGING_ENABLED, equalTo(true));
-    }
-
-    @Test
-    void testParseKafkaTopics() {
-        System.setProperty("kafka.topics", "topic-a, topic-b, topic-c");
-        assertThat(TestcontainersConfiguration.parseKafkaTopics(), equalTo(Arrays.asList("topic-a", "topic-b", "topic-c")));
-    }
-
-    @Test
-    void testParseAdditionalContainers() {
-        System.setProperty("additional.containers", "third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,6.5.4,true");
-        List<AdditionalContainer> additionalContainers = TestcontainersConfiguration.parseAdditionalContainers();
-        assertThat(additionalContainers.size(), equalTo(2));
-        assertThat(additionalContainers.get(0).getName(), equalTo("third-party-simulator"));
-        assertThat(additionalContainers.get(0).getPort(), equalTo(9002));
-        assertThat(additionalContainers.get(0).getDebugPort(), equalTo(5002));
-        assertThat(additionalContainers.get(0).getImageTag(), equalTo("latest"));
-        assertThat(additionalContainers.get(0).getAdditionalContainerLoggingEnabled(), equalTo(false));
-        assertThat(additionalContainers.get(1).getName(), equalTo("external-service-simulator"));
-        assertThat(additionalContainers.get(1).getPort(), equalTo(9003));
-        assertThat(additionalContainers.get(1).getDebugPort(), equalTo(5003));
-        assertThat(additionalContainers.get(1).getImageTag(), equalTo("6.5.4"));
-        assertThat(additionalContainers.get(1).getAdditionalContainerLoggingEnabled(), equalTo(true));
-    }
-
-    @Test
-    void testParseAdditionalContainers_Invalid() {
-        System.setProperty("additional.containers", "third-party-simulator,9002");
-        Exception exception = assertThrows(RuntimeException.class, () -> TestcontainersConfiguration.parseAdditionalContainers());
-        assertThat(exception.getMessage(), equalTo("Invalid additional containers details: [third-party-simulator, 9002] -  expecting 5 args, found 2."));
-    }
-
-    @Test
-    void testParseEnvVars_Invalid() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> TestcontainersConfiguration.parseKvPairs("invalid"));
-        assertThat(exception.getMessage(), equalTo("invalid key/value pair string for service property"));
-    }
-
-    @Test
-    void testParseEnvVars() {
-        Map<String, String> envVarsMap = parseKvPairs("firstKey=firstVal,    secondKey   =    secondVal");
-        assertThat(envVarsMap.size(), equalTo(2));
-        assertThat(envVarsMap.get("firstKey"), equalTo("firstVal"));
-        assertThat(envVarsMap.get("secondKey"), equalTo("secondVal"));
     }
 }

@@ -11,6 +11,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
 import com.github.dockerjava.api.model.Ports;
+import dev.lydtech.component.framework.configuration.ConfigurationLoader;
 import io.debezium.testing.testcontainers.DebeziumContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.Admin;
@@ -73,6 +74,7 @@ public final class TestcontainersManager {
     private TestcontainersManager(){}
 
     public static void initialise() {
+        ConfigurationLoader.loadConfiguration();
         TestcontainersManager manager = new TestcontainersManager();
         log.info("Creating testcontainers...");
         manager.createContainers();
@@ -255,7 +257,7 @@ public final class TestcontainersManager {
 
         GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+SERVICE_NAME+":" + SERVICE_IMAGE_TAG)
                 .withEnv(SERVICE_ENV_VARS)
-                .withLabel(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL)
+                .withLabel(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL_NAME)
                 .withFileSystemBind(SERVICE_APPLICATION_YML_PATH, "/application.yml", BindMode.READ_ONLY)
                 .withExposedPorts(SERVICE_PORT, SERVICE_DEBUG_PORT)
                 .withNetwork(network)
@@ -587,13 +589,13 @@ public final class TestcontainersManager {
             e.withName(containerCmdModifier);
         };
 
-        return new GenericContainer<>(DEFAULT_CONDUKTOR_POSTGRES_IMAGE_TAG)
+        return new GenericContainer<>(CONDUKTOR_POSTGRES_IMAGE_TAG)
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withCreateContainerCmdModifier(cmd)
-                .withEnv("POSTGRES_DB", DEFAULT_CONDUKTOR_POSTGRES_DB)
-                .withEnv("POSTGRES_USER", DEFAULT_CONDUKTOR_POSTGRES_USER)
-                .withEnv("POSTGRES_PASSWORD", DEFAULT_CONDUKTOR_POSTGRES_PASSWORD)
+                .withEnv("POSTGRES_DB", CONDUKTOR_POSTGRES_DB)
+                .withEnv("POSTGRES_USER", CONDUKTOR_POSTGRES_USER)
+                .withEnv("POSTGRES_PASSWORD", CONDUKTOR_POSTGRES_PASSWORD)
                 .withEnv("POSTGRES_HOST_AUTH_METHOD", "scram-sha-256")
                 .withReuse(true);
     }
@@ -620,7 +622,7 @@ public final class TestcontainersManager {
                 .withEnv("CDK_CLUSTERS_0_ID", "CTF")
                 .withEnv("CDK_CLUSTERS_0_NAME", "Local Cluster")
                 .withEnv("CDK_CLUSTERS_0_BOOTSTRAPSERVERS", KAFKA + ":" + kafkaInternalPort)
-                .withEnv("CDK_DATABASE_URL", "postgresql://" + DEFAULT_CONDUKTOR_POSTGRES_USER + ":" + DEFAULT_CONDUKTOR_POSTGRES_PASSWORD + "@" + CONDUKTOR + "-postgres" + ":5432/" + DEFAULT_CONDUKTOR_POSTGRES_DB)
+                .withEnv("CDK_DATABASE_URL", "postgresql://" + CONDUKTOR_POSTGRES_USER + ":" + DEFAULT_CONDUKTOR_POSTGRES_PASSWORD + "@" + CONDUKTOR + "-postgres" + ":5432/" + DEFAULT_CONDUKTOR_POSTGRES_DB)
                 .withReuse(true)
                 .withExposedPorts(containerExposedPort);
         if (CONDUKTOR_LICENSE_KEY != null) {

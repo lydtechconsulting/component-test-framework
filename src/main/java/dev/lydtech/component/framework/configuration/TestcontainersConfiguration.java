@@ -1,37 +1,27 @@
 package dev.lydtech.component.framework.configuration;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import dev.lydtech.component.framework.management.AdditionalContainer;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 
-@Slf4j
 public final class TestcontainersConfiguration {
 
     /**
-     * Container configuration.
+     * The default configuration.
      */
 
-    /**
-     * Label key for the Docker container housing the service.
-     */
-    public static final String CONTAINER_MAIN_LABEL_KEY = "dev.lydtech.main-container-label";
-
-    /**
-     * A unique Id to optionally apply to docker container names to distinguish the group of containers for each test run.
-     */
-    public static final String CONTAINER_GROUP_ID = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
-
-
+    // --- Container configuration ---
+    private static final String DEFAULT_CONTAINER_MAIN_LABEL_KEY = "dev.lydtech.main-container-label";
+    private static final String DEFAULT_CONTAINER_GROUP_ID = RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+    private static final String DEFAULT_CONTAINER_NAME_PREFIX = "ct";
+    private static final String DEFAULT_CONTAINER_MAIN_LABEL_NAME = "main-container";
     private static final String DEFAULT_CONTAINERS_STAYUP = "false";
     private static final String DEFAULT_CONTAINER_APPEND_GROUP_ID = "false";
 
-    /**
-     * Service default configuration.
-     */
-
+    // --- Service default configuration ---
     private static final String DEFAULT_SERVICE_NAME = "app";
     private static final String DEFAULT_SERVICE_INSTANCE_COUNT = "1";
     private static final String DEFAULT_SERVICE_PORT = "8080";
@@ -45,18 +35,13 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_SERVICE_DEBUG_SUSPEND = "false";
     private static final String DEFAULT_SERVICE_APPLICATION_ARGS = null;
+    private static final String DEFAULT_SERVICE_ENVVARS = null;
+    private static final String DEFAULT_SERVICE_ADDITIONAL_FILESYSTEM_BINDS = null;
 
-    /**
-     * Container configuration.
-     */
+    // --- Additional containers configuration ---
+    private static final String DEFAULT_ADDITIONAL_CONTAINERS = null;
 
-    private static final String DEFAULT_CONTAINER_NAME_PREFIX = "ct";
-    private static final String DEFAULT_CONTAINER_MAIN_LABEL = "main-container";
-
-    /**
-     * Postgres configuration.
-     */
-
+    // --- Postgres configuration ---
     private static final String DEFAULT_POSTGRES_ENABLED = "false";
     private static final String DEFAULT_POSTGRES_IMAGE_TAG = "14-alpine";
     private static final String DEFAULT_POSTGRES_HOST_NAME = "postgres-host";
@@ -68,19 +53,13 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_POSTGRES_SCHEMA_FILE_PATH = null;
     private static final String DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED = "false";
 
-    /**
-     * MongoDB configuration.
-     */
-
+    // --- MongoDB configuration ---
     private static final String DEFAULT_MONGODB_ENABLED = "false";
     private static final String DEFAULT_MONGODB_IMAGE_TAG = "7.0.2";
     private static final String DEFAULT_MONGODB_PORT = "27017";
     private static final String DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED = "false";
 
-    /**
-     * MariaDB configuration.
-     */
-
+    // --- MariaDB configuration ---
     private static final String DEFAULT_MARIADB_ENABLED = "false";
     private static final String DEFAULT_MARIADB_IMAGE_TAG = "10.6";
     private static final String DEFAULT_MARIADB_HOST_NAME = "mariadb-host";
@@ -90,16 +69,17 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_MARIADB_PASSWORD = "password";
     private static final String DEFAULT_MARIADB_CONTAINER_LOGGING_ENABLED = "false";
 
-
-    /**
-     * Kafka default configuration.
-     */
-
+    // --- Kafka configuration ---
     private static final String DEFAULT_KAFKA_ENABLED = "false";
+    private static final int DEFAULT_KAFKA_PORT = 9093;
+    private static final int DEFAULT_KAFKA_INTERNAL_PORT = 9092;
     private static final String DEFAULT_KAFKA_NATIVE_ENABLED = "false";
+    private static final int DEFAULT_KAFKA_NATIVE_PORT = 9092;
+    private static final int DEFAULT_KAFKA_NATIVE_INTERNAL_PORT = 9093;
     private static final String DEFAULT_KAFKA_BROKER_COUNT = "1";
     private static final String DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG = "7.3.2";
     private static final String DEFAULT_KAFKA_APACHE_NATIVE_IMAGE_TAG = "3.8.0";
+    private static final String DEFAULT_KAFKA_TOPICS = null;
     private static final String DEFAULT_KAFKA_TOPIC_PARTITION_COUNT = "1";
     private static final String DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR = "1";
@@ -108,28 +88,19 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_KAFKA_SASL_PLAIN_USERNAME = "demo";
     private static final String DEFAULT_KAFKA_SASL_PLAIN_PASSWORD = "demo-password";
 
-    /**
-     * Debezium (Kafka Connect) default configuration.
-     */
-
+    // --- Debezium (Kafka Connect) configuration ---
     private static final String DEFAULT_DEBEZIUM_ENABLED = "false";
     private static final String DEFAULT_DEBEZIUM_IMAGE_TAG = "2.4.0.Final";
     private static final String DEFAULT_DEBEZIUM_PORT = "8083";
     private static final String DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED = "false";
 
-    /**
-     * Kafka Confluent Schema Registry default configuration.
-     */
-
+    // --- Kafka Confluent Schema Registry configuration ---
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED = "false";
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = "7.3.2";
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT = "8081";
     private static final String DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = "false";
 
-    /**
-     * Kafka Confluent Control Center default configuration.
-     */
-
+    // --- Kafka Confluent Control Center configuration ---
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_ENABLED = "false";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = "7.3.2";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_PORT = "9021";
@@ -137,12 +108,10 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = "false";
     private static final String DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = "false";
 
-    /**
-     * Conduktor configuration.
-     */
-
-    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.23.0";
+    // --- Conduktor configuration ---
     private static final String DEFAULT_CONDUKTOR_ENABLED = "false";
+    private static final String DEFAULT_CONDUKTOR_IMAGE_TAG = "1.23.0";
+    private static final String DEFAULT_CONDUKTOR_LICENSE_KEY = null;
     private static final String DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_PORT = "8088";
     public static final String DEFAULT_CONDUKTOR_POSTGRES_IMAGE_TAG = "postgres:14";
@@ -150,31 +119,21 @@ public final class TestcontainersConfiguration {
     public static final String DEFAULT_CONDUKTOR_POSTGRES_USER = "conduktor";
     public static final String DEFAULT_CONDUKTOR_POSTGRES_PASSWORD = "POSTGRES_PASSWORD";
 
-    /**
-     * Conduktor Gateway configuration.
-     */
-
+    // --- Conduktor Gateway configuration ---
     private static final String DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG = "3.2.1";
-
     private static final String DEFAULT_CONDUKTOR_GATEWAY_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_CONDUKTOR_GATEWAY_PROXY_PORT = "6969";
     private static final String DEFAULT_CONDUKTOR_GATEWAY_HTTP_PORT = "8888";
 
-    /**
-     * Wiremock default configuration.
-     */
-
+    // --- Wiremock configuration ---
     private static final String DEFAULT_WIREMOCK_ENABLED = "false";
     private static final String DEFAULT_WIREMOCK_IMAGE_TAG = "3.6.0";
     private static final String DEFAULT_WIREMOCK_PORT = "8080";
     private static final String DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_WIREMOCK_OPTIONS = "";
 
-    /**
-     * Localstack (AWS) default configuration.
-     */
-
+    // --- Localstack (AWS) configuration ---
     private static final String DEFAULT_LOCALSTACK_ENABLED = "false";
     private static final String DEFAULT_LOCALSTACK_IMAGE_TAG = "0.14.3";
     private static final String DEFAULT_LOCALSTACK_PORT = "4566";
@@ -182,10 +141,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_LOCALSTACK_INIT_FILE_PATH = null;
 
-    /**
-     * Elasticsearch configuration.
-     */
-
+    // --- Elasticsearch configuration ---
     private static final String DEFAULT_ELASTICSEARCH_ENABLED = "false";
     private static final String DEFAULT_ELASTICSEARCH_IMAGE_TAG = "8.10.4";
     private static final String DEFAULT_ELASTICSEARCH_PORT = "9200";
@@ -194,10 +150,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE = "single-node";
     private static final String DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = "false";
 
-    /**
-     * Ambar configuration.
-     */
-
+    // --- Ambar configuration ---
     private static final String DEFAULT_AMBAR_ENABLED = "false";
     private static final String DEFAULT_AMBAR_IMAGE_TAG = "v1.8";
     private static final String DEFAULT_AMBAR_CONTAINER_LOGGING_ENABLED = "false";
@@ -207,10 +160,17 @@ public final class TestcontainersConfiguration {
      * The runtime configuration.
      */
 
+    // --- Container configuration ---
+    // Label key for the Docker container housing the service.
+    public static String CONTAINER_MAIN_LABEL_KEY;
+    // A unique Id to optionally apply to docker container names to distinguish the group of containers for each test run.
+    public static String CONTAINER_GROUP_ID;
     public static boolean CONTAINERS_STAYUP;
-    public static String CONTAINER_NAME_PREFIX;
-    public static String CONTAINER_MAIN_LABEL;
     public static boolean CONTAINER_APPEND_GROUP_ID;
+    public static String CONTAINER_NAME_PREFIX;
+    public static String CONTAINER_MAIN_LABEL_NAME;
+
+    // --- Service configuration ---
     public static String SERVICE_NAME;
     public static int SERVICE_INSTANCE_COUNT;
     public static int SERVICE_PORT;
@@ -227,8 +187,10 @@ public final class TestcontainersConfiguration {
     public static boolean SERVICE_CONTAINER_LOGGING_ENABLED;
     public static String SERVICE_APPLICATION_ARGS;
 
+    // --- Additional containers ---
     public static List<AdditionalContainer> ADDITIONAL_CONTAINERS;
 
+    // --- Postgres configuration ---
     public static boolean POSTGRES_ENABLED;
     public static String POSTGRES_IMAGE_TAG;
     public static String POSTGRES_HOST_NAME;
@@ -240,11 +202,13 @@ public final class TestcontainersConfiguration {
     public static String POSTGRES_SCHEMA_FILE_PATH;
     public static boolean POSTGRES_CONTAINER_LOGGING_ENABLED;
 
+    // --- MongoDB configuration ---
     public static boolean MONGODB_ENABLED;
     public static String MONGODB_IMAGE_TAG;
     public static Integer MONGODB_PORT;
     public static boolean MONGODB_CONTAINER_LOGGING_ENABLED;
 
+    // --- MariaDB configuration ---
     public static boolean MARIADB_ENABLED;
     public static String MARIADB_IMAGE_TAG;
     public static String MARIADB_HOST_NAME;
@@ -254,19 +218,16 @@ public final class TestcontainersConfiguration {
     public static String MARIADB_PASSWORD;
     public static boolean MARIADB_CONTAINER_LOGGING_ENABLED;
 
+    // --- Kafka configuration ---
     public static boolean KAFKA_ENABLED;
     public static boolean KAFKA_NATIVE_ENABLED;
     public static int KAFKA_BROKER_COUNT;
     public static String KAFKA_CONFLUENT_IMAGE_TAG;
     public static String KAFKA_APACHE_NATIVE_IMAGE_TAG;
-
-    // These ports are hardcoded in org.testcontainers.containers.KafkaContainer (Standard) and org.testcontainers.kafka.KafkaContainer (Native) respectively.
-    // PORT is the port for calls made from outside the Docker network (e.g. to 'localhost').
-    // INTERNAL_PORT is the port for calls between services within the Docker network (e.g. to the 'kafka' container).
-    public static int KAFKA_PORT = 9093;
-    public static int KAFKA_INTERNAL_PORT = 9092;
-    public static int KAFKA_NATIVE_PORT = 9092;
-    public static int KAFKA_NATIVE_INTERNAL_PORT = 9093;
+    public static int KAFKA_PORT;
+    public static int KAFKA_INTERNAL_PORT;
+    public static int KAFKA_NATIVE_PORT;
+    public static int KAFKA_NATIVE_INTERNAL_PORT;
 
     public static List<String> KAFKA_TOPICS;
     public static int KAFKA_TOPIC_PARTITION_COUNT;
@@ -277,11 +238,13 @@ public final class TestcontainersConfiguration {
     public static String KAFKA_SASL_PLAIN_USERNAME;
     public static String KAFKA_SASL_PLAIN_PASSWORD;
 
+    // --- Kafka Schema Registry configuration ---
     public static boolean KAFKA_SCHEMA_REGISTRY_ENABLED;
     public static String KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG;
     public static int KAFKA_SCHEMA_REGISTRY_PORT;
     public static boolean KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED;
 
+    // --- Kafka Control Center configuration ---
     public static boolean KAFKA_CONTROL_CENTER_ENABLED;
     public static String KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG;
     public static boolean KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED;
@@ -289,29 +252,38 @@ public final class TestcontainersConfiguration {
     public static int KAFKA_CONTROL_CENTER_PORT;
     public static boolean KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED;
 
+    // --- Conduktor configuration ---
     public static boolean CONDUKTOR_ENABLED;
     public static String CONDUKTOR_IMAGE_TAG;
     public static String CONDUKTOR_LICENSE_KEY;
     public static int CONDUKTOR_PORT;
     public static boolean CONDUKTOR_CONTAINER_LOGGING_ENABLED;
+    public static String CONDUKTOR_POSTGRES_IMAGE_TAG;
+    public static String CONDUKTOR_POSTGRES_DB;
+    public static String CONDUKTOR_POSTGRES_USER;
+    public static String CONDUKTOR_POSTGRES_PASSWORD;
 
+    // --- Conduktor Gateway configuration ---
     public static boolean CONDUKTOR_GATEWAY_ENABLED;
     public static String CONDUKTOR_GATEWAY_IMAGE_TAG;
     public static int CONDUKTOR_GATEWAY_PROXY_PORT;
     public static int CONDUKTOR_GATEWAY_HTTP_PORT;
     public static boolean CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED;
 
+    // --- Debezium configuration ---
     public static boolean DEBEZIUM_ENABLED;
     public static String DEBEZIUM_IMAGE_TAG;
     public static int DEBEZIUM_PORT;
     public static boolean DEBEZIUM_CONTAINER_LOGGING_ENABLED;
 
+    // --- Wiremock configuration ---
     public static boolean WIREMOCK_ENABLED;
     public static String WIREMOCK_IMAGE_TAG;
     public static int WIREMOCK_PORT;
     public static boolean WIREMOCK_CONTAINER_LOGGING_ENABLED;
     public static String WIREMOCK_OPTIONS;
 
+    // --- Localstack configuration ---
     public static boolean LOCALSTACK_ENABLED;
     public static String LOCALSTACK_IMAGE_TAG;
     public static int LOCALSTACK_PORT;
@@ -319,6 +291,7 @@ public final class TestcontainersConfiguration {
     public static boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED;
     public static String LOCALSTACK_INIT_FILE_PATH;
 
+    // --- Elasticsearch configuration ---
     public static boolean ELASTICSEARCH_ENABLED;
     public static String ELASTICSEARCH_IMAGE_TAG;
     public static int ELASTICSEARCH_PORT;
@@ -327,369 +300,170 @@ public final class TestcontainersConfiguration {
     public static String ELASTICSEARCH_DISCOVERY_TYPE;
     public static boolean ELASTICSEARCH_CONTAINER_LOGGING_ENABLED;
 
+    // --- Ambar configuration ---
     public static boolean AMBAR_ENABLED;
     public static String AMBAR_IMAGE_TAG;
     public static boolean AMBAR_CONTAINER_LOGGING_ENABLED;
     public static String AMBAR_CONFIG_FILE_PATH;
 
-    static {
-        configure();
-    }
+    // Private constructor to prevent instantiation.
+    private TestcontainersConfiguration() {}
 
-    protected static void configure() {
+    /**
+     * Update static configuration fields by merging the provided properties.
+     * This should be called after all external overrides have been applied.
+     *
+     * @param properties merged properties containing defaults and overrides.
+     */
+    public static void configure(Properties properties) {
 
+        // --- Container configuration ---
+        CONTAINER_MAIN_LABEL_KEY = DEFAULT_CONTAINER_MAIN_LABEL_KEY;
+        CONTAINER_GROUP_ID = DEFAULT_CONTAINER_GROUP_ID;
         CONTAINERS_STAYUP = Boolean.parseBoolean(System.getenv("TESTCONTAINERS_REUSE_ENABLE")!=null?System.getenv("TESTCONTAINERS_REUSE_ENABLE"):DEFAULT_CONTAINERS_STAYUP);
-        CONTAINER_NAME_PREFIX = System.getProperty("container.name.prefix", DEFAULT_CONTAINER_NAME_PREFIX);
-        CONTAINER_MAIN_LABEL = System.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL);
-        CONTAINER_APPEND_GROUP_ID = Boolean.parseBoolean(System.getProperty("container.append.group.id", DEFAULT_CONTAINER_APPEND_GROUP_ID));
+        CONTAINER_NAME_PREFIX = properties.getProperty("container.name.prefix", DEFAULT_CONTAINER_NAME_PREFIX);
+        CONTAINER_MAIN_LABEL_NAME = properties.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL_NAME);
+        CONTAINER_APPEND_GROUP_ID = Boolean.parseBoolean(properties.getProperty("container.append.group.id", DEFAULT_CONTAINER_APPEND_GROUP_ID));
 
-        SERVICE_NAME = System.getProperty("service.name", DEFAULT_SERVICE_NAME).toLowerCase();
-        SERVICE_INSTANCE_COUNT = Integer.parseInt(System.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
-        SERVICE_PORT = Integer.parseInt(System.getProperty("service.port", DEFAULT_SERVICE_PORT));
-        SERVICE_DEBUG_SUSPEND = Boolean.parseBoolean(System.getProperty("service.debug.suspend", DEFAULT_SERVICE_DEBUG_SUSPEND));
-        SERVICE_ENV_VARS = parseKvPairs(System.getProperty("service.envvars", null));
-        SERVICE_ADDITIONAL_FILESYSTEM_BINDS = parseKvPairs(System.getProperty("service.additional.filesystem.binds", null));
-        SERVICE_CONFIG_FILES_SYSTEM_PROPERTY = System.getProperty("service.config.files.system.property", DEFAULT_SERVICE_CONFIG_FILES_SYSTEM_PROPERTY);
-        SERVICE_APPLICATION_YML_PATH = System.getProperty("service.application.yml.path", DEFAULT_SERVICE_APPLICATION_YML_PATH);
-        SERVICE_DEBUG_PORT = Integer.parseInt(System.getProperty("service.debug.port", DEFAULT_SERVICE_DEBUG_PORT));
-        SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(System.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
-        SERVICE_STARTUP_HEALTH_ENDPOINT = System.getProperty("service.startup.health.endpoint", DEFAULT_SERVICE_STARTUP_HEALTH_ENDPOINT);
-        SERVICE_STARTUP_LOG_MESSAGE = System.getProperty("service.startup.log.message", DEFAULT_SERVICE_STARTUP_LOG_MESSAGE);
-        SERVICE_IMAGE_TAG = System.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
-        SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
-        SERVICE_APPLICATION_ARGS = System.getProperty("service.application.args", DEFAULT_SERVICE_APPLICATION_ARGS);
+        // --- Service configuration ---
+        SERVICE_NAME = properties.getProperty("service.name", DEFAULT_SERVICE_NAME).toLowerCase();
+        SERVICE_INSTANCE_COUNT = Integer.parseInt(properties.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
+        SERVICE_PORT = Integer.parseInt(properties.getProperty("service.port", DEFAULT_SERVICE_PORT));
+        SERVICE_DEBUG_PORT = Integer.parseInt(properties.getProperty("service.debug.port", DEFAULT_SERVICE_DEBUG_PORT));
+        SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(properties.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
+        SERVICE_CONFIG_FILES_SYSTEM_PROPERTY = properties.getProperty("service.config.files.system.property", DEFAULT_SERVICE_CONFIG_FILES_SYSTEM_PROPERTY);
+        SERVICE_APPLICATION_YML_PATH = properties.getProperty("service.application.yml.path", DEFAULT_SERVICE_APPLICATION_YML_PATH);
+        SERVICE_STARTUP_HEALTH_ENDPOINT = properties.getProperty("service.startup.health.endpoint", DEFAULT_SERVICE_STARTUP_HEALTH_ENDPOINT);
+        SERVICE_STARTUP_LOG_MESSAGE = properties.getProperty("service.startup.log.message", DEFAULT_SERVICE_STARTUP_LOG_MESSAGE);
+        SERVICE_IMAGE_TAG = properties.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
+        SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.parseBoolean(properties.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
+        SERVICE_DEBUG_SUSPEND = Boolean.parseBoolean(properties.getProperty("service.debug.suspend", DEFAULT_SERVICE_DEBUG_SUSPEND));
+        SERVICE_APPLICATION_ARGS = properties.getProperty("service.application.args", DEFAULT_SERVICE_APPLICATION_ARGS);
+        SERVICE_ENV_VARS = ConfigurationParser.parseKvPairs(properties.getProperty("service.envvars", DEFAULT_SERVICE_ENVVARS));
+        SERVICE_ADDITIONAL_FILESYSTEM_BINDS = ConfigurationParser.parseKvPairs(properties.getProperty("service.additional.filesystem.binds", DEFAULT_SERVICE_ADDITIONAL_FILESYSTEM_BINDS));
 
-        ADDITIONAL_CONTAINERS = parseAdditionalContainers();
+        // --- Additional containers ---
+        ADDITIONAL_CONTAINERS = ConfigurationParser.parseAdditionalContainers(properties.getProperty("additional.containers", DEFAULT_ADDITIONAL_CONTAINERS));
 
-        POSTGRES_ENABLED = Boolean.valueOf(System.getProperty("postgres.enabled", DEFAULT_POSTGRES_ENABLED));
-        POSTGRES_IMAGE_TAG = System.getProperty("postgres.image.tag", DEFAULT_POSTGRES_IMAGE_TAG);
-        POSTGRES_HOST_NAME = System.getProperty("postgres.host.name", DEFAULT_POSTGRES_HOST_NAME);
-        POSTGRES_PORT = Integer.parseInt(System.getProperty("postgres.port", DEFAULT_POSTGRES_PORT));
-        POSTGRES_DATABASE_NAME = System.getProperty("postgres.database.name", DEFAULT_POSTGRES_DATABASE_NAME);
-        POSTGRES_SCHEMA_NAME = System.getProperty("postgres.schema.name", DEFAULT_POSTGRES_SCHEMA_NAME);
-        POSTGRES_USERNAME = System.getProperty("postgres.username", DEFAULT_POSTGRES_USERNAME);
-        POSTGRES_PASSWORD = System.getProperty("postgres.password", DEFAULT_POSTGRES_PASSWORD);
-        POSTGRES_SCHEMA_FILE_PATH = System.getProperty("postgres.schema.file.path", DEFAULT_POSTGRES_SCHEMA_FILE_PATH);
-        POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
+        // --- Postgres configuration ---
+        POSTGRES_ENABLED = Boolean.parseBoolean(properties.getProperty("postgres.enabled", DEFAULT_POSTGRES_ENABLED));
+        POSTGRES_IMAGE_TAG = properties.getProperty("postgres.image.tag", DEFAULT_POSTGRES_IMAGE_TAG);
+        POSTGRES_HOST_NAME = properties.getProperty("postgres.host.name", DEFAULT_POSTGRES_HOST_NAME);
+        POSTGRES_PORT = Integer.parseInt(properties.getProperty("postgres.port", DEFAULT_POSTGRES_PORT));
+        POSTGRES_DATABASE_NAME = properties.getProperty("postgres.database.name", DEFAULT_POSTGRES_DATABASE_NAME);
+        POSTGRES_SCHEMA_NAME = properties.getProperty("postgres.schema.name", DEFAULT_POSTGRES_SCHEMA_NAME);
+        POSTGRES_USERNAME = properties.getProperty("postgres.username", DEFAULT_POSTGRES_USERNAME);
+        POSTGRES_PASSWORD = properties.getProperty("postgres.password", DEFAULT_POSTGRES_PASSWORD);
+        POSTGRES_SCHEMA_FILE_PATH = properties.getProperty("postgres.schema.file.path", DEFAULT_POSTGRES_SCHEMA_FILE_PATH);
+        POSTGRES_CONTAINER_LOGGING_ENABLED = Boolean.parseBoolean(properties.getProperty("postgres.container.logging.enabled", DEFAULT_POSTGRES_CONTAINER_LOGGING_ENABLED));
 
-        MONGODB_ENABLED = Boolean.valueOf(System.getProperty("mongodb.enabled", DEFAULT_MONGODB_ENABLED));
-        MONGODB_IMAGE_TAG = System.getProperty("mongodb.image.tag", DEFAULT_MONGODB_IMAGE_TAG);
+        // --- MongoDB configuration ---
+        MONGODB_ENABLED = Boolean.parseBoolean(properties.getProperty("mongodb.enabled", DEFAULT_MONGODB_ENABLED));
+        MONGODB_IMAGE_TAG = properties.getProperty("mongodb.image.tag", DEFAULT_MONGODB_IMAGE_TAG);
         // Port cannot be overridden in the MongoDB Testcontainer.
         MONGODB_PORT = Integer.parseInt(DEFAULT_MONGODB_PORT);
-        MONGODB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mongodb.container.logging.enabled", DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED));
+        MONGODB_CONTAINER_LOGGING_ENABLED = Boolean.parseBoolean(properties.getProperty("mongodb.container.logging.enabled",DEFAULT_MONGODB_CONTAINER_LOGGING_ENABLED));
 
-        MARIADB_ENABLED = Boolean.valueOf(System.getProperty("mariadb.enabled", DEFAULT_MARIADB_ENABLED));
-        MARIADB_IMAGE_TAG = System.getProperty("mariadb.image.tag", DEFAULT_MARIADB_IMAGE_TAG);
-        MARIADB_HOST_NAME = System.getProperty("mariadb.host.name", DEFAULT_MARIADB_HOST_NAME);
-        MARIADB_PORT = Integer.parseInt(System.getProperty("mariadb.port", DEFAULT_MARIADB_PORT));
-        MARIADB_DATABASE_NAME = System.getProperty("mariadb.database.name", DEFAULT_MARIADB_DATABASE_NAME);
-        MARIADB_USERNAME = System.getProperty("mariadb.username", DEFAULT_MARIADB_USERNAME);
-        MARIADB_PASSWORD = System.getProperty("mariadb.password", DEFAULT_MARIADB_PASSWORD);
-        MARIADB_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("mariadb.container.logging.enabled", DEFAULT_MARIADB_CONTAINER_LOGGING_ENABLED));
+        // --- MariaDB configuration ---
+        MARIADB_ENABLED = Boolean.parseBoolean(properties.getProperty("mariadb.enabled", DEFAULT_MARIADB_ENABLED));
+        MARIADB_IMAGE_TAG = properties.getProperty("mariadb.image.tag", DEFAULT_MARIADB_IMAGE_TAG);
+        MARIADB_HOST_NAME = properties.getProperty("mariadb.host.name", DEFAULT_MARIADB_HOST_NAME);
+        MARIADB_PORT = Integer.parseInt(properties.getProperty("mariadb.port", DEFAULT_MARIADB_PORT));
+        MARIADB_DATABASE_NAME = properties.getProperty("mariadb.database.name", DEFAULT_MARIADB_DATABASE_NAME);
+        MARIADB_USERNAME = properties.getProperty("mariadb.username", DEFAULT_MARIADB_USERNAME);
+        MARIADB_PASSWORD = properties.getProperty("mariadb.password", DEFAULT_MARIADB_PASSWORD);
+        MARIADB_CONTAINER_LOGGING_ENABLED = Boolean.parseBoolean(properties.getProperty("mariadb.container.logging.enabled", DEFAULT_MARIADB_CONTAINER_LOGGING_ENABLED));
 
-        KAFKA_ENABLED = Boolean.valueOf(System.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
-        KAFKA_NATIVE_ENABLED = Boolean.valueOf(System.getProperty("kafka.native.enabled", DEFAULT_KAFKA_NATIVE_ENABLED));
-        KAFKA_BROKER_COUNT = Integer.parseInt(System.getProperty("kafka.broker.count", DEFAULT_KAFKA_BROKER_COUNT));
-        KAFKA_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.confluent.image.tag", DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG);
-        KAFKA_APACHE_NATIVE_IMAGE_TAG = System.getProperty("kafka.apache.native.image.tag", DEFAULT_KAFKA_APACHE_NATIVE_IMAGE_TAG);
-        KAFKA_TOPICS = parseKafkaTopics();
-        KAFKA_TOPIC_PARTITION_COUNT = Integer.parseInt(System.getProperty("kafka.topic.partition.count", DEFAULT_KAFKA_TOPIC_PARTITION_COUNT));
-        KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
-        KAFKA_TOPIC_REPLICATION_FACTOR = Integer.parseInt(System.getProperty("kafka.topic.replication.factor", DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR));
-        KAFKA_MIN_INSYNC_REPLICAS = Integer.parseInt(System.getProperty("kafka.min.insync.replicas", DEFAULT_KAFKA_MIN_INSYNC_REPLICAS));
-        KAFKA_SASL_PLAIN_ENABLED = Boolean.valueOf(System.getProperty("kafka.sasl.plain.enabled", DEFAULT_KAFKA_SASL_PLAIN_ENABLED));
-        KAFKA_SASL_PLAIN_USERNAME = System.getProperty("kafka.sasl.plain.username", DEFAULT_KAFKA_SASL_PLAIN_USERNAME);
-        KAFKA_SASL_PLAIN_PASSWORD = System.getProperty("kafka.sasl.plain.password", DEFAULT_KAFKA_SASL_PLAIN_PASSWORD);
+        // --- Kafka configuration ---
+        KAFKA_ENABLED = Boolean.valueOf(properties.getProperty("kafka.enabled", DEFAULT_KAFKA_ENABLED));
+        KAFKA_NATIVE_ENABLED = Boolean.valueOf(properties.getProperty("kafka.native.enabled", DEFAULT_KAFKA_NATIVE_ENABLED));
+        // These Kafka ports are hardcoded in org.testcontainers.containers.KafkaContainer (Standard) and org.testcontainers.kafka.KafkaContainer (Native) respectively.
+        // PORT is the port for calls made from outside the Docker network (e.g. to 'localhost').
+        // INTERNAL_PORT is the port for calls between services within the Docker network (e.g. to the 'kafka' container).
+        KAFKA_PORT = DEFAULT_KAFKA_PORT;
+        KAFKA_INTERNAL_PORT = DEFAULT_KAFKA_INTERNAL_PORT;
+        KAFKA_NATIVE_PORT = DEFAULT_KAFKA_NATIVE_PORT;
+        KAFKA_NATIVE_INTERNAL_PORT = DEFAULT_KAFKA_NATIVE_INTERNAL_PORT;
+        KAFKA_BROKER_COUNT = Integer.parseInt(properties.getProperty("kafka.broker.count", DEFAULT_KAFKA_BROKER_COUNT));
+        KAFKA_CONFLUENT_IMAGE_TAG = properties.getProperty("kafka.confluent.image.tag", DEFAULT_KAFKA_CONFLUENT_IMAGE_TAG);
+        KAFKA_APACHE_NATIVE_IMAGE_TAG = properties.getProperty("kafka.apache.native.image.tag", DEFAULT_KAFKA_APACHE_NATIVE_IMAGE_TAG);
+        KAFKA_TOPICS = ConfigurationParser.parseKafkaTopics(properties.getProperty("kafka.topics", DEFAULT_KAFKA_TOPICS));
+        KAFKA_TOPIC_PARTITION_COUNT = Integer.parseInt(properties.getProperty("kafka.topic.partition.count", DEFAULT_KAFKA_TOPIC_PARTITION_COUNT));
+        KAFKA_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("kafka.container.logging.enabled", DEFAULT_KAFKA_CONTAINER_LOGGING_ENABLED));
+        KAFKA_TOPIC_REPLICATION_FACTOR = Integer.parseInt(properties.getProperty("kafka.topic.replication.factor", DEFAULT_KAFKA_TOPIC_REPLICATION_FACTOR));
+        KAFKA_MIN_INSYNC_REPLICAS = Integer.parseInt(properties.getProperty("kafka.min.insync.replicas", DEFAULT_KAFKA_MIN_INSYNC_REPLICAS));
+        KAFKA_SASL_PLAIN_ENABLED = Boolean.valueOf(properties.getProperty("kafka.sasl.plain.enabled", DEFAULT_KAFKA_SASL_PLAIN_ENABLED));
+        KAFKA_SASL_PLAIN_USERNAME = properties.getProperty("kafka.sasl.plain.username", DEFAULT_KAFKA_SASL_PLAIN_USERNAME);
+        KAFKA_SASL_PLAIN_PASSWORD = properties.getProperty("kafka.sasl.plain.password", DEFAULT_KAFKA_SASL_PLAIN_PASSWORD);
 
-        KAFKA_SCHEMA_REGISTRY_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED));
-        KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.schema.registry.confluent.image.tag", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
-        KAFKA_SCHEMA_REGISTRY_PORT = Integer.parseInt(System.getProperty("kafka.schema.registry.port", DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT));
-        KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.schema.registry.container.logging.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED));
+        // --- Kafka Schema Registry configuration ---
+        KAFKA_SCHEMA_REGISTRY_ENABLED = Boolean.valueOf(properties.getProperty("kafka.schema.registry.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_ENABLED));
+        KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG = properties.getProperty("kafka.schema.registry.confluent.image.tag", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
+        KAFKA_SCHEMA_REGISTRY_PORT = Integer.parseInt(properties.getProperty("kafka.schema.registry.port", DEFAULT_KAFKA_SCHEMA_REGISTRY_PORT));
+        KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("kafka.schema.registry.container.logging.enabled", DEFAULT_KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED));
 
-        KAFKA_CONTROL_CENTER_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.enabled", DEFAULT_KAFKA_CONTROL_CENTER_ENABLED));
-        KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = System.getProperty("kafka.control.center.confluent.image.tag", DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG);
-        KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.export.metrics.enabled", DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED));
-        KAFKA_CONTROL_CENTER_JMX_PORT = System.getProperty("kafka.control.center.jmx.port", DEFAULT_KAFKA_CONTROL_CENTER_JMX_PORT);
-        KAFKA_CONTROL_CENTER_PORT = Integer.parseInt(System.getProperty("kafka.control.center.port", DEFAULT_KAFKA_CONTROL_CENTER_PORT));
-        KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("kafka.control.center.container.logging.enabled", DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED));
+        // --- Kafka Control Center configuration ---
+        KAFKA_CONTROL_CENTER_ENABLED = Boolean.valueOf(properties.getProperty("kafka.control.center.enabled", DEFAULT_KAFKA_CONTROL_CENTER_ENABLED));
+        KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG = properties.getProperty("kafka.control.center.confluent.image.tag", DEFAULT_KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG);
+        KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED = Boolean.valueOf(properties.getProperty("kafka.control.center.export.metrics.enabled", DEFAULT_KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED));
+        KAFKA_CONTROL_CENTER_JMX_PORT = properties.getProperty("kafka.control.center.jmx.port", DEFAULT_KAFKA_CONTROL_CENTER_JMX_PORT);
+        KAFKA_CONTROL_CENTER_PORT = Integer.parseInt(properties.getProperty("kafka.control.center.port", DEFAULT_KAFKA_CONTROL_CENTER_PORT));
+        KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("kafka.control.center.container.logging.enabled", DEFAULT_KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED));
 
-        CONDUKTOR_ENABLED = Boolean.valueOf(System.getProperty("conduktor.enabled", DEFAULT_CONDUKTOR_ENABLED));
-        CONDUKTOR_IMAGE_TAG = System.getProperty("conduktor.image.tag", DEFAULT_CONDUKTOR_IMAGE_TAG);
-        CONDUKTOR_LICENSE_KEY = System.getProperty("conduktor.license.key");
-        CONDUKTOR_PORT = Integer.parseInt(System.getProperty("conduktor.port", DEFAULT_CONDUKTOR_PORT));
-        CONDUKTOR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("conduktor.container.logging.enabled", DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED));
+        // --- Conduktor configuration ---
+        CONDUKTOR_ENABLED = Boolean.valueOf(properties.getProperty("conduktor.enabled", DEFAULT_CONDUKTOR_ENABLED));
+        CONDUKTOR_IMAGE_TAG = properties.getProperty("conduktor.image.tag", DEFAULT_CONDUKTOR_IMAGE_TAG);
+        CONDUKTOR_LICENSE_KEY = properties.getProperty("conduktor.license.key", DEFAULT_CONDUKTOR_LICENSE_KEY);
+        CONDUKTOR_PORT = Integer.parseInt(properties.getProperty("conduktor.port", DEFAULT_CONDUKTOR_PORT));
+        CONDUKTOR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("conduktor.container.logging.enabled", DEFAULT_CONDUKTOR_CONTAINER_LOGGING_ENABLED));
+        // Conduktor properties that are not overridable.
+        CONDUKTOR_POSTGRES_IMAGE_TAG = DEFAULT_CONDUKTOR_POSTGRES_IMAGE_TAG;
+        CONDUKTOR_POSTGRES_DB = DEFAULT_CONDUKTOR_POSTGRES_DB;
+        CONDUKTOR_POSTGRES_USER = DEFAULT_CONDUKTOR_POSTGRES_USER;
+        CONDUKTOR_POSTGRES_PASSWORD = DEFAULT_CONDUKTOR_POSTGRES_PASSWORD;
 
-        CONDUKTOR_GATEWAY_ENABLED = Boolean.valueOf(System.getProperty("conduktor.gateway.enabled", DEFAULT_CONDUKTOR_GATEWAY_ENABLED));
-        CONDUKTOR_GATEWAY_IMAGE_TAG = System.getProperty("conduktor.gateway.image.tag", DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG);
-        CONDUKTOR_GATEWAY_PROXY_PORT = Integer.parseInt(System.getProperty("conduktor.gateway.proxy.port", DEFAULT_CONDUKTOR_GATEWAY_PROXY_PORT));
-        CONDUKTOR_GATEWAY_HTTP_PORT = Integer.parseInt(System.getProperty("conduktor.gateway.http.port", DEFAULT_CONDUKTOR_GATEWAY_HTTP_PORT));
-        CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("conduktor.gateway.container.logging.enabled", DEFAULT_CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED));
+        // --- Conduktor Gateway configuration ---
+        CONDUKTOR_GATEWAY_ENABLED = Boolean.valueOf(properties.getProperty("conduktor.gateway.enabled", DEFAULT_CONDUKTOR_GATEWAY_ENABLED));
+        CONDUKTOR_GATEWAY_IMAGE_TAG = properties.getProperty("conduktor.gateway.image.tag", DEFAULT_CONDUKTOR_GATEWAY_IMAGE_TAG);
+        CONDUKTOR_GATEWAY_PROXY_PORT = Integer.parseInt(properties.getProperty("conduktor.gateway.proxy.port", DEFAULT_CONDUKTOR_GATEWAY_PROXY_PORT));
+        CONDUKTOR_GATEWAY_HTTP_PORT = Integer.parseInt(properties.getProperty("conduktor.gateway.http.port", DEFAULT_CONDUKTOR_GATEWAY_HTTP_PORT));
+        CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("conduktor.gateway.container.logging.enabled", DEFAULT_CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED));
 
-        DEBEZIUM_ENABLED = Boolean.valueOf(System.getProperty("debezium.enabled", DEFAULT_DEBEZIUM_ENABLED));
-        DEBEZIUM_IMAGE_TAG = System.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
-        DEBEZIUM_PORT = Integer.parseInt(System.getProperty("debezium.port", DEFAULT_DEBEZIUM_PORT));
-        DEBEZIUM_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("debezium.container.logging.enabled", DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED));
+        // --- Debezium configuration ---
+        DEBEZIUM_ENABLED = Boolean.valueOf(properties.getProperty("debezium.enabled", DEFAULT_DEBEZIUM_ENABLED));
+        DEBEZIUM_IMAGE_TAG = properties.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
+        DEBEZIUM_PORT = Integer.parseInt(properties.getProperty("debezium.port", DEFAULT_DEBEZIUM_PORT));
+        DEBEZIUM_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("debezium.container.logging.enabled", DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED));
 
-        WIREMOCK_ENABLED = Boolean.valueOf(System.getProperty("wiremock.enabled", DEFAULT_WIREMOCK_ENABLED));
-        WIREMOCK_IMAGE_TAG = System.getProperty("wiremock.image.tag", DEFAULT_WIREMOCK_IMAGE_TAG);
-        WIREMOCK_PORT = Integer.parseInt(System.getProperty("wiremock.port", DEFAULT_WIREMOCK_PORT));
-        WIREMOCK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("wiremock.container.logging.enabled", DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED));
-        WIREMOCK_OPTIONS = System.getProperty("wiremock.options", DEFAULT_WIREMOCK_OPTIONS);
+        // --- Wiremock configuration ---
+        WIREMOCK_ENABLED = Boolean.valueOf(properties.getProperty("wiremock.enabled", DEFAULT_WIREMOCK_ENABLED));
+        WIREMOCK_IMAGE_TAG = properties.getProperty("wiremock.image.tag", DEFAULT_WIREMOCK_IMAGE_TAG);
+        WIREMOCK_PORT = Integer.parseInt(properties.getProperty("wiremock.port", DEFAULT_WIREMOCK_PORT));
+        WIREMOCK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("wiremock.container.logging.enabled", DEFAULT_WIREMOCK_CONTAINER_LOGGING_ENABLED));
+        WIREMOCK_OPTIONS = properties.getProperty("wiremock.options", DEFAULT_WIREMOCK_OPTIONS);
 
-        LOCALSTACK_ENABLED = Boolean.valueOf(System.getProperty("localstack.enabled", DEFAULT_LOCALSTACK_ENABLED));
-        LOCALSTACK_IMAGE_TAG = System.getProperty("localstack.image.tag", DEFAULT_LOCALSTACK_IMAGE_TAG);
-        LOCALSTACK_PORT = Integer.parseInt(System.getProperty("localstack.port", DEFAULT_LOCALSTACK_PORT));
-        LOCALSTACK_SERVICES = System.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
-        LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
-        LOCALSTACK_INIT_FILE_PATH = System.getProperty("localstack.init.file.path", DEFAULT_LOCALSTACK_INIT_FILE_PATH);
+        // --- Localstack configuration ---
+        LOCALSTACK_ENABLED = Boolean.valueOf(properties.getProperty("localstack.enabled", DEFAULT_LOCALSTACK_ENABLED));
+        LOCALSTACK_IMAGE_TAG = properties.getProperty("localstack.image.tag", DEFAULT_LOCALSTACK_IMAGE_TAG);
+        LOCALSTACK_PORT = Integer.parseInt(properties.getProperty("localstack.port", DEFAULT_LOCALSTACK_PORT));
+        LOCALSTACK_SERVICES = properties.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
+        LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
+        LOCALSTACK_INIT_FILE_PATH = properties.getProperty("localstack.init.file.path", DEFAULT_LOCALSTACK_INIT_FILE_PATH);
 
-        ELASTICSEARCH_ENABLED = Boolean.valueOf(System.getProperty("elasticsearch.enabled", DEFAULT_ELASTICSEARCH_ENABLED));
-        ELASTICSEARCH_IMAGE_TAG = System.getProperty("elasticsearch.image.tag", DEFAULT_ELASTICSEARCH_IMAGE_TAG);
+        // --- Elasticsearch configuration ---
+        ELASTICSEARCH_ENABLED = Boolean.valueOf(properties.getProperty("elasticsearch.enabled", DEFAULT_ELASTICSEARCH_ENABLED));
+        ELASTICSEARCH_IMAGE_TAG = properties.getProperty("elasticsearch.image.tag", DEFAULT_ELASTICSEARCH_IMAGE_TAG);
         // Port cannot be overridden in the Elasticsearch Testcontainer.
         ELASTICSEARCH_PORT = Integer.parseInt(DEFAULT_ELASTICSEARCH_PORT);
-        ELASTICSEARCH_PASSWORD = System.getProperty("elasticsearch.password", DEFAULT_ELASTICSEARCH_PASSWORD);
-        ELASTICSEARCH_CLUSTER_NAME = System.getProperty("elasticsearch.cluster.name", DEFAULT_ELASTICSEARCH_CLUSTER_NAME);
-        ELASTICSEARCH_DISCOVERY_TYPE = System.getProperty("elasticsearch.discovery.type", DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE);
-        ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("elasticsearch.container.logging.enabled", DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED));
+        ELASTICSEARCH_PASSWORD = properties.getProperty("elasticsearch.password", DEFAULT_ELASTICSEARCH_PASSWORD);
+        ELASTICSEARCH_CLUSTER_NAME = properties.getProperty("elasticsearch.cluster.name", DEFAULT_ELASTICSEARCH_CLUSTER_NAME);
+        ELASTICSEARCH_DISCOVERY_TYPE = properties.getProperty("elasticsearch.discovery.type", DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE);
+        ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("elasticsearch.container.logging.enabled", DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED));
 
-        AMBAR_ENABLED = Boolean.valueOf(System.getProperty("ambar.enabled", DEFAULT_AMBAR_ENABLED));
-        AMBAR_IMAGE_TAG = System.getProperty("ambar.image.tag", DEFAULT_AMBAR_IMAGE_TAG);
-        AMBAR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(System.getProperty("ambar.container.logging.enabled", DEFAULT_AMBAR_CONTAINER_LOGGING_ENABLED));
-        AMBAR_CONFIG_FILE_PATH = System.getProperty("ambar.config.file.path", DEFAULT_AMBAR_CONFIG_FILE_PATH);
-    }
-
-    protected static List<AdditionalContainer> parseAdditionalContainers() {
-        String additionalContainersPropertyValue = System.getProperty("additional.containers", null);
-        log.debug("Parsing additional containers: {}", additionalContainersPropertyValue);
-        List<AdditionalContainer> additionalContainers = Collections.EMPTY_LIST;
-        if(additionalContainersPropertyValue!=null) {
-            additionalContainersPropertyValue = additionalContainersPropertyValue.replaceAll("\\s+","");
-            if(additionalContainersPropertyValue.length()>0) {
-                List<String> containerDetailStrings = Arrays.asList(additionalContainersPropertyValue.split(":"));
-                additionalContainers = containerDetailStrings.stream().map(containerDetail -> {
-                    log.debug("Parsing individual additional container: {}", containerDetail);
-                    List<String> parsedDetails = Arrays.asList(containerDetail.split(","));
-                    if(parsedDetails.size()!=5) {
-                        String message = "Invalid additional containers details: "+parsedDetails+" -  expecting 5 args, found "+parsedDetails.size()+".";
-                        log.error(message);
-                        throw new RuntimeException(message);
-                    }
-                    return AdditionalContainer.builder()
-                            .name(parsedDetails.get(0))
-                            .port(Integer.parseInt(parsedDetails.get(1)))
-                            .debugPort(Integer.parseInt(parsedDetails.get(2)))
-                            .imageTag(parsedDetails.get(3))
-                            .additionalContainerLoggingEnabled(Boolean.valueOf(parsedDetails.get(4)))
-                            .build();
-                }).collect(Collectors.toList());
-            }
-        }
-        return additionalContainers;
-    }
-
-    protected static Map<String, String> parseKvPairs(String input) {
-        if (input == null) {
-            return new HashMap<>();
-        }
-
-        Map<String, String> resultMap = new HashMap<>();
-
-        String[] pairs = input.split(",");
-
-        for (String pair : pairs) {
-            String[] keyValue = pair.split("=");
-
-            if (keyValue.length == 2) {
-                String key = keyValue[0].trim();
-                String value = keyValue[1].trim();
-                resultMap.put(key, value);
-            } else {
-                throw new IllegalArgumentException("invalid key/value pair string for service property");
-            }
-        }
-
-        return resultMap;
-    }
-
-    protected static List<String> parseKafkaTopics() {
-        String topicNamesPropertyValue = System.getProperty("kafka.topics", null);
-        List<String> topics = Collections.EMPTY_LIST;
-        if(topicNamesPropertyValue!=null) {
-            topicNamesPropertyValue = topicNamesPropertyValue.replaceAll("\\s+","");
-            if(topicNamesPropertyValue.length()>0) {
-                topics = Arrays.asList(topicNamesPropertyValue.split(","));
-            }
-        }
-        return topics;
-    }
-
-    static {
-        log.info("Testcontainers Configuration:");
-
-        log.info("containers.stayup: " + CONTAINERS_STAYUP);
-        log.info("container.name.prefix: " + CONTAINER_NAME_PREFIX);
-        log.info("container.main.label: " + CONTAINER_MAIN_LABEL);
-        log.info("container.append.group.id: " + CONTAINER_APPEND_GROUP_ID);
-        if(CONTAINER_APPEND_GROUP_ID) {
-            log.info("container group unique id: " + CONTAINER_GROUP_ID);
-        }
-
-        log.info("service.name: " + SERVICE_NAME);
-        log.info("service.instance.count: " + SERVICE_INSTANCE_COUNT);
-        log.info("service.port: " + SERVICE_PORT);
-        log.info("service.debug.port: " + SERVICE_DEBUG_PORT);
-        log.info("service.debug.suspend: " + SERVICE_DEBUG_SUSPEND);
-        log.info("service.envvars: " + SERVICE_ENV_VARS);
-        log.info("service.additional.filesystem.binds: " + SERVICE_ADDITIONAL_FILESYSTEM_BINDS);
-        log.info("service.config.files.system.property: " + SERVICE_CONFIG_FILES_SYSTEM_PROPERTY);
-        log.info("service.application.yml.path: " + SERVICE_APPLICATION_YML_PATH);
-        log.info("service.startup.health.endpoint: " + SERVICE_STARTUP_HEALTH_ENDPOINT);
-        String serviceStartupLogMessage = SERVICE_STARTUP_LOG_MESSAGE;
-        if(SERVICE_STARTUP_LOG_MESSAGE == null) {
-            serviceStartupLogMessage = "";
-        }
-        log.info("service.startup.log.message: " + serviceStartupLogMessage);
-        String serviceApplicationArgs = SERVICE_APPLICATION_ARGS;
-        if(SERVICE_APPLICATION_ARGS == null) {
-            serviceApplicationArgs = "";
-        }
-        log.info("service.application.args: " + serviceApplicationArgs);
-        log.info("service.startup.timeout.seconds: " + SERVICE_STARTUP_TIMEOUT_SECONDS);
-        log.info("service.image.tag: " + SERVICE_IMAGE_TAG);
-        log.info("service.container.logging.enabled: " + SERVICE_CONTAINER_LOGGING_ENABLED);
-
-        log.info("additional.containers: "+System.getProperty("additional.containers", ""));
-
-        log.info("postgres.enabled: " + POSTGRES_ENABLED);
-        if(POSTGRES_ENABLED) {
-            log.info("postgres.image.tag: " + POSTGRES_IMAGE_TAG);
-            log.info("postgres.host.name: " + POSTGRES_HOST_NAME);
-            log.info("postgres.port: " + POSTGRES_PORT);
-            log.info("postgres.database.name: " + POSTGRES_DATABASE_NAME);
-            log.info("postgres.schema.name: " + POSTGRES_SCHEMA_NAME);
-            log.info("postgres.username: " + POSTGRES_USERNAME);
-            log.info("postgres.password: " + POSTGRES_PASSWORD);
-            String postgresSchemaFilePath = POSTGRES_SCHEMA_FILE_PATH;
-            if(POSTGRES_SCHEMA_FILE_PATH == null) {
-                postgresSchemaFilePath = "";
-            }
-            log.info("postgres.schema.file.path: " + postgresSchemaFilePath);
-            log.info("postgres.container.logging.enabled: " + POSTGRES_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("mongodb.enabled: " + MONGODB_ENABLED);
-        if(MONGODB_ENABLED) {
-            log.info("mongodb.image.tag: " + MONGODB_IMAGE_TAG);
-            log.info("mongodb.port: " + MONGODB_PORT);
-            log.info("mongodb.container.logging.enabled: " + MONGODB_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("mariadb.enabled: " + MARIADB_ENABLED);
-        if(MARIADB_ENABLED) {
-            log.info("mariadb.image.tag: " + MARIADB_IMAGE_TAG);
-            log.info("mariadb.host.name: " + MARIADB_HOST_NAME);
-            log.info("mariadb.port: " + MARIADB_PORT);
-            log.info("mariadb.database.name: " + MARIADB_DATABASE_NAME);
-            log.info("mariadb.username: " + MARIADB_USERNAME);
-            log.info("mariadb.password: " + MARIADB_PASSWORD);
-            log.info("mariadb.container.logging.enabled: " + MARIADB_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("kafka.enabled: " + KAFKA_ENABLED);
-        log.info("kafka.native.enabled: " + KAFKA_NATIVE_ENABLED);
-        if(KAFKA_ENABLED) {
-            log.info("kafka.confluent.image.tag: " + KAFKA_CONFLUENT_IMAGE_TAG);
-        }
-        if(KAFKA_NATIVE_ENABLED) {
-            log.info("kafka.apache.native.image.tag: " + KAFKA_APACHE_NATIVE_IMAGE_TAG);
-        }
-        if(KAFKA_ENABLED || KAFKA_NATIVE_ENABLED) {
-            log.info("kafka.broker.count: " + KAFKA_BROKER_COUNT);
-            log.info("kafka.topics: " + KAFKA_TOPICS);
-            log.info("kafka.topic.partition.count: " + KAFKA_TOPIC_PARTITION_COUNT);
-            log.info("kafka.topic.replication.factor: " + KAFKA_TOPIC_REPLICATION_FACTOR);
-            log.info("kafka.min.insync.replicas: " + KAFKA_MIN_INSYNC_REPLICAS);
-            log.info("kafka.container.logging.enabled: " + KAFKA_CONTAINER_LOGGING_ENABLED);
-            log.info("kafka.sasl.plain.enabled: " + KAFKA_SASL_PLAIN_ENABLED);
-            if(KAFKA_SASL_PLAIN_ENABLED) {
-                log.info("kafka.sasl.plain.username: " + KAFKA_SASL_PLAIN_USERNAME);
-                log.info("kafka.sasl.plain.password: " + KAFKA_SASL_PLAIN_PASSWORD);
-            }
-        }
-
-        log.info("kafka.schema.registry.enabled: " + KAFKA_SCHEMA_REGISTRY_ENABLED);
-        if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
-            log.info("kafka.schema.registry.confluent.image.tag: " + KAFKA_SCHEMA_REGISTRY_CONFLUENT_IMAGE_TAG);
-            log.info("kafka.schema.registry.port: " + KAFKA_SCHEMA_REGISTRY_PORT);
-            log.info("kafka.schema.registry.container.logging.enabled: " + KAFKA_SCHEMA_REGISTRY_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("kafka.control.center.enabled: " + KAFKA_CONTROL_CENTER_ENABLED);
-        if(KAFKA_CONTROL_CENTER_ENABLED) {
-            log.info("kafka.control.center.confluent.image.tag: " + KAFKA_CONTROL_CENTER_CONFLUENT_IMAGE_TAG);
-            log.info("kafka.control.center.port: " + KAFKA_CONTROL_CENTER_PORT);
-            log.info("kafka.control.center.export.metrics.enabled: " + KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED);
-            log.info("kafka.control.center.jmx.port: " + KAFKA_CONTROL_CENTER_JMX_PORT);
-            if(KAFKA_CONTROL_CENTER_EXPORT_METRICS_ENABLED) {
-                log.info("Kafka Control Center metrics require Confluent's community package kafka-clients and monitoring-interceptors libraries.");
-            }
-            log.info("kafka.control.center.container.logging.enabled: " + KAFKA_CONTROL_CENTER_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("conduktor.enabled: " + CONDUKTOR_ENABLED);
-        if(CONDUKTOR_ENABLED) {
-            log.info("conduktor.image.tag: " + CONDUKTOR_IMAGE_TAG);
-            log.info("conduktor.license.key: " + CONDUKTOR_LICENSE_KEY);
-            log.info("conduktor.port: " + CONDUKTOR_PORT);
-            log.info("conduktor.container.logging.enabled: " + CONDUKTOR_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("conduktor.gateway.enabled: " + CONDUKTOR_GATEWAY_ENABLED);
-        if(CONDUKTOR_GATEWAY_ENABLED) {
-            log.info("conduktor.gateway.image.tag: " + CONDUKTOR_GATEWAY_IMAGE_TAG);
-            log.info("conduktor.gateway.proxy.port: " + CONDUKTOR_GATEWAY_PROXY_PORT);
-            log.info("conduktor.gateway.http.port: " + CONDUKTOR_GATEWAY_HTTP_PORT);
-            log.info("conduktor.gateway.container.logging.enabled: " + CONDUKTOR_GATEWAY_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("debezium.enabled: " + DEBEZIUM_ENABLED);
-        if(DEBEZIUM_ENABLED) {
-            log.info("debezium.image.tag: " + DEBEZIUM_IMAGE_TAG);
-            log.info("debezium.port: " + DEBEZIUM_PORT);
-            log.info("debezium.container.logging.enabled: " + DEBEZIUM_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("wiremock.enabled: " + WIREMOCK_ENABLED);
-        if(WIREMOCK_ENABLED) {
-            log.info("wiremock.image.tag: " + WIREMOCK_IMAGE_TAG);
-            log.info("wiremock.port: " + WIREMOCK_PORT);
-            log.info("wiremock.container.logging.enabled: " + WIREMOCK_CONTAINER_LOGGING_ENABLED);
-            log.info("wiremock.options: " + WIREMOCK_OPTIONS);
-        }
-
-        log.info("localstack.enabled: " + LOCALSTACK_ENABLED);
-        if(LOCALSTACK_ENABLED) {
-            log.info("localstack.image.tag: " + LOCALSTACK_IMAGE_TAG);
-            log.info("localstack.port: " + LOCALSTACK_PORT);
-            log.info("localstack.services: " + LOCALSTACK_SERVICES);
-            log.info("localstack.container.logging.enabled: " + LOCALSTACK_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("elasticsearch.enabled: " + ELASTICSEARCH_ENABLED);
-        if(ELASTICSEARCH_ENABLED) {
-            log.info("elasticsearch.image.tag: " + ELASTICSEARCH_IMAGE_TAG);
-            log.info("elasticsearch.port: " + ELASTICSEARCH_PORT);
-            log.info("elasticsearch.password: " + ELASTICSEARCH_PASSWORD);
-            log.info("elasticsearch.cluster.name: " + ELASTICSEARCH_CLUSTER_NAME);
-            log.info("elasticsearch.discovery.type: " + ELASTICSEARCH_DISCOVERY_TYPE);
-            log.info("elasticsearch.container.logging.enabled: " + ELASTICSEARCH_CONTAINER_LOGGING_ENABLED);
-        }
-
-        log.info("ambar.enabled: " + AMBAR_ENABLED);
-        if(AMBAR_ENABLED) {
-            log.info("ambar.image.tag: " + AMBAR_IMAGE_TAG);
-            log.info("ambar.config.file.path: " + AMBAR_CONFIG_FILE_PATH);
-            log.info("ambar.container.logging.enabled: " + AMBAR_CONTAINER_LOGGING_ENABLED);
-        }
+        // --- Ambar configuration ---
+        AMBAR_ENABLED = Boolean.valueOf(properties.getProperty("ambar.enabled", DEFAULT_AMBAR_ENABLED));
+        AMBAR_IMAGE_TAG = properties.getProperty("ambar.image.tag", DEFAULT_AMBAR_IMAGE_TAG);
+        AMBAR_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("ambar.container.logging.enabled", DEFAULT_AMBAR_CONTAINER_LOGGING_ENABLED));
+        AMBAR_CONFIG_FILE_PATH = properties.getProperty("ambar.config.file.path", DEFAULT_AMBAR_CONFIG_FILE_PATH);
     }
 }

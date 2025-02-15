@@ -21,11 +21,11 @@ public final class ComponentTestExtension implements BeforeAllCallback {
 
     // Use a static boolean to track whether the containers are started so multiple test classes each with this extension
     // only perform one startup.
-    private static boolean started = false;
+    protected static boolean started = false;
 
     @Override
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
-        log.info("Test containers setup extension started.");
+        log.info("Component test framework extension started.");
         if (!started) {
             started = true;
             DockerClient dockerClient = DockerManager.getDockerClient();

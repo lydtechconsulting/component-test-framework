@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.9.0] - 2025-02-15
+### Added
+- Supports loading configuration overrides from a properties or YAML file.
+
 ## [3.8.0] - 2025-02-08
 ### Added
 - Supports client calls to additional containers using AdditionalContainerClient.
