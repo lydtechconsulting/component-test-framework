@@ -109,10 +109,10 @@ todo link to this simple project
 - [Supported Versions](README.md#supported-versions)
 - [Docker Configuration](README.md#docker-configuration)
 - [Configuration Properties](README.md#configuration-properties)
-  - [Declaring properties via specific properties/yml file](README.md#declaring-properties-via-specific-properties--yml-file)
-  - [Declaring properties via command line environment variables](README.md#declaring-properties-via-command-line-environment-variables)
-  - [Declaring properties via environment variables in Maven/Gradle config](README.md#declaring-properties-via-environment-variables-in-maven--gradle-config)
-- [Samle Projects](README.md#sample-projects)
+  - [Method 1: Properties via specific properties/yml file](README.md#method-1-properties-via-specific-properties--yml-file)
+  - [Method 2: Properties via command line environment variables](README.md#method-2-properties-via-command-line-environment-variables)
+  - [Method 3: Properties via environment variables in Maven/Gradle config](README.md#method-3-properties-via-environment-variables-in-maven--gradle-config)
+- [Sample Projects](README.md#sample-projects)
 - [Using Maven](README.md#using-maven)
 - [Using Gradle](README.md#using-gradle)
 - [Writing Component Tests](README.md#writing-component-tests)
@@ -186,7 +186,7 @@ The **Component Test Framework** supports many features that can be enabled and 
 
 The framework supports a number of methods for setting these properties. The recommended approach is to use property/yml files
 
-### Declaring properties via specific properties / yml file
+### Method 1: Properties via specific properties / yml file
 Declare the properties that should be overridden from their defaults in a file named `component-test.properties`, `component-test.yaml`, or `component-test.yml`.  This file needs to be in the test classpath, so place in the `src/test/resources` folder to ensure it is built into the classpath directory.
 
 Add as key/value pairs or in yaml format accordingly.  e.g. in the properties file:
@@ -206,13 +206,13 @@ kafka:
 
 The file can be given a custom name by setting the system property `component.test.configuration.filename`.  e.g. `-Dcomponent.test.configuration.filename=test-config.properties`.
 
-### Declaring properties via command line environment variables
+### Method 2: Properties via command line environment variables
 If a properties file has not been provided, then the properties can be overidden using system properties.  These can be provided on the command line, e.g.
 ```
 mvn test -Pcomponent -Dservice.name=demo -Dservice.port=9001 -Dkafka.enabled=true
 ```
 
-### Declaring properties via environment variables in Maven / Gradle config
+### Method 3: Properties via environment variables in Maven / Gradle config
 Inside the maven `pom.xml` in the `maven-surefire-plugin`.  e.g.
 ```
 <systemPropertyVariables>
