@@ -31,16 +31,28 @@ public class MyController {
     }
 }
 ```
-5. Now its time for the Lydtech Component Test Framework. add the following test dependency to your pom.xml
+5. Add a simple Dockerfile to allow your app to be packaged into a Docker image
+```
+FROM openjdk:17-jdk-slim
+COPY target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+```
+6. Now its time for the Lydtech Component Test Framework. add the following test dependencies to your pom.xml. The first pulls in CTF, the second pulls in RestAssured - a handy tool for testing HTTP services.
 ```xml
 <dependency>
    <groupId>dev.lydtech</groupId>
    <artifactId>component-test-framework</artifactId>
    <version>3.9.0</version>
    <scope>test</scope>
-</dependency> 
+</dependency>
+<dependency>
+   <groupId>io.rest-assured</groupId>
+   <artifactId>rest-assured</artifactId>
+   <scope>test</scope>
+</dependency>
 ```
-6. With the dependency added, Lets add some config to initiate the Component tests. This config introduces a minimal `component` profile to run all tests named with the pattern *CT.java. It expects the service to listen on port 8080 and the docker image to be have the tag samples/my-maven-app
+7. With the dependency added, Lets add some config to initiate the Component tests. This config introduces a minimal `component` profile to run all tests named with the pattern *CT.java.
 ```xml
 <profiles>
         <profile>
@@ -66,7 +78,18 @@ public class MyController {
         </profile>
     </profiles>
 ```
-7. Finally, lets add our Component test. Note the `@ExtendWith` annotation to enable the Lydtech Component Test Framework. Also notice how it retrieves the pre-configured `RestAssured` instance which is configured to hit the service that the framework initiated. The test issues a `GET api/v1/hello` and asserts that the response code is 200 with the correct body.
+8. Add a configuration file for the component tests in src/main/resources/component-test.yml. This is a minimal file that tells CTF to:
+   1. bind a docker container port to port 8080 which is what the application listens on
+   2. use the following Docker image name for the service container: `samples/my-maven-app`
+```yaml
+service:
+   port: 8080
+   name: my-maven-app
+container:
+   name:
+      prefix: samples
+```
+9. Finally, lets add our Component test. Note the `@ExtendWith` annotation to enable the Lydtech Component Test Framework. Also notice how it retrieves the pre-configured `RestAssured` instance which is configured to hit the service that the framework initiated. The test issues a `GET api/v1/hello` and asserts that the response code is 200 with the correct body.
 ```java
 @ExtendWith(ComponentTestExtension.class)
 public class MyComponentTestCT {
@@ -79,8 +102,9 @@ public class MyComponentTestCT {
     }
 }
 ```
-8. Now lets build the service and run the test. Run `./mvnw clean install; docker built -t samples/my-maven-app` to build the service and docker container. Now run the Component Tests using `./mvnw clean install -Pcomponent` and see the test run and pass. Thats it, you've added your first component test against your simple service! Now check out some of the examples below for more complex examples - where the real value of the framework lies.
+10. Now lets build the service and run the test. Run `./mvnw clean install; docker build -t samples/my-maven-app .` to build the service and docker container. Now run the Component Tests using `./mvnw clean install -Pcomponent` and see the test run and pass. Thats it, you've added your first component test against your simple service! Now check out some of the examples below for more complex examples - where the real value of the framework lies.
 
+todo link to this simple project
 
 # Contents
 
