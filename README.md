@@ -18,8 +18,8 @@ Follow these steps to add your first Component Test to a minimal Spring Boot App
 
 1. visit https://start.spring.io
 2. Choose Maven, accept the defaults for other fields, choose a project name & add the following dependencies:
-   3. `Spring Web` - this project will have a simple Rest Controller
-   4. `Spring Boot Actuator` - the application health endpoint is a helpful way to know the service has started
+   a. `Spring Web` - this project will have a simple Rest Controller
+   b. `Spring Boot Actuator` - the application health endpoint is a helpful way to know the service has started
 3. Generate the project and open in your favourite IDE
 4. Add a simple REST controller `MyController.java` that responds with a fixed string:
 ```java
@@ -66,11 +66,6 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
                             <includes>
                                 <include>*CT.*</include>
                             </includes>
-                            <systemPropertyVariables>
-                                <service.port>8080</service.port>
-                                <container.name.prefix>samples</container.name.prefix>
-                                <service.name>my-maven-app</service.name>
-                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>
