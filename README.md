@@ -103,14 +103,16 @@ todo link to this simple project
 
 # Contents
 
-- [Overview](README.md#overview)
+- [Advanced Example 1](README.md#advanced-example-1)
+- [Advanced Example 2](README.md#advanced-example-2)
 - [Supported Resources](README.md#supported-resources)
 - [Supported Versions](README.md#supported-versions)
-- [Maven Dependency](README.md#maven-dependency)
 - [Example Usage Projects](README.md#example-usage-projects)
-- [Upgrading From Previous Versions](README.md#upgrading-from-previous-versions)
 - [Docker Configuration](README.md#docker-configuration)
 - [Configuration Properties](README.md#configuration-properties)
+  - [Declaring properties via specific properties/yml file](README.md#declaring-properties-via-specific-properties--yml-file)
+  - [Declaring properties via command line environment variables](README.md#declaring-properties-via-command-line-environment-variables)
+  - [Declaring properties via environment variables in Maven/Gradle config](README.md#declaring-properties-via-environment-variables-in-maven--gradle-config)
 - [Overriding Default Configuration](README.md#overriding-default-configuration)
 - [Using Maven](README.md#using-maven)
 - [Using Gradle](README.md#using-gradle)
@@ -135,16 +137,7 @@ todo link to this simple project
 - [Docker Commands](README.md#docker-commands)
 - [Troubleshooting](README.md#troubleshooting)
 
-# Overview
-
-This open-source library facilitates component testing of a Spring Boot application.
-
-The service under test and its required dependent resources (such as a broker or database) are spun up in Docker containers.  The component test then interacts with the system treating it as a black box, to verify the behaviour.
-
-To use, a JUnit test is simply annotated with a Component Test Framework annotation.  Tests can be run both locally by the developer/tester, and automated in the CI pipeline.
-
-The framework uses the open-source [Testcontainers](https://www.testcontainers.org/) library to start and manage the Docker containers.
-
+# Advanced example 1
 In the following example, the Component Test Framework spins up the system under test.  In this case it comprises of two instances of the Spring Boot application to test and a two node Kafka cluster with Zookeeper, each in their own Docker container.  The application has a REST endpoint and consumes messages from, and produces messages to, Kafka.  Confluent Control Center is also spun up in a Docker container, which monitors the application instances and Kafka broker nodes, allowing the tester to view metrics on the system under test.  This can be a helpful tool in debugging test issues.
 
 ![Component testing a Spring Boot application that integrates with Kafka](resources/ctf-kafka-example.png)
@@ -153,6 +146,7 @@ _Figure 1: Component testing a Spring Boot application that integrates with Kafk
 
 This test is available in the repository [here](https://github.com/lydtechconsulting/kafka-springboot-consume-produce).
 
+# Advanced example 2
 In this second example, a Change Data Capture (CDC) flow is tested.  The component test spins up the Spring Boot application, MongoDB, Debezium (Kafka Connect), and Kafka in Docker containers using the Component Test Framework.  The test registers the Debezium connector with Kafka Connect, and the end to end CDC flow is tested.
 
 ![Component testing a CDC flow with Kafka Connect](resources/ctf-cdc-example.png)
@@ -164,7 +158,7 @@ This test is available in the repository [here](https://github.com/lydtechconsul
 [[Back To Top](README.md#component-test-framework)]
 
 # Supported Resources:
-
+The current list of supported resources / features / backing services is currently as follows. New features are continuously being added. Please keep an eye out here for more additions
 - Configurable number of instances of the service under test.
 - Additional containers (simulators/services)
 - Kafka broker (standard or native build)
@@ -184,34 +178,16 @@ This test is available in the repository [here](https://github.com/lydtechconsul
 [[Back To Top](README.md#component-test-framework)]
 
 # Supported Versions
-
-`component-test-framework` version `2.x` supports:
+The current version of `component-test-framework` version `2.x` supports:
 - Spring Boot 3.x
 - Kafka Clients 3.x
 - Java 17
 
-`component-test-framework` version `1.x` supports:
-- Spring Boot 2.x
-- Kafka Clients 2.x
-- Java 11
+[[Back To Top](README.md#component-test-framework)]
 
 [[Back To Top](README.md#component-test-framework)]
 
-# Maven Dependency
-
-Add this library as a dependency to the pom of the service under test:
-```
-    <dependency>
-        <groupId>dev.lydtech</groupId>
-        <artifactId>component-test-framework</artifactId>
-        <version>{version}</version>
-        <scope>test</scope>
-    </dependency>
-```
-
-[[Back To Top](README.md#component-test-framework)]
-
-# Example Usage Projects
+# Sample Projects
 
 Example companion projects have been created to demonstrate usage of this framework.
 
@@ -283,25 +259,6 @@ https://github.com/lydtechconsulting/ambar-event-sourcing - demonstrates event s
 
 [[Back To Top](README.md#component-test-framework)]
 
-# Upgrading From Previous Versions
-
-## Upgrading To 3.x From 2.x
-
-### Application Default Port
-
-The default port that the Component Test Framework uses for the application under test has changed from `9001` to `8080`.
-
-If using port `9001` for the application either specify this port in the configuration:
-
-e.g. in the pom.xml add `<service.port>9001</service.port>`
-
-Or change the application port to be `8080` in order to leave the Component Test Framework using the default port.
-
-## Upgrading To 2.6.0 From Any Previous Version
-
-### JUnit Extension Class
-The JUnit extension class `dev.lydtech.component.framework.extension.TestContainersSetupExtension` has been deprecated and removed from version `3.6.0`.  Instead use `dev.lydtech.component.framework.extension.ComponentTestExtension`.  e.g. `@ExtendWith(ComponentTestExtension.class)`.
-
 ### Testcontainers Environment Variable
 The Testcontainers environment variable `TESTCONTAINERS_RYUK_DISABLED` used for keeping containers up between test runs has changed to `TESTCONTAINERS_REUSE_ENABLE`.  In the maven pom component test profile, change to use this variable:
 ```
@@ -325,6 +282,53 @@ In order for the component test framework to interrogate the docker containers a
 ![Enable Docker Socket](resources/ctf-docker-socket.png)
 
 # Configuration Properties
+The **Component Test Framework** supports many features that can be enabled and configured via an array of configuration properties. The table shows the core configuration properties, with technology specific properties available further down this file.
+
+The framework supports a number of methods for setting these properties. The recommended approach is to use property/yml files
+
+### Declaring properties via specific properties / yml file
+Declare the properties that should be overridden from their defaults in a file named `component-test.properties`, `component-test.yaml`, or `component-test.yml`.  This file needs to be in the test classpath, so place in the `src/test/resources` folder to ensure it is built into the classpath directory.
+
+Add as key/value pairs or in yaml format accordingly.  e.g. in the properties file:
+```
+service.name=demo
+service.port=9001
+kafka.enabled=true
+```
+Or in the yaml/yml file:
+```
+service:
+    name: demo
+    port: 9001
+kafka:
+    enabled: true
+```
+
+The file can be given a custom name by setting the system property `component.test.configuration.filename`.  e.g. `-Dcomponent.test.configuration.filename=test-config.properties`.
+
+### Declaring properties via command line environment variables
+If a properties file has not been provided, then the properties can be overidden using system properties.  These can be provided on the command line, e.g.
+```
+mvn test -Pcomponent -Dservice.name=demo -Dservice.port=9001 -Dkafka.enabled=true
+```
+
+### Declaring properties via environment variables in Maven / Gradle config
+Inside the maven `pom.xml` in the `maven-surefire-plugin`.  e.g.
+```
+<systemPropertyVariables>
+    <service.name>${project.name}</service.name>
+    <service.port>9001</service.port>
+    <kafka.enabled>true</kafka.enabled>
+</systemPropertyVariables>
+```
+Or via gradle in the `gradle.properties`.
+
+### Notes on funadmental properties
+Note that the following 2 properties can not be set in the test properties/yml files. 
+- `containers.stayup`
+- `component.test.configuration.filename`
+
+# Core properties
 
 | Property                                        | Usage                                                                                                                                                                                                                                                                                                                                                                           | Default                            |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
@@ -436,43 +440,6 @@ The configuration is logged at test execution time at INFO level.  Enable in `lo
 [[Back To Top](README.md#component-test-framework)]
 
 # Overriding Default Configuration
-
-Declare the properties that should be overridden from their defaults in a file named `component-test.properties`, `component-test.yaml`, or `component-test.yml`.  This file needs to be in the test classpath, so place in the `src/test/resources` folder to ensure it is built into the classpath directory.
-
-Add as key/value pairs or in yaml format accordingly.  e.g. in the properties file:
-```
-service.name=demo
-service.port=9001
-kafka.enabled=true
-```
-Or in the yaml/yml file:
-```
-service:
-    name: demo
-    port: 9001
-kafka:
-    enabled: true
-```
-
-The file can be given a custom name by setting the system property `component.test.configuration.filename`.  e.g. `-Dcomponent.test.configuration.filename=test-config.properties`.
-
-If a properties file has not been provided, then the properties can be overidden using system properties.  These can be provided on the command line, e.g.
-```
-mvn test -Pcomponent -Dservice.name=demo -Dservice.port=9001 -Dkafka.enabled=true
-```
-Or in the maven `pom.xml` in the `maven-surefire-plugin`.  e.g.
-```
-<systemPropertyVariables>
-    <service.name>${project.name}</service.name>
-    <service.port>9001</service.port>
-    <kafka.enabled>true</kafka.enabled>
-</systemPropertyVariables>
-```
-Or via gradle in the `gradle.properties`.
-
-Note that the `containers.stayup` property can not be set in the component test properties file, it must be set as a system property as it is used in the `maven-surefire-plugin` in the `pom.xml` when using maven, or in the `build.gradle` when using gradle.
-
-Note also that the `component.test.configuration.filename` property can not be set in the component test properties file, it must be set as a system property as it is used to specify the name of the properties/yaml file to use (if not using one of the default file names).
 
 [[Back To Top](README.md#component-test-framework)]
 
