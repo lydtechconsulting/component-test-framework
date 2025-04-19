@@ -107,13 +107,12 @@ todo link to this simple project
 - [Advanced Example 2](README.md#advanced-example-2)
 - [Supported Resources](README.md#supported-resources)
 - [Supported Versions](README.md#supported-versions)
-- [Example Usage Projects](README.md#example-usage-projects)
 - [Docker Configuration](README.md#docker-configuration)
 - [Configuration Properties](README.md#configuration-properties)
   - [Declaring properties via specific properties/yml file](README.md#declaring-properties-via-specific-properties--yml-file)
   - [Declaring properties via command line environment variables](README.md#declaring-properties-via-command-line-environment-variables)
   - [Declaring properties via environment variables in Maven/Gradle config](README.md#declaring-properties-via-environment-variables-in-maven--gradle-config)
-- [Overriding Default Configuration](README.md#overriding-default-configuration)
+- [Samle Projects](README.md#sample-projects)
 - [Using Maven](README.md#using-maven)
 - [Using Gradle](README.md#using-gradle)
 - [Writing Component Tests](README.md#writing-component-tests)
@@ -187,78 +186,6 @@ The current version of `component-test-framework` version `2.x` supports:
 
 [[Back To Top](README.md#component-test-framework)]
 
-# Sample Projects
-
-Example companion projects have been created to demonstrate usage of this framework.
-
-The `component-test-framework` can be used within a single module project as per:
-
-https://github.com/lydtechconsulting/ctf-example-service
-
-This project demonstrates using:
-- Kafka
-- Postgres
-- Debezium
-- Wiremock
-
-There is an advantage in separating its usage from the service under test to ensure that it does not utilise any of the service's classes, and to ensure there are no dependency clashes with the serivce's dependencies.  The following project demonstrates its usage in a multi module project:
-
-https://github.com/lydtechconsulting/ctf-example-multi-module
-
-This project demonstrates using:
-- A child `component-test` module. 
-- REST calls to the service under test.
-- Multiple additional containers (simulators) - these also benefit from the multi module structure as each is defined in its own child module.
-- Running component tests with gradle.
-
-Other reference projects that utilise the framework for component testing the application:
-
-https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb - includes Localstack with DynamoDB and uses multiple instances of the service under test.
-
-https://github.com/lydtechconsulting/kafka-schema-registry-avro - a multi-module maven project demonstrating using the Confluent Schema Registry, and demonstrates using Confluent Control Center and Conduktor Platform with Confluent Schema Registry integration.
-
-https://github.com/lydtechconsulting/kafka-metrics - demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform).
-
-https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka (either standard or native build) to consume and produce events, and observe events using Confluent Control Center and Conduktor.
-
-https://github.com/lydtechconsulting/kafka-streams - demonstrates using Kafka with the Kafka Streams API. 
-
-https://github.com/lydtechconsulting/kafka-idempotent-consumer - uses multiple instances of the service under test.
-
-https://github.com/lydtechconsulting/kafka-consumer-retry - uses multiple instances of the service under test.
-
-https://github.com/lydtechconsulting/kafka-batch-consume - uses a custom Producer with additional configuration for batch send.
-
-https://github.com/lydtechconsulting/kafka-chaos-testing - demonstrates using Conduktor Gateway for chaos testing the service under test.
-
-https://github.com/lydtechconsulting/kafka-connect-debezium-postgres - demonstrates using Kafka Connect with Debezium for Change Data Capture with Postgres. 
-
-https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb - demonstrates using Kafka Connect with Debezium for Change Data Capture with MongoDB.
-
-https://github.com/lydtechconsulting/springboot-rest - demonstrates hitting the service via a REST API to perform CRUD operations.
-
-https://github.com/lydtechconsulting/springboot-postgres - demonstrates using Postgres as the database for reading and writing items.
-
-https://github.com/lydtechconsulting/springboot-mongodb - demonstrates using MongoDB as the database for reading and writing items.
-
-https://github.com/lydtechconsulting/springboot-elasticsearch - demonstrates reading and writing items to Elasticsearch.
-
-https://github.com/lydtechconsulting/kafka-sasl-plain - demonstrates consumers and producers connecting to Kafka using the Simple Authentication and Security Layer (SASL) PLAIN protocol.
-
-https://github.com/lydtechconsulting/micronaut-postgres-java - demonstrates a Micronaut application written in Java, built with Gradle, using Postgres as the database for reading and writing items.
-
-https://github.com/lydtechconsulting/micronaut-postgres-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Postgres as the database for reading and writing items.
-
-https://github.com/lydtechconsulting/micronaut-kafka-java - demonstrates a Micronaut application written in Java, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
-
-https://github.com/lydtechconsulting/micronaut-kafka-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
-
-https://github.com/lydtechconsulting/flink-kafka-connector - demonstrates a Flink application using Kafka as the source and sink for streaming data.
-
-https://github.com/lydtechconsulting/ambar-event-sourcing - demonstrates event sourcing with Ambar.
-
-[[Back To Top](README.md#component-test-framework)]
-
 ### Testcontainers Environment Variable
 The Testcontainers environment variable `TESTCONTAINERS_RYUK_DISABLED` used for keeping containers up between test runs has changed to `TESTCONTAINERS_REUSE_ENABLE`.  In the maven pom component test profile, change to use this variable:
 ```
@@ -323,7 +250,7 @@ Inside the maven `pom.xml` in the `maven-surefire-plugin`.  e.g.
 ```
 Or via gradle in the `gradle.properties`.
 
-### Notes on funadmental properties
+### Notes on fundamental properties
 Note that the following 2 properties can not be set in the test properties/yml files. 
 - `containers.stayup`
 - `component.test.configuration.filename`
@@ -353,27 +280,6 @@ Note that the following 2 properties can not be set in the test properties/yml f
 | service.startup.timeout.seconds                 | The number of seconds to wait for the service to start before considered failed.                                                                                                                                                                                                                                                                                                | `180`                              |
 | service.container.logging.enabled               | Whether to output the service Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | `false`                            |
 | additional.containers                           | Colon separated list of additional containers to spin up, such as simulators.  Each additional container entry requires a comma separated list of details:  name, port, debugPort, imageTag, containerLoggingEnabled.  Example is: `third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false`                                             |                                    |
-| postgres.enabled                                | Whether a Docker Postgres container should be started.                                                                                                                                                                                                                                                                                                                          | `false`                            |
-| postgres.image.tag                              | The image tag of the Postgres Docker container to use.                                                                                                                                                                                                                                                                                                                          | `14-alpine`                        |
-| postgres.host.name                              | The name of the Postgres host.                                                                                                                                                                                                                                                                                                                                                  | `postgres`                         |
-| postgres.port                                   | The port of the Postgres Docker container.                                                                                                                                                                                                                                                                                                                                      | `5432`                             |
-| postgres.database.name                          | The name of the Postgres database.                                                                                                                                                                                                                                                                                                                                              | `postgres-db`                      |
-| postgres.schema.name                            | The name of the Postgres schema.                                                                                                                                                                                                                                                                                                                                                | `test`                             |
-| postgres.username                               | The Postgres username.                                                                                                                                                                                                                                                                                                                                                          | `user`                             |
-| postgres.password                               | The Postgres password.                                                                                                                                                                                                                                                                                                                                                          | `password`                         |
-| postgres.schema.file.path                       | The path to the file containing the schema initialisation SQL.  e.g. `schema.sql`                                                                                                                                                                                                                                                                                               |                                    |
-| postgres.container.logging.enabled              | Whether to output the Postgres Docker logs to the console.                                                                                                                                                                                                                                                                                                                      | `false`                            |
-| mongodb.enabled                                 | Whether a Docker MongoDB container should be started.                                                                                                                                                                                                                                                                                                                           | `false`                            |
-| mongodb.image.tag                               | The image tag of the MongoDB Docker container to use.                                                                                                                                                                                                                                                                                                                           | `7.0.2`                            |
-| mongodb.container.logging.enabled               | Whether to output the MongoDB Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | `false`                            |
-| mariadb.enabled                                 | Whether a Docker MariaDB container should be started.                                                                                                                                                                                                                                                                                                                           | `false`                            |
-| mariadb.image.tag                               | The image tag of the MariaDB Docker container to use.                                                                                                                                                                                                                                                                                                                           | `10.6`                             |
-| mariadb.host.name                               | The name of the MariaDB host.                                                                                                                                                                                                                                                                                                                                                   | `mariadb-host`                     |
-| mariadb.port                                    | The port of the MariaDB Docker container.                                                                                                                                                                                                                                                                                                                                       | `3306`                             |
-| mariadb.database.name                           | The name of the MariaDB database.                                                                                                                                                                                                                                                                                                                                               | `mariadb-db`                       |
-| mariadb.username                                | The MariaDB username.                                                                                                                                                                                                                                                                                                                                                           | `user`                             |
-| mariadb.password                                | The MariaDB password.                                                                                                                                                                                                                                                                                                                                                           | `password`                         |
-| mariadb.container.logging.enabled               | Whether to output the MariaDB Docker logs to the console.                                                                                                                                                                                                                                                                                                                       | `false`                            |
 | kafka.enabled                                   | Whether a Docker Kafka container (standard build) should be started.  Cannot be `true` if `kafka.native.enabled` is `true`.  Set the application's Kafka `bootstrap-servers` to `kafka:9092` in the `application-component-test.yml` to connect.                                                                                                                                | `false`                            |
 | kafka.native.enabled                            | Whether a Docker Kafka container (native build) should be started.  Cannot be `true` if `kafka.enabled` is `true`.  Set the application's Kafka `bootstrap-servers` to `kafka:9093` in the `application-component-test.yml` to connect.                                                                                                                                         | `false`                            |
 | kafka.broker.count                              | The number of Kafka broker nodes in the cluster.  Each broker node will start in its own Docker container.  The first instance will be `kafka`, then subsequent will have an instance suffix, e.g. `kafka-2`.  If multiple instances are started a Zookeeper Docker container is also started (rather than using the embedded Zookeeper).                                       | `1`                                |
@@ -439,7 +345,75 @@ The configuration is logged at test execution time at INFO level.  Enable in `lo
 
 [[Back To Top](README.md#component-test-framework)]
 
-# Overriding Default Configuration
+# Sample Projects
+
+Example companion projects have been created to demonstrate usage of this framework.
+
+The `component-test-framework` can be used within a single module project as per:
+
+https://github.com/lydtechconsulting/ctf-example-service
+
+This project demonstrates using:
+- Kafka
+- Postgres
+- Debezium
+- Wiremock
+
+There is an advantage in separating its usage from the service under test to ensure that it does not utilise any of the service's classes, and to ensure there are no dependency clashes with the serivce's dependencies.  The following project demonstrates its usage in a multi module project:
+
+https://github.com/lydtechconsulting/ctf-example-multi-module
+
+This project demonstrates using:
+- A child `component-test` module.
+- REST calls to the service under test.
+- Multiple additional containers (simulators) - these also benefit from the multi module structure as each is defined in its own child module.
+- Running component tests with gradle.
+
+Other reference projects that utilise the framework for component testing the application:
+
+https://github.com/lydtechconsulting/kafka-idempotent-consumer-dynamodb - includes Localstack with DynamoDB and uses multiple instances of the service under test.
+
+https://github.com/lydtechconsulting/kafka-schema-registry-avro - a multi-module maven project demonstrating using the Confluent Schema Registry, and demonstrates using Confluent Control Center and Conduktor Platform with Confluent Schema Registry integration.
+
+https://github.com/lydtechconsulting/kafka-metrics - demonstrates using multiple Kafka broker nodes, multiple instances of the service under test, topic replication and min-insync replicas, with Confluent Control Center and Conduktor Platform).
+
+https://github.com/lydtechconsulting/kafka-springboot-consume-produce - demonstrates using Kafka (either standard or native build) to consume and produce events, and observe events using Confluent Control Center and Conduktor.
+
+https://github.com/lydtechconsulting/kafka-streams - demonstrates using Kafka with the Kafka Streams API.
+
+https://github.com/lydtechconsulting/kafka-idempotent-consumer - uses multiple instances of the service under test.
+
+https://github.com/lydtechconsulting/kafka-consumer-retry - uses multiple instances of the service under test.
+
+https://github.com/lydtechconsulting/kafka-batch-consume - uses a custom Producer with additional configuration for batch send.
+
+https://github.com/lydtechconsulting/kafka-chaos-testing - demonstrates using Conduktor Gateway for chaos testing the service under test.
+
+https://github.com/lydtechconsulting/kafka-connect-debezium-postgres - demonstrates using Kafka Connect with Debezium for Change Data Capture with Postgres.
+
+https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb - demonstrates using Kafka Connect with Debezium for Change Data Capture with MongoDB.
+
+https://github.com/lydtechconsulting/springboot-rest - demonstrates hitting the service via a REST API to perform CRUD operations.
+
+https://github.com/lydtechconsulting/springboot-postgres - demonstrates using Postgres as the database for reading and writing items.
+
+https://github.com/lydtechconsulting/springboot-mongodb - demonstrates using MongoDB as the database for reading and writing items.
+
+https://github.com/lydtechconsulting/springboot-elasticsearch - demonstrates reading and writing items to Elasticsearch.
+
+https://github.com/lydtechconsulting/kafka-sasl-plain - demonstrates consumers and producers connecting to Kafka using the Simple Authentication and Security Layer (SASL) PLAIN protocol.
+
+https://github.com/lydtechconsulting/micronaut-postgres-java - demonstrates a Micronaut application written in Java, built with Gradle, using Postgres as the database for reading and writing items.
+
+https://github.com/lydtechconsulting/micronaut-postgres-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Postgres as the database for reading and writing items.
+
+https://github.com/lydtechconsulting/micronaut-kafka-java - demonstrates a Micronaut application written in Java, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
+
+https://github.com/lydtechconsulting/micronaut-kafka-kotlin - demonstrates a Micronaut application written in Kotlin, built with Gradle, using Kafka as the messaging broker for sending and receiving items.
+
+https://github.com/lydtechconsulting/flink-kafka-connector - demonstrates a Flink application using Kafka as the source and sink for streaming data.
+
+https://github.com/lydtechconsulting/ambar-event-sourcing - demonstrates event sourcing with Ambar.
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -831,154 +805,11 @@ https://github.com/lydtechconsulting/ctf-example-multi-module
 
 [[Back To Top](README.md#component-test-framework)]
 
-# Postgres Database
+# Supported technologies/backing services
+- [Postgres](./documentation/README-postgres.md)
+- [MongoDB](./documentation/README-mongo.md)
+- [MariaDB](./documentation/README-mariadb.md)
 
-Enable the Postgres database via the property `postgres.enabled`.  The connection details can be configured including the host, database name, schema name, user and password.
-
-A SQL file can be run when the database container is started for the initial database population.  Specify the path to the SQl file to use with the `postgres.schema.file.path` property.  For example, if the SQL file is located at `src/test/resources/schema.sql`, this will be placed in the classpath (in `target/test-classes/`), so set the property as:
-
-`-Dpostgres.schema.file.path=schema.sql`
-
-Override the main configuration in the application's `application-component-test.yml` file in order to connect to the Dockerised Postgres, for example:
-```
-spring:
-    datasource:
-        url: jdbc:postgresql://postgres:5432/postgres?currentSchema=dmeo
-        username: postgres
-        password: postgres
-```
-
-Use the `PostgresClient` utility class to get a `Connection` that can be used to run queries against the database:
-```
-import dev.lydtech.component.framework.client.database.PostgresClient;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-Connection dbConnection = PostgresClient.getInstance().getConnection();
-```
-
-Note that when leaving containers up between test runs, if the default Postgres properties are overridden, then the test needs to be passed these in order to create the connection.  e.g. set:
-```
--Dpostgres.database.name=dbname2 -Dpostgres.schema.name=schema2 -Dpostgres.username=user2 -Dpostgres.password=password2
-```
-
-Alternatively use the method to get the `Connection` that taking these parameters:
-```
-Connection dbConnection = PostgresClient.getInstance().getConnection("dbname2", "schema2", "user2", "password2");
-```
-
-Close the connection at the end of the test:
-```
-PostgresClient.getInstance().close(dbConnection);
-```
-
-The DB URL with the host and port can be obtained with the following call:
-```
-String dbUrl = MongoDbClient.getInstance().getMongoClient().getDbHostAndPortUrl();
-```
-This has the mapped port for the Docker container enabling the test to connect to the database.  It could then for example be used to instantiate a `JdbcTemplate` if using Spring:
-```
-DriverManagerDataSource dataSource = new DriverManagerDataSource();
-dataSource.setUrl(dbUrl);
-dataSource.setUsername(username);
-dataSource.setPassword(password);
-JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-```
-
-[[Back To Top](README.md#component-test-framework)]
-
-# MongoDB Database
-
-Enable the MongoDB database via the property `mongodb.enabled`.  The database is available on port `27017`.
-
-Override the main configuration in the application's `application-component-test.yml` file to connect to the Dockerised MongoDB, for example:
-
-```
-spring:
-  data:
-    mongodb:
-      database: demo
-      port: 27017
-      host: mongodb
-```
-The MongoDB Testcontainer creates a replica set name `docker-rs`. 
-
-Use the `MongoDbClient` utility class to get a `MongoClient` that can be used to run queries against the database:
-```
-import dev.lydtech.component.framework.client.database.MongoDbClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-
-MongoClient mongoClient = MongoDbClient.getInstance().getMongoClient();
-MongoCollection items = mongoClient.getDatabase("demo").getCollection("items");
-FindIterable results = items.find(Filters.eq("name", request.getName()));
-```
-
-Close the connection at the end of the test:
-```
-MongoDbClient.getInstance().close(mongoClient);
-```
-
-Alternatively the MongoDB URL can be obtained with the following call:
-```
-String dbUrl = MongoDbClient.getInstance().getMongoClient().getDbUrl();
-```
-
-This has the mapped port for the Docker container enabling the test to connect to the database.  It could then for example be used to instantiate a `MongoTemplate` if using Spring:
-```
-ConnectionString connectionString = new ConnectionString(dbUrl);
-MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
-    .applyConnectionString(connectionString)
-    .build();
-MongoTemplate mongoTemplate = new MongoTemplate(MongoClients.create(mongoClientSettings), "demo");
-```
-
-# MariaDB Database
-
-Enable the MariaDB database via the property `mariadb.enabled`.  The database is available on port `3306`.
-
-Override the main configuration in the application's `application-component-test.yml` file to connect to the Dockerised MariaDB, for example:
-
-```
-spring:
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/database
-    username: username
-    password: password
-```
-
-Use the `MariaDbClient` utility class to get a `Connection` that can be used to run queries against the database:
-```
-import dev.lydtech.component.framework.client.database.MariaDbClient;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-Connection connection = MariaDbClient.getInstance().getConnection();
-
-try (PreparedStatement statement = connection.prepareStatement("SELECT version()")) {
-    ResultSet resultSet = statement.executeQuery();
-    while (resultSet.next()) {
-        LOG.info("resultset: " + resultSet.getString(1));
-    }
-}
-```
-
-Close the connection at the end of the test:
-```
-MariaDbClient.getInstance().close(dbConnection);
-```
-
-The DB URL with the host and port can be obtained with the following call:
-```
-String dbUrl = MariaDbClient.getInstance().getMariaDbClient().getDbHostAndPortUrl();
-```
-
-[[Back To Top](README.md#component-test-framework)]
 
 # Kafka
 ## Kafka Configuration
