@@ -107,7 +107,6 @@ todo link to this simple project
 - [Advanced Example 2](README.md#advanced-example-2)
 - [Supported Resources](README.md#supported-resources)
 - [Supported Versions](README.md#supported-versions)
-- [Docker Configuration](README.md#docker-configuration)
 - [Configuration Properties](README.md#configuration-properties)
   - [Method 1: Properties via specific properties/yml file](README.md#method-1-properties-via-specific-properties--yml-file)
   - [Method 2: Properties via command line environment variables](README.md#method-2-properties-via-command-line-environment-variables)
@@ -172,14 +171,6 @@ The current version of `component-test-framework` version `2.x` supports:
 [[Back To Top](README.md#component-test-framework)]
 
 [[Back To Top](README.md#component-test-framework)]
-
-# Docker Configuration
-
-In order for the component test framework to interrogate the docker containers at test time, the `/var/run/docker.sock` must be available to use.  In Docker Desktop / `Advanced` check the following box:
-
-[[Back To Top](README.md#component-test-framework)]
-
-![Enable Docker Socket](resources/ctf-docker-socket.png)
 
 # Configuration Properties
 The **Component Test Framework** supports many features that can be enabled and configured via an array of configuration properties. 
@@ -811,7 +802,9 @@ Caused by: java.io.IOException: com.sun.jna.LastErrorException: [2] No such file
 Docker needs to be able to use the `docker.sock` process but this is not available.
 
 **Resolution:**
-See the required configuration in the [[Docker Configuration](README.md#docker-configuration)] section. 
+In order for the component test framework to interrogate the docker containers at test time, the `/var/run/docker.sock` must be available to use.  In Docker Desktop / `Advanced` check the following box:
+
+![Enable Docker Socket](resources/ctf-docker-socket.png)
 
 [[Back To Top](README.md#component-test-framework)]
 
