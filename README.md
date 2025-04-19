@@ -119,20 +119,7 @@ todo link to this simple project
 - [Service Under Test](README.md#service-under-test)
 - [Running The Component Tests](README.md#running-the-component-tests)
 - [Additional Containers](README.md#additional-containers)
-- [Postgres Database](README.md#postgres-database)
-- [MongoDB Database](README.md#mongodb-database)
-- [MariaDB Database](README.md#mariadb-database)
-- [Kafka](README.md#kafka)
-- [Kafka Avro](README.md#kafka-avro)
-- [Kafka Schema Registry](README.md#kafka-schema-registry)
-- [Confluent Control Center](README.md#confluent-control-center)
-- [Conduktor Platform](README.md#conduktor-platform)
-- [Conduktor Gateway](README.md#conduktor-gateway)
-- [Debezium](README.md#debezium)
-- [Wiremock](README.md#wiremock)
-- [Localstack (with DynamoDB)](README.md#localstack)
-- [Elasticsearch](README.md#elasticsearch)
-- [Ambar](README.md#ambar)
+- [Supported Technologies / Backing Services](README.md#supported-technologiesbacking-services)
 - [Docker Commands](README.md#docker-commands)
 - [Troubleshooting](README.md#troubleshooting)
 
@@ -183,20 +170,6 @@ The current version of `component-test-framework` version `2.x` supports:
 - Java 17
 
 [[Back To Top](README.md#component-test-framework)]
-
-[[Back To Top](README.md#component-test-framework)]
-
-### Testcontainers Environment Variable
-The Testcontainers environment variable `TESTCONTAINERS_RYUK_DISABLED` used for keeping containers up between test runs has changed to `TESTCONTAINERS_REUSE_ENABLE`.  In the maven pom component test profile, change to use this variable:
-```
-<environmentVariables>
-    <TESTCONTAINERS_REUSE_ENABLE>${containers.stayup}</TESTCONTAINERS_REUSE_ENABLE>
-</environmentVariables>
-```
-Similarly for gradle, change the environment set up to:
-```
-environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup')
-```
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -809,6 +782,17 @@ https://github.com/lydtechconsulting/ctf-example-multi-module
 - [Postgres](./documentation/README-postgres.md)
 - [MongoDB](./documentation/README-mongo.md)
 - [MariaDB](./documentation/README-mariadb.md)
+- [Kafka](./documentation/README-kafka.md)
+- [Kafka Avro](./documentation/README-kafka-avro.md)
+- [Kafka Schema Registry](./documentation/README-kafka-schema-registry.md)
+- [Confluent Control Center](./documentation/README-confluent-control-center.md)
+- [Conduktor Platform](./documentation/README-conduktor-platform.md)
+- [Conduktor Gateway](./documentation/README-conduktor-gateway.md)
+- [Debezium](./documentation/README-debezium.md)
+- [Wiremock](./documentation/README-wiremock.md)
+- [Localstack](./documentation/README-localstack.md)
+- [ElasticSearch](./documentation/README-elastic.md)
+- [Ambar](./documentation/README-ambar.md)
 
 
 # Kafka
