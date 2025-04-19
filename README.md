@@ -17,9 +17,9 @@ Just annotate your JUnit test, and the framework handles everything—startup, w
 Follow these steps to add your first Component Test to a minimal Spring Boot App.
 
 1. visit https://start.spring.io
-2. Choose Maven, accept the defaults for other fields, choose a project name & add the following dependencies:
-   a. `Spring Web` - this project will have a simple Rest Controller
-   b. `Spring Boot Actuator` - the application health endpoint is a helpful way to know the service has started
+2. Choose Maven, accept the defaults for other fields, choose a project name & add the following dependencies
+   - `Spring Web` - this project will have a simple Rest Controller
+   - `Spring Boot Actuator` - the application health endpoint is a helpful way to know the service has started
 3. Generate the project and open in your favourite IDE
 4. Add a simple REST controller `MyController.java` that responds with a fixed string:
 ```java
@@ -74,8 +74,8 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
     </profiles>
 ```
 8. Add a configuration file for the component tests in src/main/resources/component-test.yml. This is a minimal file that tells CTF to:
-   1. bind a docker container port to port 8080 which is what the application listens on
-   2. use the following Docker image name for the service container: `samples/my-maven-app`
+   - bind a docker container port to port 8080 which is what the application listens on
+   - use the following Docker image name for the service container: `samples/my-maven-app`
 ```yaml
 service:
    port: 8080
