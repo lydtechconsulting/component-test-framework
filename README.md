@@ -182,9 +182,9 @@ In order for the component test framework to interrogate the docker containers a
 ![Enable Docker Socket](resources/ctf-docker-socket.png)
 
 # Configuration Properties
-The **Component Test Framework** supports many features that can be enabled and configured via an array of configuration properties. The table shows the core configuration properties, with technology specific properties available further down this file.
+The **Component Test Framework** supports many features that can be enabled and configured via an array of configuration properties. 
 
-The framework supports a number of methods for setting these properties. The recommended approach is to use property/yml files
+The framework supports a number of methods for setting these properties. The recommended approach is [Method 1: specific properties / yml file](README.md#method-1-properties-via-specific-properties--yml-file)
 
 ### Method 1: Properties via specific properties / yml file
 Declare the properties that should be overridden from their defaults in a file named `component-test.properties`, `component-test.yaml`, or `component-test.yml`.  This file needs to be in the test classpath, so place in the `src/test/resources` folder to ensure it is built into the classpath directory.
@@ -229,7 +229,7 @@ Note that the following 2 properties can not be set in the test properties/yml f
 - `component.test.configuration.filename`
 
 # Core properties
-
+The table shows the core configuration properties, with technology specific properties available in the sub documents mentioned in [Supported Technologies / Backing services](README.md#supported-technologiesbacking-services).
 | Property                                        | Usage                                                                                                                                                                                                                                                                                                                                                                           | Default                            |
 |-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
 | component.test.configuration.filename           | The name of the file for the Testcontainers configuration overrides.  Can only be set as a system property.  If not set, will look for `component-test.properties`, `component-test.yaml` or `component-test-yml` in the test runtime classpath.  If none of these files is present, then will use any system property overrides that are set.                                  |                                    |
