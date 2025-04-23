@@ -18,29 +18,29 @@ public class ConfigurationLogger {
             log.info("container group unique id: " + CONTAINER_GROUP_ID);
         }
 
-        log.info("service.name: " + SERVICE_NAME);
-        log.info("service.instance.count: " + SERVICE_INSTANCE_COUNT);
-        log.info("service.port: " + SERVICE_PORT);
-        log.info("service.debug.port: " + SERVICE_DEBUG_PORT);
-        log.info("service.debug.suspend: " + SERVICE_DEBUG_SUSPEND);
-        log.info("service.envvars: " + SERVICE_ENV_VARS);
-        log.info("service.additional.filesystem.binds: " + SERVICE_ADDITIONAL_FILESYSTEM_BINDS);
-        log.info("service.config.files.system.property: " + SERVICE_CONFIG_FILES_SYSTEM_PROPERTY);
-        log.info("service.application.yml.path: " + SERVICE_APPLICATION_YML_PATH);
-        log.info("service.startup.health.endpoint: " + SERVICE_STARTUP_HEALTH_ENDPOINT);
-        String serviceStartupLogMessage = SERVICE_STARTUP_LOG_MESSAGE;
-        if(SERVICE_STARTUP_LOG_MESSAGE == null) {
-            serviceStartupLogMessage = "";
-        }
-        log.info("service.startup.log.message: " + serviceStartupLogMessage);
-        String serviceApplicationArgs = SERVICE_APPLICATION_ARGS;
-        if(SERVICE_APPLICATION_ARGS == null) {
-            serviceApplicationArgs = "";
-        }
-        log.info("service.application.args: " + serviceApplicationArgs);
-        log.info("service.startup.timeout.seconds: " + SERVICE_STARTUP_TIMEOUT_SECONDS);
-        log.info("service.image.tag: " + SERVICE_IMAGE_TAG);
-        log.info("service.container.logging.enabled: " + SERVICE_CONTAINER_LOGGING_ENABLED);
+//        log.info("service.name: " + SERVICE_NAME);
+//        log.info("service.instance.count: " + SERVICE_INSTANCE_COUNT);
+//        log.info("service.port: " + SERVICE_PORT);
+//        log.info("service.debug.port: " + SERVICE_DEBUG_PORT);
+//        log.info("service.debug.suspend: " + SERVICE_DEBUG_SUSPEND);
+//        log.info("service.envvars: " + SERVICE_ENV_VARS);
+//        log.info("service.additional.filesystem.binds: " + SERVICE_ADDITIONAL_FILESYSTEM_BINDS);
+//        log.info("service.config.files.system.property: " + SERVICE_CONFIG_FILES_SYSTEM_PROPERTY);
+//        log.info("service.application.yml.path: " + SERVICE_APPLICATION_YML_PATH);
+//        log.info("service.startup.health.endpoint: " + SERVICE_STARTUP_HEALTH_ENDPOINT);
+//        String serviceStartupLogMessage = SERVICE_STARTUP_LOG_MESSAGE;
+//        if(SERVICE_STARTUP_LOG_MESSAGE == null) {
+//            serviceStartupLogMessage = "";
+//        }
+//        log.info("service.startup.log.message: " + serviceStartupLogMessage);
+//        String serviceApplicationArgs = SERVICE_APPLICATION_ARGS;
+//        if(SERVICE_APPLICATION_ARGS == null) {
+//            serviceApplicationArgs = "";
+//        }
+//        log.info("service.application.args: " + serviceApplicationArgs);
+//        log.info("service.startup.timeout.seconds: " + SERVICE_STARTUP_TIMEOUT_SECONDS);
+//        log.info("service.image.tag: " + SERVICE_IMAGE_TAG);
+//        log.info("service.container.logging.enabled: " + SERVICE_CONTAINER_LOGGING_ENABLED);
 
         log.info("additional.containers: "+System.getProperty("additional.containers", ""));
 

@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import dev.lydtech.component.framework.management.AdditionalContainer;
+import dev.lydtech.component.framework.management.ServiceConfiguration;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public final class TestcontainersConfiguration {
@@ -22,21 +23,21 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_CONTAINER_APPEND_GROUP_ID = "false";
 
     // --- Service default configuration ---
-    private static final String DEFAULT_SERVICE_NAME = "app";
-    private static final String DEFAULT_SERVICE_INSTANCE_COUNT = "1";
-    private static final String DEFAULT_SERVICE_PORT = "8080";
-    private static final String DEFAULT_SERVICE_DEBUG_PORT = "5001";
-    private static final String DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS = "180";
-    private static final String DEFAULT_SERVICE_CONFIG_FILES_SYSTEM_PROPERTY = "spring.config.additional-location";
-    private static final String DEFAULT_SERVICE_APPLICATION_YML_PATH = "src/test/resources/application-component-test.yml";
-    private static final String DEFAULT_SERVICE_STARTUP_HEALTH_ENDPOINT = "/actuator/health";
-    private static final String DEFAULT_SERVICE_STARTUP_LOG_MESSAGE = null;
-    private static final String DEFAULT_SERVICE_IMAGE_TAG = "latest";
-    private static final String DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED = "false";
-    private static final String DEFAULT_SERVICE_DEBUG_SUSPEND = "false";
-    private static final String DEFAULT_SERVICE_APPLICATION_ARGS = null;
-    private static final String DEFAULT_SERVICE_ENVVARS = null;
-    private static final String DEFAULT_SERVICE_ADDITIONAL_FILESYSTEM_BINDS = null;
+    protected static final String DEFAULT_SERVICE_NAME = "app";
+    protected static final String DEFAULT_SERVICE_INSTANCE_COUNT = "1";
+    protected static final String DEFAULT_SERVICE_PORT = "8080";
+    protected static final String DEFAULT_SERVICE_DEBUG_PORT = "5001";
+    protected static final String DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS = "180";
+    protected static final String DEFAULT_SERVICE_CONFIG_FILES_SYSTEM_PROPERTY = "spring.config.additional-location";
+    protected static final String DEFAULT_SERVICE_APPLICATION_YML_PATH = "src/test/resources/application-component-test.yml";
+    protected static final String DEFAULT_SERVICE_STARTUP_HEALTH_ENDPOINT = "/actuator/health";
+    protected static final String DEFAULT_SERVICE_STARTUP_LOG_MESSAGE = null;
+    protected static final String DEFAULT_SERVICE_IMAGE_TAG = "latest";
+    protected static final String DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED = "false";
+    protected static final String DEFAULT_SERVICE_DEBUG_SUSPEND = "false";
+    protected static final String DEFAULT_SERVICE_APPLICATION_ARGS = null;
+    protected static final String DEFAULT_SERVICE_ENVVARS = null;
+    protected static final String DEFAULT_SERVICE_ADDITIONAL_FILESYSTEM_BINDS = null;
 
     // --- Additional containers configuration ---
     private static final String DEFAULT_ADDITIONAL_CONTAINERS = null;
@@ -171,21 +172,7 @@ public final class TestcontainersConfiguration {
     public static String CONTAINER_MAIN_LABEL_NAME;
 
     // --- Service configuration ---
-    public static String SERVICE_NAME;
-    public static int SERVICE_INSTANCE_COUNT;
-    public static int SERVICE_PORT;
-    public static int SERVICE_DEBUG_PORT;
-    public static boolean SERVICE_DEBUG_SUSPEND;
-    public static Map<String, String> SERVICE_ENV_VARS;
-    public static Map<String, String> SERVICE_ADDITIONAL_FILESYSTEM_BINDS;
-    public static String SERVICE_CONFIG_FILES_SYSTEM_PROPERTY;
-    public static String SERVICE_APPLICATION_YML_PATH;
-    public static int SERVICE_STARTUP_TIMEOUT_SECONDS;
-    public static String SERVICE_STARTUP_HEALTH_ENDPOINT;
-    public static String SERVICE_STARTUP_LOG_MESSAGE;
-    public static String SERVICE_IMAGE_TAG;
-    public static boolean SERVICE_CONTAINER_LOGGING_ENABLED;
-    public static String SERVICE_APPLICATION_ARGS;
+    public static List<ServiceConfiguration> SERVICES;
 
     // --- Additional containers ---
     public static List<AdditionalContainer> ADDITIONAL_CONTAINERS;
@@ -326,21 +313,7 @@ public final class TestcontainersConfiguration {
         CONTAINER_APPEND_GROUP_ID = Boolean.parseBoolean(properties.getProperty("container.append.group.id", DEFAULT_CONTAINER_APPEND_GROUP_ID));
 
         // --- Service configuration ---
-        SERVICE_NAME = properties.getProperty("service.name", DEFAULT_SERVICE_NAME).toLowerCase();
-        SERVICE_INSTANCE_COUNT = Integer.parseInt(properties.getProperty("service.instance.count", DEFAULT_SERVICE_INSTANCE_COUNT));
-        SERVICE_PORT = Integer.parseInt(properties.getProperty("service.port", DEFAULT_SERVICE_PORT));
-        SERVICE_DEBUG_PORT = Integer.parseInt(properties.getProperty("service.debug.port", DEFAULT_SERVICE_DEBUG_PORT));
-        SERVICE_STARTUP_TIMEOUT_SECONDS = Integer.parseInt(properties.getProperty("service.startup.timeout.seconds", DEFAULT_SERVICE_STARTUP_TIMEOUT_SECONDS));
-        SERVICE_CONFIG_FILES_SYSTEM_PROPERTY = properties.getProperty("service.config.files.system.property", DEFAULT_SERVICE_CONFIG_FILES_SYSTEM_PROPERTY);
-        SERVICE_APPLICATION_YML_PATH = properties.getProperty("service.application.yml.path", DEFAULT_SERVICE_APPLICATION_YML_PATH);
-        SERVICE_STARTUP_HEALTH_ENDPOINT = properties.getProperty("service.startup.health.endpoint", DEFAULT_SERVICE_STARTUP_HEALTH_ENDPOINT);
-        SERVICE_STARTUP_LOG_MESSAGE = properties.getProperty("service.startup.log.message", DEFAULT_SERVICE_STARTUP_LOG_MESSAGE);
-        SERVICE_IMAGE_TAG = properties.getProperty("service.image.tag", DEFAULT_SERVICE_IMAGE_TAG);
-        SERVICE_CONTAINER_LOGGING_ENABLED = Boolean.parseBoolean(properties.getProperty("service.container.logging.enabled", DEFAULT_SERVICE_CONTAINER_LOGGING_ENABLED));
-        SERVICE_DEBUG_SUSPEND = Boolean.parseBoolean(properties.getProperty("service.debug.suspend", DEFAULT_SERVICE_DEBUG_SUSPEND));
-        SERVICE_APPLICATION_ARGS = properties.getProperty("service.application.args", DEFAULT_SERVICE_APPLICATION_ARGS);
-        SERVICE_ENV_VARS = ConfigurationParser.parseKvPairs(properties.getProperty("service.envvars", DEFAULT_SERVICE_ENVVARS));
-        SERVICE_ADDITIONAL_FILESYSTEM_BINDS = ConfigurationParser.parseKvPairs(properties.getProperty("service.additional.filesystem.binds", DEFAULT_SERVICE_ADDITIONAL_FILESYSTEM_BINDS));
+        SERVICES = ConfigurationParser.parseServices(properties);
 
         // --- Additional containers ---
         ADDITIONAL_CONTAINERS = ConfigurationParser.parseAdditionalContainers(properties.getProperty("additional.containers", DEFAULT_ADDITIONAL_CONTAINERS));

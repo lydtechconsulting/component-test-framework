@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockStatic;
@@ -34,8 +35,10 @@ class ConfigurationLoaderPropertiesFileTest {
         try (MockedStatic<ConfigurationLogger> configurationLoggerMock = mockStatic(ConfigurationLogger.class)) {
             ConfigurationLoader.loadConfiguration();
 
-            assertThat(TestcontainersConfiguration.SERVICE_NAME, equalTo("demo"));
-            assertThat(TestcontainersConfiguration.SERVICE_PORT, equalTo(8080));
+            assertThat(TestcontainersConfiguration.SERVICES, notNullValue());
+            assertThat(TestcontainersConfiguration.SERVICES.size(), equalTo(1));
+            assertThat(TestcontainersConfiguration.SERVICES.get(0).getName(), equalTo("demo"));
+            assertThat(TestcontainersConfiguration.SERVICES.get(0).getPort(), equalTo(8080));
             assertThat(TestcontainersConfiguration.KAFKA_ENABLED, equalTo(true));
             configurationLoggerMock.verify(ConfigurationLogger::log, times(1));
         }
@@ -52,8 +55,10 @@ class ConfigurationLoaderPropertiesFileTest {
         try (MockedStatic<ConfigurationLogger> configurationLoggerMock = mockStatic(ConfigurationLogger.class)) {
             ConfigurationLoader.loadConfiguration();
 
-            assertThat(TestcontainersConfiguration.SERVICE_NAME, equalTo("demo"));
-            assertThat(TestcontainersConfiguration.SERVICE_PORT, equalTo(8080));
+            assertThat(TestcontainersConfiguration.SERVICES, notNullValue());
+            assertThat(TestcontainersConfiguration.SERVICES.size(), equalTo(1));
+            assertThat(TestcontainersConfiguration.SERVICES.get(0).getName(), equalTo("demo"));
+            assertThat(TestcontainersConfiguration.SERVICES.get(0).getPort(), equalTo(8080));
             assertThat(TestcontainersConfiguration.KAFKA_ENABLED, equalTo(true));
             configurationLoggerMock.verify(ConfigurationLogger::log, times(1));
         }
@@ -70,8 +75,10 @@ class ConfigurationLoaderPropertiesFileTest {
         try (MockedStatic<ConfigurationLogger> configurationLoggerMock = mockStatic(ConfigurationLogger.class)) {
             ConfigurationLoader.loadConfiguration();
 
-            assertThat(TestcontainersConfiguration.SERVICE_NAME, equalTo("demo"));
-            assertThat(TestcontainersConfiguration.SERVICE_PORT, equalTo(8080));
+            assertThat(TestcontainersConfiguration.SERVICES, notNullValue());
+            assertThat(TestcontainersConfiguration.SERVICES.size(), equalTo(1));
+            assertThat(TestcontainersConfiguration.SERVICES.get(0).getName(), equalTo("demo"));
+            assertThat(TestcontainersConfiguration.SERVICES.get(0).getPort(), equalTo(8080));
             assertThat(TestcontainersConfiguration.KAFKA_ENABLED, equalTo(true));
             configurationLoggerMock.verify(ConfigurationLogger::log, times(1));
         }
@@ -86,7 +93,7 @@ class ConfigurationLoaderPropertiesFileTest {
         try (MockedStatic<ConfigurationLogger> configurationLoggerMock = mockStatic(ConfigurationLogger.class)) {
             RuntimeException thrown = assertThrows(RuntimeException.class, ConfigurationLoader::loadConfiguration);
 
-            assertThat(thrown.getMessage(), equalTo("Unexpected property in configuration: service.unknown.key"));
+            assertThat(thrown.getMessage(), equalTo("Unexpected property in configuration: some.unknown.key"));
             configurationLoggerMock.verify(ConfigurationLogger::log, never());
         }
     }

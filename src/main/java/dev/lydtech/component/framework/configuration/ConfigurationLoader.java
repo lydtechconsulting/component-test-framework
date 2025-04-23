@@ -104,13 +104,15 @@ public final class ConfigurationLoader {
     }
 
     /**
-     * Validates that every key in the provided Properties exists in the allowed key set.
+     * Validates that every key in the provided Properties exists in the allowed key set
+     * or starts with "service." prefix.
      */
     private static void validateKeys(Properties props) {
         for (String key : props.stringPropertyNames()) {
-            if (!ConfigurationKeys.PROPERTY_KEYS.contains(key)) {
-                throw new RuntimeException("Unexpected property in configuration: " + key);
+            if (ConfigurationKeys.PROPERTY_KEYS.contains(key) || key.startsWith("service.")) {
+                continue;
             }
+            throw new RuntimeException("Unexpected property in configuration: " + key);
         }
     }
 }

@@ -29,6 +29,24 @@ public final class ConfigurationKeys {
     public static final String SERVICE_ENVVARS_KEY = "service.envvars";
     public static final String SERVICE_ADDITIONAL_FILESYSTEM_BINDS_KEY = "service.additional.filesystem.binds";
 
+    public static final Set<String> DEFAULT_SERVICE_KEYS = Set.of(
+            SERVICE_NAME_KEY,
+            SERVICE_INSTANCE_COUNT_KEY,
+            SERVICE_PORT_KEY,
+            SERVICE_DEBUG_PORT_KEY,
+            SERVICE_STARTUP_TIMEOUT_SECONDS_KEY,
+            SERVICE_CONFIG_FILES_SYSTEM_PROPERTY_KEY,
+            SERVICE_APPLICATION_YML_PATH_KEY,
+            SERVICE_STARTUP_HEALTH_ENDPOINT_KEY,
+            SERVICE_STARTUP_LOG_MESSAGE_KEY,
+            SERVICE_IMAGE_TAG_KEY,
+            SERVICE_CONTAINER_LOGGING_ENABLED_KEY,
+            SERVICE_DEBUG_SUSPEND_KEY,
+            SERVICE_APPLICATION_ARGS_KEY,
+            SERVICE_ENVVARS_KEY,
+            SERVICE_ADDITIONAL_FILESYSTEM_BINDS_KEY
+    );
+
     // --- Additional containers configuration key ---
     public static final String ADDITIONAL_CONTAINERS_KEY = "additional.containers";
 

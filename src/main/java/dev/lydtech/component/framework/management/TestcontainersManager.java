@@ -88,9 +88,6 @@ public final class TestcontainersManager {
         if(CONTAINERS_STAYUP && CONTAINER_APPEND_GROUP_ID) {
             throw new RuntimeException("Either configure containers to stayup or enable concurrent test runs.");
         }
-        if (SERVICE_INSTANCE_COUNT < 1) {
-            throw new RuntimeException("At least one service container should be started");
-        }
         network = Network.newNetwork();
         if (POSTGRES_ENABLED) {
             postgresContainer = createPostgresContainer();
@@ -178,9 +175,15 @@ public final class TestcontainersManager {
             ambarContainer = createAmbarContainer();
         }
 
-        serviceContainers = IntStream.range(1, SERVICE_INSTANCE_COUNT + 1)
-                .mapToObj(this::createServiceContainer)
+        serviceContainers = SERVICES.stream()
+                .flatMap(serviceConfig ->
+                        IntStream.range(1, serviceConfig.getInstanceCount() + 1)
+                                .mapToObj(instance -> createServiceContainer(serviceConfig, instance))
+                )
                 .collect(Collectors.toList());
+        if (serviceContainers.size() < 1) {
+            throw new RuntimeException("At least one service container should be started");
+        }
 
         additionalContainers = ADDITIONAL_CONTAINERS.stream().map(additionalContainer -> createAdditionalContainer(
                 additionalContainer.getName(),
@@ -249,17 +252,17 @@ public final class TestcontainersManager {
         }
     }
 
-    private GenericContainer createServiceContainer(int instance) {
-        String containerName = SERVICE_NAME+"-"+instance;
-        String suspendFlag = SERVICE_DEBUG_SUSPEND ? "y" : "n";
-        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+SERVICE_DEBUG_PORT+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -D"+SERVICE_CONFIG_FILES_SYSTEM_PROPERTY+"=file:/application.yml";
-        SERVICE_ENV_VARS.put("JAVA_OPTS", javaOpts);
+    private GenericContainer createServiceContainer(ServiceConfiguration serviceConfiguration, int instance) {
+        String containerName = serviceConfiguration.getName()+"-"+instance;
+        String suspendFlag = serviceConfiguration.getDebugSuspend() ? "y" : "n";
+        String javaOpts = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=" + suspendFlag + ",address=*:"+serviceConfiguration.getDebugPort()+" -Xms512m -Xmx512m -Djava.security.egd=file:/dev/./urandom -D"+serviceConfiguration.getConfigFilesSystemProperty()+"=file:/application.yml";
+        serviceConfiguration.getEnvvars().put("JAVA_OPTS", javaOpts);
 
-        GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+SERVICE_NAME+":" + SERVICE_IMAGE_TAG)
-                .withEnv(SERVICE_ENV_VARS)
+        GenericContainer container = new GenericContainer<>(CONTAINER_NAME_PREFIX+"/"+serviceConfiguration.getName()+":" + serviceConfiguration.getImageTag())
+                .withEnv(serviceConfiguration.getEnvvars())
                 .withLabel(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL_NAME)
-                .withFileSystemBind(SERVICE_APPLICATION_YML_PATH, "/application.yml", BindMode.READ_ONLY)
-                .withExposedPorts(SERVICE_PORT, SERVICE_DEBUG_PORT)
+                .withFileSystemBind(serviceConfiguration.getApplicationYmlPath(), "/application.yml", BindMode.READ_ONLY)
+                .withExposedPorts(serviceConfiguration.getPort(), serviceConfiguration.getDebugPort())
                 .withNetwork(network)
                 .withNetworkAliases(containerName)
                 .withReuse(true)
@@ -268,20 +271,20 @@ public final class TestcontainersManager {
                     cmd.withName(containerCmdModifier);
                 });
 
-        SERVICE_ADDITIONAL_FILESYSTEM_BINDS.keySet().forEach(source -> container.withFileSystemBind(source, SERVICE_ADDITIONAL_FILESYSTEM_BINDS.get(source), BindMode.READ_ONLY));
-        if(SERVICE_APPLICATION_ARGS != null) {
-            container.withEnv("APP_ARGS", SERVICE_APPLICATION_ARGS);
+        serviceConfiguration.getAdditionalFilesystemBinds().keySet().forEach(source -> container.withFileSystemBind(source, serviceConfiguration.getAdditionalFilesystemBinds().get(source), BindMode.READ_ONLY));
+        if(serviceConfiguration.getApplicationArgs() != null) {
+            container.withEnv("APP_ARGS", serviceConfiguration.getApplicationArgs());
         }
-        if (SERVICE_STARTUP_LOG_MESSAGE != null) {
-            container.waitingFor(Wait.forLogMessage(SERVICE_STARTUP_LOG_MESSAGE, 1))
-                    .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS));
+        if (serviceConfiguration.getStartupLogMessage() != null) {
+            container.waitingFor(Wait.forLogMessage(serviceConfiguration.getStartupLogMessage(), 1))
+                    .withStartupTimeout(Duration.ofSeconds(serviceConfiguration.getStartupTimeoutSeconds()));
         } else {
-            container.waitingFor(Wait.forHttp(SERVICE_STARTUP_HEALTH_ENDPOINT)
-                    .forPort(SERVICE_PORT)
+            container.waitingFor(Wait.forHttp(serviceConfiguration.getStartupHealthEndpoint())
+                    .forPort(serviceConfiguration.getPort())
                     .forStatusCode(200)
-                    .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));
+                    .withStartupTimeout(Duration.ofSeconds(serviceConfiguration.getStartupTimeoutSeconds())));
         }
-        if(SERVICE_CONTAINER_LOGGING_ENABLED) {
+        if(serviceConfiguration.getContainerLoggingEnabled()) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;
@@ -305,7 +308,7 @@ public final class TestcontainersManager {
                 .waitingFor(Wait.forHttp("/actuator/health")
                         .forPort(port)
                         .forStatusCode(200)
-                        .withStartupTimeout(Duration.ofSeconds(SERVICE_STARTUP_TIMEOUT_SECONDS)));
+                        .withStartupTimeout(Duration.ofSeconds(180)));
         if(containerLoggingEnabled) {
             container.withLogConsumer(getLogConsumer(name));
         }

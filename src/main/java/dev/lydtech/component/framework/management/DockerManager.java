@@ -45,7 +45,7 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_PORT;
-import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICES;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_PORT;
 import static dev.lydtech.component.framework.resource.Resource.CONDUKTORGATEWAY;
@@ -108,17 +108,8 @@ public final class DockerManager {
     public static void captureDockerContainerPorts(DockerClient dockerClient) {
         log.info("Capturing Docker ports...");
         log.info("Container main label: "+ CONTAINER_MAIN_LABEL_NAME);
-        // To locate the service containers use the container prefix and main container label.  This decouples discovery
-        // from the service name, so that subsequent runs do not need this overridden if changed each time.
-        List<Container> serviceContainers = dockerClient.listContainersCmd()
-                .withNameFilter(singletonList(CONTAINER_NAME_PREFIX + "-"))
-                .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL_NAME))
-                .exec();
-        if (serviceContainers.size() > 0) {
-            mapPort(SERVICE.toString(), SERVICE_PORT, serviceContainers.get(0));
-        } else {
-            throw new RuntimeException("Service container not found");
-        }
+
+        mapServicePorts(dockerClient);
         findContainerAndMapPort(dockerClient, POSTGRES.toString(), POSTGRES_ENABLED, POSTGRES_PORT);
         findContainerAndMapPort(dockerClient, MONGODB.toString(), MONGODB_ENABLED, MONGODB_PORT);
         findContainerAndMapPort(dockerClient, MARIADB.toString(), MARIADB_ENABLED, MARIADB_PORT);
@@ -139,6 +130,40 @@ public final class DockerManager {
         captureHost();
 
         log.info("Docker host and ports captured.");
+    }
+
+    /**
+     * To locate the service containers use the container prefix and main container label.  This decouples discovery
+     * from the service name, so that subsequent runs do not need this overridden if changed each time.
+     */
+    private static void mapServicePorts(DockerClient dockerClient) {
+        List<Container> serviceContainers = dockerClient.listContainersCmd()
+                .withNameFilter(singletonList(CONTAINER_NAME_PREFIX + "-"))
+                .withLabelFilter(Collections.singletonMap(CONTAINER_MAIN_LABEL_KEY, CONTAINER_MAIN_LABEL_NAME))
+                .exec()
+                .stream()
+                .filter(container -> Arrays.stream(container.getNames())
+                        .anyMatch(name -> name.endsWith("-1")))    // Check if any name ends with "-1"
+                .collect(Collectors.toList());
+
+        if (serviceContainers.size() == 0) {
+            throw new RuntimeException("Service container not found");
+        }
+
+        // Map each service container to its corresponding service configuration
+        for (Container container : serviceContainers) {
+            String containerName = Arrays.stream(container.getNames())
+                    .map(name -> name.replaceFirst("^/", "")) // Remove leading "/"
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Container name not found"));
+
+            ServiceConfiguration serviceConfig = SERVICES.stream()
+                    .filter(service -> containerName.equals(CONTAINER_NAME_PREFIX + "-" + service.getName() + "-1"))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No matching service container found for " + containerName));
+
+            mapPort("service." + serviceConfig.getName() + "." + containerName, serviceConfig.getPort(), container);
+        }
     }
 
     private static void mapAdditionalContainersPorts(DockerClient dockerClient) {
