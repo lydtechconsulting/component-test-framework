@@ -1,7 +1,5 @@
 package dev.lydtech.component.framework.extension;
 
-import com.github.dockerjava.api.DockerClient;
-import dev.lydtech.component.framework.management.DockerManager;
 import dev.lydtech.component.framework.management.TestcontainersManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -27,14 +25,8 @@ public final class ComponentTestExtension implements BeforeAllCallback {
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
         log.info("Component test framework extension started.");
         if (!started) {
+            TestcontainersManager.initialise();
             started = true;
-            DockerClient dockerClient = DockerManager.getDockerClient();
-            if  (DockerManager.shouldPerformSetup(dockerClient)) {
-                TestcontainersManager.initialise();
-            } else {
-                log.info("Main service is running. Skipping Testcontainers setup.");
-            }
-            DockerManager.captureDockerContainerPorts(dockerClient);
         }
         log.info("Test containers setup extension completed.");
     }

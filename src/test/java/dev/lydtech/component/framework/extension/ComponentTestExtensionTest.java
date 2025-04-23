@@ -1,7 +1,5 @@
 package dev.lydtech.component.framework.extension;
 
-import com.github.dockerjava.api.DockerClient;
-import dev.lydtech.component.framework.management.DockerManager;
 import dev.lydtech.component.framework.management.TestcontainersManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,46 +12,26 @@ import static org.mockito.Mockito.times;
 
 class ComponentTestExtensionTest {
 
-    private ComponentTestExtension extension;
+    private ExtensionContext context;
 
     @BeforeEach
-    public void setUp() {
-        extension = new ComponentTestExtension();
+    void setUp() {
+        context = mock(ExtensionContext.class);
     }
 
     @Test
-    public void testBeforeAll_NotStarted() throws Exception {
-        ComponentTestExtension.started = false;
-        try (MockedStatic<DockerManager> dockerManagerMock = mockStatic(DockerManager.class);
-             MockedStatic<TestcontainersManager> testcontainersManagerMock = mockStatic(TestcontainersManager.class)) {
+    void shouldInitialiseContainersOnlyOnceAcrossMultipleInvocations() throws Exception {
+        try (MockedStatic<TestcontainersManager> mgr = mockStatic(TestcontainersManager.class)) {
+            ComponentTestExtension firstExt = new ComponentTestExtension();
+            ComponentTestExtension secondExt = new ComponentTestExtension();
 
-            DockerClient mockDockerClient = mock(DockerClient.class);
-            dockerManagerMock.when(DockerManager::getDockerClient).thenReturn(mockDockerClient);
-            dockerManagerMock.when(() -> DockerManager.shouldPerformSetup(mockDockerClient)).thenReturn(true);
-            ExtensionContext mockContext = mock(ExtensionContext.class);
+            // First invocation should initialise
+            firstExt.beforeAll(context);
+            // Second invocation should not initialise again
+            secondExt.beforeAll(context);
 
-            extension.beforeAll(mockContext);
-
-            // Verify that the static methods were called as expected
-            dockerManagerMock.verify(DockerManager::getDockerClient, times(1));
-            dockerManagerMock.verify(() -> DockerManager.shouldPerformSetup(mockDockerClient), times(1));
-            testcontainersManagerMock.verify(TestcontainersManager::initialise, times(1));
-            dockerManagerMock.verify(() -> DockerManager.captureDockerContainerPorts(mockDockerClient), times(1));
-        }
-    }
-
-    @Test
-    public void testBeforeAll_AlreadyStarted() throws Exception {
-        ComponentTestExtension.started = true;
-        try (MockedStatic<DockerManager> dockerManagerMock = mockStatic(DockerManager.class);
-             MockedStatic<TestcontainersManager> testcontainersManagerMock = mockStatic(TestcontainersManager.class)) {
-
-            ExtensionContext mockContext = mock(ExtensionContext.class);
-
-            extension.beforeAll(mockContext);
-
-            dockerManagerMock.verifyNoInteractions();
-            testcontainersManagerMock.verifyNoInteractions();
+            // Verify initialise() was called exactly once in total
+            mgr.verify(() -> TestcontainersManager.initialise(), times(1));
         }
     }
 }

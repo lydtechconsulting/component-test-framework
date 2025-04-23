@@ -1,12 +1,16 @@
 package dev.lydtech.component.framework.management;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
@@ -75,12 +79,18 @@ public final class TestcontainersManager {
 
     public static void initialise() {
         ConfigurationLoader.loadConfiguration();
-        TestcontainersManager manager = new TestcontainersManager();
-        log.info("Creating testcontainers...");
-        manager.createContainers();
-        log.info("Starting testcontainers...");
-        manager.startContainers();
-        log.info("Started testcontainers.");
+        DockerClient dockerClient = DockerManager.getDockerClient();
+        if  (DockerManager.shouldPerformSetup(dockerClient)) {
+            TestcontainersManager manager = new TestcontainersManager();
+            log.info("Creating testcontainers...");
+            manager.createContainers();
+            log.info("Starting testcontainers...");
+            manager.startContainers();
+            log.info("Started testcontainers.");
+        } else {
+            log.info("Main service is running. Skipping Testcontainers setup.");
+        }
+        DockerManager.captureDockerContainerPorts(dockerClient);
     }
 
     private void createContainers() {
