@@ -258,21 +258,13 @@ The configuration is logged at test execution time at INFO level.  Enable in `lo
 
 Example companion projects have been created to demonstrate usage of this framework.
 
-The `component-test-framework` can be used within a single module project as per:
-
-https://github.com/lydtechconsulting/ctf-example-service
-
-This project demonstrates using:
+This project https://github.com/lydtechconsulting/ctf-example-service demonstrates using:
 - Kafka
 - Postgres
 - Debezium
 - Wiremock
 
-There is an advantage in separating its usage from the service under test to ensure that it does not utilise any of the service's classes, and to ensure there are no dependency clashes with the serivce's dependencies.  The following project demonstrates its usage in a multi module project:
-
-https://github.com/lydtechconsulting/ctf-example-multi-module
-
-This project demonstrates using:
+This project https://github.com/lydtechconsulting/ctf-example-multi-module demonstrates using:
 - A child `component-test` module.
 - REST calls to the service under test.
 - Multiple additional containers (simulators) - these also benefit from the multi module structure as each is defined in its own child module.
@@ -328,83 +320,96 @@ https://github.com/lydtechconsulting/ambar-event-sourcing - demonstrates event s
 
 # Using Maven
 
-## Pom.xml Properties
+The [Quick Start](README.md#quick-start) section above demonstrates how simple it is to use CTF with Maven. There are plenty of Examples in [[Sample projects](README.md#sample-projects)] that use Maven.
 
-To enable leaving the Docker containers running after a test run, in order to run tests again without re-starting the containers, the following property should be included in the `properties` section:
-```
-<properties>
-    <containers.stayup>false</containers.stayup>
-</properties>
-```
+One important decision to make is whether to 
+1. include the component test classes alongside other unit / component tests and use a Maven profile to run them. Example project: https://github.com/lydtechconsulting/ctf-example-service 
+2. Use a Maven multi module approach where the Component Test classes live in their own module. Example project: https://github.com/lydtechconsulting/ctf-example-multi-module
 
-The `containers.stayup` property is then used by the Maven Surefire Plugin in the `environmentVariables`.
+There is an advantage in separating its usage from the service under test to ensure that it does not utilise any of the service's classes, and to ensure there are no dependency clashes with the serivce's dependencies. A multi module approach could also be seen as cleaner and provides good separation of concerns but for basic projects, introducing multi modules is probably overkill.
 
-The `http.client5.version` override may need to be included to ensure that the correct version of this lib is used for the Docker containers check.  This is not required in a multi module project.
-```
-<httpclient5.version>5.0.4</httpclient5.version>
-```
-
-## Maven Surefire Plugin
-
-Add the Maven Surefire Plugin to the pom of the service under test with the following profile.  This example includes adding some property overrides:
-```
-<profiles>
-    <profile>
-        <id>component</id>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <includes>
-                            <include>*CT.*</include>
-                        </includes>
-                        <environmentVariables>
-                            <TESTCONTAINERS_REUSE_ENABLE>${containers.stayup}</TESTCONTAINERS_REUSE_ENABLE>
-                        </environmentVariables>
-                        <systemPropertyVariables>
-                            <service.instance.count>3</service.instance.count>
-                            <service.port>8080</service.port>
-                            <service.debug.port>5001</service.debug.port>
-                            <kafka.enabled>true</kafka.enabled>
-                            <kafka.broker.count>3</kafka.broker.count>
-                        </systemPropertyVariables>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile>
-</profiles>
-```
-
-The property overrides are all optional.  There is no need to include them if the default values are required, or alternatively a properties file can be provided that specifies the overrides.  See [Overriding Default Configuration](README.md#overriding-default-configuration).
-
-In a multi module maven project the surefire plugin should be added to the pom of the component test module.
 
 [[Back To Top](README.md#component-test-framework)]
 
 # Using Gradle
+Here is a Quick Start with Gradle guide in line with [[The Maven Quick Start ](README.md#quick-start)]
 
-Add the following to the `build.gradle` test method:
-```
-test {
-    systemProperties = System.properties
-    environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup')
-    useJUnitPlatform()
+1. visit https://start.spring.io
+2. Choose `Gradle - Groovy`, accept the defaults for other fields, choose a project name & add the following dependencies
+    - `Spring Web` - this project will have a simple Rest Controller
+    - `Spring Boot Actuator` - the application health endpoint is a helpful way to know the service has started
+3. Generate the project and open in your favourite IDE
+4. Add a simple REST controller `MyController.java` that responds with a fixed string:
+```java
+@RestController
+public class MyController {
+    @GetMapping("/api/v1/hello")
+    public String sayHello(){
+        return "Hello there";
+    }
 }
 ```
-
-Define any properties that need their default value to be overridden in the `gradle.properties` file.  For example:
+5. Add a simple Dockerfile to allow your app to be packaged into a Docker image
 ```
-systemProp.service.name=ctf-example-mm-service
-systemProp.additional.containers=third-party-simulator,9002,5002,latest,false:external-service-simulator,9003,5003,latest,false
-systemProp.containers.stayup=true
+FROM openjdk:17-jdk-slim
+COPY build/libs/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 ```
+6. Now its time for the Lydtech Component Test Framework. add the following dependencies block of your build.gradle. The first pulls in CTF, the second pulls in RestAssured - a handy tool for testing HTTP services.
+```
+	testImplementation 'dev.lydtech:component-test-framework:3.9.2'
+    testImplementation 'io.rest-assured:rest-assured'
+```
+7. With the dependency added, Lets add some Gradle config to 
+    1. exclude component tests (with the suffix `TestCT.class`) from the main test task
+    2. add a `componentTest` task to run only the component tests (with the suffix *CT.java).
+```
+tasks.named('test') {
+	useJUnitPlatform()
+	exclude '**/*TestCT.class'
+}
 
-Alternatively provide a file with the required property overrides as described in [Overriding Default Configuration](README.md#overriding-default-configuration).
+tasks.register('componentTest', Test) {
+	useJUnitPlatform()
+	description = 'Runs only Component Tests'
+	group = 'verification'
+	systemProperties = System.properties
+	environment "TESTCONTAINERS_REUSE_ENABLE", System.getProperty('containers.stayup')
 
-The `containers.stayup` property is added to the environment variables by the Gradle build.
+	include '**/*TestCT.class'
+}
+```
+8. Add a configuration file for the component tests in src/main/resources/component-test.yml. This is a minimal file that tells CTF to:
+    - bind a docker container port to port 8080 which is what the application listens on
+    - use the following Docker image name for the service container: `samples/my-maven-app`
+```yaml
+service:
+   port: 8080
+   name: my-maven-app
+container:
+   name:
+      prefix: samples
+```
+9. Finally, lets add our Component test. Note the `@ExtendWith` annotation to enable the Lydtech Component Test Framework. Also notice how it retrieves the pre-configured `RestAssured` instance which is configured to hit the service that the framework initiated. The test issues a `GET api/v1/hello` and asserts that the response code is 200 with the correct body.
+```java
+@ExtendWith(ComponentTestExtension.class)
+public class MyComponentTestCT {
+    @Test
+    public void test() {
+        RestAssured.baseURI = ServiceClient.getInstance().getBaseUrl();
+        RestAssured.get("api/v1/hello").then().assertThat()
+                .statusCode(200)
+                .body(equalTo("Hello there"));
+    }
+}
+```
+10. Now lets build the service: Run ` ./gradlew clean build; docker build -t samples/my-maven-app .`
+11. Now run the Component Tests using `./gradlew clean componentTest` and see the test run and pass. Thats it, you've added a component test in a Gradle project! 
+Note: You won't see the test output by default using Gradle. To see StdOut include `--info` on the end of the Gradle command. Additionally, the test output is available in the Junit report found under `build/reports/tests`
+
+See the following repo for this code
+https://github.com/lydtechconsulting/simple-component-test
 
 [[Back To Top](README.md#component-test-framework)]
 
