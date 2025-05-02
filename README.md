@@ -113,16 +113,28 @@ https://github.com/lydtechconsulting/simple-component-test
   - [Method 1: Properties via specific properties/yml file](README.md#method-1-properties-via-specific-properties--yml-file)
   - [Method 2: Properties via command line environment variables](README.md#method-2-properties-via-command-line-environment-variables)
   - [Method 3: Properties via environment variables in Maven/Gradle config](README.md#method-3-properties-via-environment-variables-in-maven--gradle-config)
+- [Core Properties](README.md#core-properties)
 - [Sample Projects](README.md#sample-projects)
 - [Using Maven](README.md#using-maven)
 - [Using Gradle](README.md#using-gradle)
-- [Writing Component Tests](README.md#writing-component-tests)
-- [Service Under Test](README.md#service-under-test)
-- [Running The Component Tests](README.md#running-the-component-tests)
-- [Additional Containers](README.md#additional-containers)
+- [Tips and Tricks](README.md#tips-and-tricks)
+  - [Keeping Docker Containers up between test runs](README.md#keeping-docker-containers-up-between-test-runs)
+  - [Setting the service under test's application properties](README.md#setting-the-service-under-tests-application-properties)
+  - [Configuring when the service under test has started successfully](README.md#configuring-when-the-service-under-test-has-started-successfully)
+  - [Running the component tests](README.md#running-the-component-tests)
+  - [passing extra args](README.md#passing-extra-args)
+  - [discovering the service URL](README.md#discovering-the-service-url)
+  - [Running The Component Tests](README.md#running-the-component-tests)
+  - [Running The Component Tests within the IDE](README.md#running-component-tests-within-the-ide)
+  - [Running Concurrent Test Runs](README.md#running-concurrent-component-test-runs)
+  - [Remote debugging the service](README.md#remote-debugging-the-service)
+  - [Handy Docker Commands](README.md#handy-docker-commands)
+  - [Additional Containers](README.md#additional-containers)
 - [Supported Technologies / Backing Services](README.md#supported-technologiesbacking-services)
-- [Docker Commands](README.md#docker-commands)
 - [Troubleshooting](README.md#troubleshooting)
+  - [Docker Communication Error](README.md#docker-communication-error) 
+  - [Services failing to start](README.md#service-failing-to-start) 
+  - [Dependency conflicts](README.md#dependency-conflicts) 
 
 # Advanced example 1
 In the following example, the Component Test Framework spins up the system under test.  In this case it comprises of two instances of the Spring Boot application to test and a two node Kafka cluster with Zookeeper, each in their own Docker container.  The application has a REST endpoint and consumes messages from, and produces messages to, Kafka.  Confluent Control Center is also spun up in a Docker container, which monitors the application instances and Kafka broker nodes, allowing the tester to view metrics on the system under test.  This can be a helpful tool in debugging test issues.
@@ -169,8 +181,6 @@ The current version of `component-test-framework` version `2.x` supports:
 - Spring Boot 3.x
 - Kafka Clients 3.x
 - Java 17
-
-[[Back To Top](README.md#component-test-framework)]
 
 [[Back To Top](README.md#component-test-framework)]
 
@@ -413,24 +423,35 @@ https://github.com/lydtechconsulting/simple-component-test
 
 [[Back To Top](README.md#component-test-framework)]
 
-# Writing Component Tests
+# Tips and Tricks
+This section should help you get the most out of CTF
 
-## Component Test Annotations
+## Keeping Docker Containers Up Between Test Runs
 
-Annotate the JUnit test with the following extra annotation:
+A common usage of this framework is to keep the Docker containers running whilst developing and running the component tests.
 
+As it can take some time to spin up multiple Docker containers for the different resources in use, skipping this step for each test run is a key advantage.
+
+To achieve this, use the `containers.stayup` configuration property:
 ```
-import dev.lydtech.component.framework.extension.ComponentTestExtension;
-
-@ExtendWith(ComponentTestExtension.class)
-public class EndToEndCT {
+mvn test -Pcomponent -Dcontainers.stayup
+```
+or for Gradle
+```
+./gradlew clean componentTest -Dcontainers.stayup=true
 ```
 
-The `ComponentTestExtension` is the JUnit5 extension that enables hooking into a test execution run before the tests themselves run, so that the Dockerised containers can be started.
+This property can not be set in the component test properties file, it must be set as a system property as it is used in the `maven-surefire-plugin` in the `pom.xml` when using maven, or in the `build.gradle` when using gradle.
 
-The component test class should be named with the suffix `CT`.  This ensures it is not run via the standard maven-surefire-plugin (if that is in use in the service pom.xml).  Instead it is only run with the `mvn` command when the profile `-Pcomponent` is included.
+With the containers running the component tests can for example be run from with the IDE (through the standard right-click Run/Debug test).
 
-# Component Test Application Properties
+Changes to system properties are only respected when containers are being brought up.  So if changes are required then the containers must be stopped and restarted.
+
+To manually stop the containers, see the Docker commands section below.
+
+The `containers.stayup` property drives the `TESTCONTAINERS_REUSE_ENABLE` environment property.  This is a Testcontainers library property it uses to determine whether it should automatically clean up the Docker containers at the end of the test run.
+
+## Setting the service under test's Application Properties
 
 By default the library expects an `application-component-test.yml` properties file in the `src/test/resources` directory for the service under test with the necessary property overrides.  e.g. to specify the Kafka bootstrap-services URL:
 ```
@@ -443,11 +464,8 @@ This default location can be overridden using the property `service.application.
 
 By default, the system property used to specify the location of the additional properties file is the Spring Boot `spring.config.additional-location`.  This system property name can be overridden via `service.config.files.system.property`.  For example, for a Micronaut application, this should typically be set to `micronaut.config.files`.
 
-[[Back To Top](README.md#component-test-framework)]
 
-# Service Under Test
-
-## Service Health
+## Configuring when the service under test has started successfully
 
 The service under test can expose its health endpoint for the test set up to know that the service has successfully started before the configurable `service.startup.timeout.seconds` has expired.  The endpoint to check can be overridden via the `service.startup.health.endpoint`.  It defaults to the Spring Actuator health endpoint:
 ```
@@ -483,33 +501,7 @@ Alternatively the presence of a startup log message can be used to determine whe
 
 If this property is set it will be used instead of the startup health endpoint property.
 
-## Dockerising The Service
-
-Build a Docker container with the service under test.  
-
-e.g. use a `Dockerfile` with contents:
-```
-FROM openjdk:17.0.2-jdk-slim
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar /app.jar"]
-```
-
-Build the application jar:
-```
-mvn clean install
-```
-
-Build the Docker container:
-```
-docker build -t ct/my-service:latest .
-```
-
-Assumes `ct` is used as the container prefix for the component tests (which is the default but can be overridden).
-
-The name (`my-service`) must match the `service.name` configuration.
-
-### Passing Extra Args
+## Passing Extra Args
 
 To pass extra args to the service under test, update the `Dockerfile` entry point to include `$APP_ARGS` before Dockerising the service:
 ```
@@ -538,64 +530,36 @@ Querying using RestAssured:
 RestAssured.get("/v1/my-service").then().assertThat().statusCode(202)
 ```
 
-[[Back To Top](README.md#component-test-framework)]
+## Running The Component Tests
 
-# Running The Component Tests
-
-## Maven
+### Maven
 
 Run tests:
 ```
 mvn test -Pcomponent
 ```
 
-Run tests leaving containers up:
-```
-mvn test -Pcomponent -Dcontainers.stayup
-```
+Read about [[Keeping the Docker containers up between test runs](README.md#keeping-docker-containers-up-between-test-runs)]
 
 Override any of the other configurable properties in the same way, specifying `-D` args.  e.g.
 ```
 mvn test -Pcomponent -Dservice.instance.count=2 -Dkafka.enabled
 ```
 
-## Gradle
+### Gradle
 
 Run tests:
 ```
-./gradlew clean build
+./gradlew componentTest
 ```
 
-Run tests leaving the containers up:
-```
-./gradlew clean build -Dcontainers.stayup=false
-```
+Read about [[Keeping the Docker containers up between test runs](README.md#keeping-docker-containers-up-between-test-runs)]
 
 Override any of the other configurable properties in the same way, specifying `-D` args.  e.g.
 ```
 ./gradlew clean build -Dservice.instance.count=2 -Dkafka.enabled
 ```
 
-## Keeping Docker Containers Up Between Test Runs
-
-A common usage of this framework is to keep the Docker containers running whilst developing and running the component tests.
-
-As it can take some time to spin up multiple Docker containers for the different resources in use, skipping this step for each test run is a key advantage.
-
-To achieve this, use the `containers.stayup` configuration property:
-```
-mvn test -Pcomponent -Dcontainers.stayup
-```
-
-This property can not be set in the component test properties file, it must be set as a system property as it is used in the `maven-surefire-plugin` in the `pom.xml` when using maven, or in the `build.gradle` when using gradle.
-
-With the containers running the component tests can for example be run from with the IDE (through the standard right-click Run/Debug test). 
-
-Changes to system properties are only respected when containers are being brought up.  So if changes are required then the containers must be stopped and restarted.
-
-To manually stop the containers, see the Docker commands section below.
-
-The `containers.stayup` property drives the `TESTCONTAINERS_REUSE_ENABLE` environment property.  This is a Testcontainers library property it uses to determine whether it should automatically clean up the Docker containers at the end of the test run.
 
 ## Running Concurrent Component Test Runs
 
@@ -717,25 +681,8 @@ Additional containers work well in a multi module project.  They are co-located 
 
 https://github.com/lydtechconsulting/ctf-example-multi-module
 
-[[Back To Top](README.md#component-test-framework)]
 
-# Supported technologies/backing services
-- [Postgres](./documentation/README-postgres.md)
-- [MongoDB](./documentation/README-mongo.md)
-- [MariaDB](./documentation/README-mariadb.md)
-- [Kafka](./documentation/README-kafka.md)
-- [Kafka Avro](./documentation/README-kafka-avro.md)
-- [Kafka Schema Registry](./documentation/README-kafka-schema-registry.md)
-- [Confluent Control Center](./documentation/README-confluent-control-center.md)
-- [Conduktor Platform](./documentation/README-conduktor-platform.md)
-- [Conduktor Gateway](./documentation/README-conduktor-gateway.md)
-- [Debezium](./documentation/README-debezium.md)
-- [Wiremock](./documentation/README-wiremock.md)
-- [Localstack](./documentation/README-localstack.md)
-- [ElasticSearch](./documentation/README-elastic.md)
-- [Ambar](./documentation/README-ambar.md)
-
-# Docker Commands
+# Handy Docker Commands
 
 ## List Docker Containers
 
@@ -794,6 +741,22 @@ com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"c
 
 [[Back To Top](README.md#component-test-framework)]
 
+# Supported technologies/backing services
+- [Postgres](./documentation/README-postgres.md)
+- [MongoDB](./documentation/README-mongo.md)
+- [MariaDB](./documentation/README-mariadb.md)
+- [Kafka](./documentation/README-kafka.md)
+- [Kafka Avro](./documentation/README-kafka-avro.md)
+- [Kafka Schema Registry](./documentation/README-kafka-schema-registry.md)
+- [Confluent Control Center](./documentation/README-confluent-control-center.md)
+- [Conduktor Platform](./documentation/README-conduktor-platform.md)
+- [Conduktor Gateway](./documentation/README-conduktor-gateway.md)
+- [Debezium](./documentation/README-debezium.md)
+- [Wiremock](./documentation/README-wiremock.md)
+- [Localstack](./documentation/README-localstack.md)
+- [ElasticSearch](./documentation/README-elastic.md)
+- [Ambar](./documentation/README-ambar.md)
+
 # Troubleshooting
 
 ## Docker Communication Error
@@ -815,7 +778,52 @@ In order for the component test framework to interrogate the docker containers a
 
 [[Back To Top](README.md#component-test-framework)]
 
-## Versioning & Release
+## Services failing to start
+
+Occasionally your service under test or one of the backing services may fail to start. This could be for a variety of reasons but is typically configuration related.
+
+Depending on how your component tests are configured and what is going wrong, the message could vary but typically you will see something along the lines of
+```
+ContainerLaunch Container startup failed for image samples/my-maven-app:latest
+```
+if a service is not starting. By default, the docker logs of the service under test and the backing services won't be logged to the console. 
+
+There are 2 main ways to obtain the logs to help troubleshoot and fix the issue
+1. Use `containers.stayup` to avoid Testcontainers destroying the containers after the test has completed - read more about that  [[here](README.md#keeping-docker-containers-up-between-test-runs)]. Then use the `docker logs` command to find and fix the problem
+2. Use the `service.container.logging.enabled` property to log the service's logs to stdout which will be available in the Maven log as lines prefixed with the container name such as `INFO container.my-maven-app-1`
+
+
+## Dependency conflicts
+Occasionally, there can be a conflict between the versions of Java libraries needed by the Component Test Framework, and the versions used in the application (typically managed by Spring in a Java application). The cleanest solution to this is typically to include a dependency management section inside your `component` profile of the pom and specify the required versions. An example is below:
+```
+<profiles>
+		<profile>
+			<id>component</id>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.httpcomponents.client5</groupId>
+						<artifactId>httpclient5</artifactId>
+						<version>5.4.3</version>
+						<scope>test</scope>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.httpcomponents.core5</groupId>
+						<artifactId>httpcore5</artifactId>
+						<version>5.3.4</version>
+						<scope>test</scope>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+			...
+```
+
+For Maven multi-module builds - the solution is easier since you can declare the required dependencies in the component-test module of your project.
+
+[[Back To Top](README.md#component-test-framework)]
+
+
+# Versioning & Release
 
 Every commit or merge to `main` will increment the version and release to Maven central.
 
