@@ -797,25 +797,25 @@ There are 2 main ways to obtain the logs to help troubleshoot and fix the issue
 Occasionally, there can be a conflict between the versions of Java libraries needed by the Component Test Framework, and the versions used in the application (typically managed by Spring in a Java application). The cleanest solution to this is typically to include a dependency management section inside your `component` profile of the pom and specify the required versions. An example is below:
 ```
 <profiles>
-		<profile>
-			<id>component</id>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.httpcomponents.client5</groupId>
-						<artifactId>httpclient5</artifactId>
-						<version>5.4.3</version>
-						<scope>test</scope>
-					</dependency>
-					<dependency>
-						<groupId>org.apache.httpcomponents.core5</groupId>
-						<artifactId>httpcore5</artifactId>
-						<version>5.3.4</version>
-						<scope>test</scope>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-			...
+    <profile>
+        <id>component</id>
+        <dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.httpcomponents.client5</groupId>
+                    <artifactId>httpclient5</artifactId>
+                    <version>5.4.3</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.httpcomponents.core5</groupId>
+                    <artifactId>httpcore5</artifactId>
+                    <version>5.3.4</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </dependencyManagement>
+    ...
 ```
 
 For Maven multi-module builds - the solution is easier since you can declare the required dependencies in the component-test module of your project.
