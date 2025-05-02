@@ -133,7 +133,7 @@ https://github.com/lydtechconsulting/simple-component-test
 - [Supported Technologies / Backing Services](README.md#supported-technologiesbacking-services)
 - [Troubleshooting](README.md#troubleshooting)
   - [Docker Communication Error](README.md#docker-communication-error) 
-  - [Services failing to start](README.md#service-failing-to-start) 
+  - [Services failing to start](README.md#services-failing-to-start) 
   - [Dependency conflicts](README.md#dependency-conflicts) 
 
 # Advanced example 1
@@ -792,6 +792,9 @@ There are 2 main ways to obtain the logs to help troubleshoot and fix the issue
 1. Use `containers.stayup` to avoid Testcontainers destroying the containers after the test has completed - read more about that  [[here](README.md#keeping-docker-containers-up-between-test-runs)]. Then use the `docker logs` command to find and fix the problem
 2. Use the `service.container.logging.enabled` property to log the service's logs to stdout which will be available in the Maven log as lines prefixed with the container name such as `INFO container.my-maven-app-1`
 
+Similar approaches can be used to obtain the logs for any backing service. All backing services will typically have a property such as `<service-name>.container.logging.enabled` such as `kafka.container.logging.enabled` - see [[Supported Technologies/backing services](README.md#supported-technologiesbacking-services)] to allow their logs to be included in the output.
+
+Note that in Gradle, you typically won't see the output when running the tests. In order to do that, include the `--info` flag, e.g. `./gradlew clean componentTest --info`
 
 ## Dependency conflicts
 Occasionally, there can be a conflict between the versions of Java libraries needed by the Component Test Framework, and the versions used in the application (typically managed by Spring in a Java application). The cleanest solution to this is typically to include a dependency management section inside your `component` profile of the pom and specify the required versions. An example is below:
