@@ -43,7 +43,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 <dependency>
    <groupId>dev.lydtech</groupId>
    <artifactId>component-test-framework</artifactId>
-   <version>3.9.4</version>
+   <version>3.9.3</version>
    <scope>test</scope>
 </dependency>
 <dependency>
@@ -368,7 +368,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 ```
 6. Now its time for the Lydtech Component Test Framework. add the following dependencies block of your build.gradle. The first pulls in CTF, the second pulls in RestAssured - a handy tool for testing HTTP services.
 ```
-	testImplementation 'dev.lydtech:component-test-framework:3.9.4'
+	testImplementation 'dev.lydtech:component-test-framework:3.9.3'
     testImplementation 'io.rest-assured:rest-assured'
 ```
 7. With the dependency added, Lets add some Gradle config to 
