@@ -73,7 +73,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
         </profile>
     </profiles>
 ```
-8. Add a configuration file for the component tests in src/main/resources/component-test.yml. This is a minimal file that tells CTF to:
+8. Add a configuration file for the component tests in src/test/resources/component-test.yml. This is a minimal file that tells CTF to:
    - bind a docker container port to port 8080 which is what the application listens on
    - use the following Docker image name for the service container: `samples/my-maven-app`
 ```yaml
@@ -390,7 +390,7 @@ tasks.register('componentTest', Test) {
 	include '**/*TestCT.class'
 }
 ```
-8. Add a configuration file for the component tests in src/main/resources/component-test.yml. This is a minimal file that tells CTF to:
+8. Add a configuration file for the component tests in src/test/resources/component-test.yml. This is a minimal file that tells CTF to:
     - bind a docker container port to port 8080 which is what the application listens on
     - use the following Docker image name for the service container: `samples/my-maven-app`
 ```yaml
