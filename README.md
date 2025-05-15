@@ -52,8 +52,11 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
    <scope>test</scope>
 </dependency>
 ```
-7. With the dependency added, Lets add some config to initiate the Component tests. This config introduces a minimal `component` profile to run all tests named with the pattern *CT.java.
+7. With the dependency added, Lets add some config to initiate the Component tests. 
+   1. In the `properties` block of your pom, add `<containers.stayup>true</containers.stayup>` 
+   2. This config introduces a minimal `component` profile to run all tests named with the pattern *CT.java.
 ```xml
+
 <profiles>
         <profile>
             <id>component</id>
@@ -66,12 +69,15 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
                             <includes>
                                 <include>*CT.*</include>
                             </includes>
+                            <environmentVariables>
+                                <TESTCONTAINERS_REUSE_ENABLE>${containers.stayup}</TESTCONTAINERS_REUSE_ENABLE>
+                            </environmentVariables>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-    </profiles>
+</profiles>
 ```
 8. Add a configuration file for the component tests in src/test/resources/component-test.yml. This is a minimal file that tells CTF to:
    - bind a docker container port to port 8080 which is what the application listens on
