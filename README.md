@@ -53,7 +53,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
 </dependency>
 ```
 7. With the dependency added, Lets add some config to initiate the Component tests. 
-   1. In the `properties` block of your pom, add `<containers.stayup>true</containers.stayup>` 
+   1. In the `properties` block of your pom, add `<containers.stayup>false</containers.stayup>` 
    2. This config introduces a minimal `component` profile to run all tests named with the pattern *CT.java.
 ```xml
 
