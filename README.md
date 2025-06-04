@@ -104,7 +104,7 @@ public class MyComponentTestCT {
 }
 ```
 10. Now lets build the service: Run `./mvnw clean install; docker build -t samples/my-maven-app .` 
-11. Now run the Component Tests using `./mvnw clean install -Pcomponent` and see the test run and pass. Thats it, you've added your first component test against your simple service! Now check out some of the examples below for more complex examples - where the real value of the framework lies.
+11. Now run the Component Tests using `./mvnw clean test -Pcomponent` and see the test run and pass. Thats it, you've added your first component test against your simple service! Now check out some of the examples below for more complex examples - where the real value of the framework lies.
 
 See the following repo for this code
 https://github.com/lydtechconsulting/simple-component-test
