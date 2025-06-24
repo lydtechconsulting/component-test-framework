@@ -24,6 +24,7 @@ import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.security.plain.PlainLoginModule;
+import org.opensearch.testcontainers.OpensearchContainer;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
@@ -48,6 +49,7 @@ import static dev.lydtech.component.framework.resource.Resource.KAFKA_CONTROL_CE
 import static dev.lydtech.component.framework.resource.Resource.KAFKA_SCHEMA_REGISTRY;
 import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
 import static dev.lydtech.component.framework.resource.Resource.MONGODB;
+import static dev.lydtech.component.framework.resource.Resource.OPENSEARCH;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
 import static dev.lydtech.component.framework.resource.Resource.MARIADB;
 import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
@@ -73,6 +75,7 @@ public final class TestcontainersManager {
     private GenericContainer conduktorContainer;
     private GenericContainer conduktorGatewayContainer;
     private GenericContainer elasticSearchContainer;
+    private GenericContainer openSearchContainer;
     private GenericContainer ambarContainer;
 
     private TestcontainersManager(){}
@@ -184,6 +187,9 @@ public final class TestcontainersManager {
         if (ELASTICSEARCH_ENABLED) {
             elasticSearchContainer = createElasticsearchContainer();
         }
+        if (OPENSEARCH_ENABLED && !ELASTICSEARCH_ENABLED) {
+            openSearchContainer = createOpensearchContainer();
+        }
         if(AMBAR_ENABLED) {
             ambarContainer = createAmbarContainer();
         }
@@ -247,6 +253,9 @@ public final class TestcontainersManager {
             }
             if(ELASTICSEARCH_ENABLED) {
                 elasticSearchContainer.start();
+            }
+            if(OPENSEARCH_ENABLED) {
+                openSearchContainer.start();
             }
             if(AMBAR_ENABLED) {
                 ambarContainer.start();
@@ -738,6 +747,28 @@ public final class TestcontainersManager {
             container.withPassword(ELASTICSEARCH_PASSWORD);
         }
         if(ELASTICSEARCH_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    private GenericContainer createOpensearchContainer() {
+        String containerName = OPENSEARCH.toString();
+        DockerImageName opensearchImage = DockerImageName.parse("opensearchproject/opensearch" + ":" + OPENSEARCH_IMAGE_TAG);
+        OpensearchContainer container = new OpensearchContainer(opensearchImage.withTag(OPENSEARCH_IMAGE_TAG))
+            .withNetwork(network)
+            .withNetworkAliases(containerName)
+            .withEnv("cluster.name", OPENSEARCH_CLUSTER_NAME)
+            .withEnv("discovery.type", OPENSEARCH_DISCOVERY_TYPE)
+            .withEnv("DISABLE_INSTALL_DEMO_CONFIG", "true")
+            .withEnv("DISABLE_SECURITY_PLUGIN", "true")
+            .withEnv("cluster.routing.allocation.disk.threshold_enabled", "false")
+            .withReuse(true)
+            .withCreateContainerCmdModifier(cmd -> {
+                String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
+                cmd.withName(containerCmdModifier);
+            });
+        if(OPENSEARCH_CONTAINER_LOGGING_ENABLED) {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         return container;

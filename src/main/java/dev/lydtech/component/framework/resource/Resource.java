@@ -14,6 +14,7 @@ public enum Resource {
     LOCALSTACK,
     MONGODB,
     ELASTICSEARCH,
+    OPENSEARCH,
     MARIADB,
     AMBAR;
 

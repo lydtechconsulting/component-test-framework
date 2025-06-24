@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.10.0] - 2025-06-24
+### Added
+- Supports Opensearch.
+
 ## [3.9.0] - 2025-02-15
 ### Added
 - Supports loading configuration overrides from a properties or YAML file.

@@ -131,6 +131,14 @@ public final class ConfigurationKeys {
     public static final String ELASTICSEARCH_DISCOVERY_TYPE_KEY = "elasticsearch.discovery.type";
     public static final String ELASTICSEARCH_CONTAINER_LOGGING_ENABLED_KEY = "elasticsearch.container.logging.enabled";
 
+    // --- Opensearch configuration keys ---
+    public static final String OPENSEARCH_ENABLED_KEY = "opensearch.enabled";
+    public static final String OPENSEARCH_IMAGE_TAG_KEY = "opensearch.image.tag";
+    public static final String OPENSEARCH_PASSWORD_KEY = "opensearch.password";
+    public static final String OPENSEARCH_CLUSTER_NAME_KEY = "opensearch.cluster.name";
+    public static final String OPENSEARCH_DISCOVERY_TYPE_KEY = "opensearch.discovery.type";
+    public static final String OPENSEARCH_CONTAINER_LOGGING_ENABLED_KEY = "opensearch.container.logging.enabled";
+    
     // --- Ambar configuration keys ---
     public static final String AMBAR_ENABLED_KEY = "ambar.enabled";
     public static final String AMBAR_IMAGE_TAG_KEY = "ambar.image.tag";
@@ -250,6 +258,13 @@ public final class ConfigurationKeys {
                 ELASTICSEARCH_CLUSTER_NAME_KEY,
                 ELASTICSEARCH_DISCOVERY_TYPE_KEY,
                 ELASTICSEARCH_CONTAINER_LOGGING_ENABLED_KEY,
+
+                OPENSEARCH_ENABLED_KEY,
+                OPENSEARCH_IMAGE_TAG_KEY,
+                OPENSEARCH_PASSWORD_KEY,
+                OPENSEARCH_CLUSTER_NAME_KEY,
+                OPENSEARCH_DISCOVERY_TYPE_KEY,
+                OPENSEARCH_CONTAINER_LOGGING_ENABLED_KEY,
 
                 AMBAR_ENABLED_KEY,
                 AMBAR_IMAGE_TAG_KEY,
