@@ -2,7 +2,7 @@
 
 Enable Opensearch via the property `opensearch.enabled`. Opensearch is available on port `9200`.
 
-_note that `elasticsearch.enabled` must be `false` for the opensearch to container to start_
+_note that `elasticsearch.enabled` must be `false` for the Opensearch container to start_
 
 ## Related properties
 
@@ -15,7 +15,7 @@ _note that `elasticsearch.enabled` must be `false` for the opensearch to contain
 | opensearch.discovery.type            | Whether to form a single node or multi node Opensearch cluster. | `single-node` |
 | opensearch.container.logging.enabled | Whether to output the Opensearch Docker logs to the console.    | `false`       |
 
-The container base URL can be obtained using the `OpensearchClient`:
+The container base URL can be obtained using the `OpensearchCtfClient`:
 
 ```
 import dev.lydtech.component.framework.client.opensearch.OpensearchCtfClient;
