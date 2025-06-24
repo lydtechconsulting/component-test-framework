@@ -147,6 +147,13 @@ public class ConfigurationLoaderSystemPropertiesTest {
         System.clearProperty("elasticsearch.discovery.type");
         System.clearProperty("elasticsearch.container.logging.enabled");
 
+        System.clearProperty("opensearch.enabled");
+        System.clearProperty("opensearch.image.tag");
+        System.clearProperty("opensearch.password");
+        System.clearProperty("opensearch.cluster.name");
+        System.clearProperty("opensearch.discovery.type");
+        System.clearProperty("opensearch.container.logging.enabled");
+
         System.clearProperty("ambar.enabled");
         System.clearProperty("ambar.image.tag");
         System.clearProperty("ambar.config.file.path");

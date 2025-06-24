@@ -149,6 +149,15 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_ELASTICSEARCH_CLUSTER_NAME = "elasticsearch";
     private static final String DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE = "single-node";
     private static final String DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = "false";
+    
+    // --- Opensearch configuration ---
+    private static final String DEFAULT_OPENSEARCH_ENABLED = "false";
+    private static final String DEFAULT_OPENSEARCH_IMAGE_TAG = "2.15.0";
+    private static final String DEFAULT_OPENSEARCH_PORT = "9200";
+    private static final String DEFAULT_OPENSEARCH_PASSWORD = null;
+    private static final String DEFAULT_OPENSEARCH_CLUSTER_NAME = "opensearch";
+    private static final String DEFAULT_OPENSEARCH_DISCOVERY_TYPE = "single-node";
+    private static final String DEFAULT_OPENSEARCH_CONTAINER_LOGGING_ENABLED = "false";
 
     // --- Ambar configuration ---
     private static final String DEFAULT_AMBAR_ENABLED = "false";
@@ -299,6 +308,15 @@ public final class TestcontainersConfiguration {
     public static String ELASTICSEARCH_CLUSTER_NAME;
     public static String ELASTICSEARCH_DISCOVERY_TYPE;
     public static boolean ELASTICSEARCH_CONTAINER_LOGGING_ENABLED;
+
+    // --- Opensearch configuration ---
+    public static boolean OPENSEARCH_ENABLED;
+    public static String OPENSEARCH_IMAGE_TAG;
+    public static int OPENSEARCH_PORT;
+    public static String OPENSEARCH_PASSWORD;
+    public static String OPENSEARCH_CLUSTER_NAME;
+    public static String OPENSEARCH_DISCOVERY_TYPE;
+    public static boolean OPENSEARCH_CONTAINER_LOGGING_ENABLED;
 
     // --- Ambar configuration ---
     public static boolean AMBAR_ENABLED;
@@ -459,6 +477,16 @@ public final class TestcontainersConfiguration {
         ELASTICSEARCH_CLUSTER_NAME = properties.getProperty("elasticsearch.cluster.name", DEFAULT_ELASTICSEARCH_CLUSTER_NAME);
         ELASTICSEARCH_DISCOVERY_TYPE = properties.getProperty("elasticsearch.discovery.type", DEFAULT_ELASTICSEARCH_DISCOVERY_TYPE);
         ELASTICSEARCH_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("elasticsearch.container.logging.enabled", DEFAULT_ELASTICSEARCH_CONTAINER_LOGGING_ENABLED));
+
+        // --- Opensearch configuration ---
+        OPENSEARCH_ENABLED = Boolean.valueOf(properties.getProperty("opensearch.enabled", DEFAULT_OPENSEARCH_ENABLED));
+        OPENSEARCH_IMAGE_TAG = properties.getProperty("opensearch.image.tag", DEFAULT_OPENSEARCH_IMAGE_TAG);
+        // Port cannot be overridden in the Elasticsearch Testcontainer.
+        OPENSEARCH_PORT = Integer.parseInt(DEFAULT_OPENSEARCH_PORT);
+        OPENSEARCH_PASSWORD = properties.getProperty("opensearch.password", DEFAULT_OPENSEARCH_PASSWORD);
+        OPENSEARCH_CLUSTER_NAME = properties.getProperty("opensearch.cluster.name", DEFAULT_OPENSEARCH_CLUSTER_NAME);
+        OPENSEARCH_DISCOVERY_TYPE = properties.getProperty("opensearch.discovery.type", DEFAULT_OPENSEARCH_DISCOVERY_TYPE);
+        OPENSEARCH_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("opensearch.container.logging.enabled", DEFAULT_OPENSEARCH_CONTAINER_LOGGING_ENABLED));
 
         // --- Ambar configuration ---
         AMBAR_ENABLED = Boolean.valueOf(properties.getProperty("ambar.enabled", DEFAULT_AMBAR_ENABLED));

@@ -169,6 +169,16 @@ public class ConfigurationLogger {
             log.info("elasticsearch.container.logging.enabled: " + ELASTICSEARCH_CONTAINER_LOGGING_ENABLED);
         }
 
+        log.info("opensearch.enabled: " + OPENSEARCH_ENABLED);
+        if(OPENSEARCH_ENABLED) {
+            log.info("opensearch.image.tag: " + OPENSEARCH_IMAGE_TAG);
+            log.info("opensearch.port: " + OPENSEARCH_PORT);
+            log.info("opensearch.password: " + OPENSEARCH_PASSWORD);
+            log.info("opensearch.cluster.name: " + OPENSEARCH_CLUSTER_NAME);
+            log.info("opensearch.discovery.type: " + OPENSEARCH_DISCOVERY_TYPE);
+            log.info("opensearch.container.logging.enabled: " + OPENSEARCH_CONTAINER_LOGGING_ENABLED);
+        }
+
         log.info("ambar.enabled: " + AMBAR_ENABLED);
         if(AMBAR_ENABLED) {
             log.info("ambar.image.tag: " + AMBAR_IMAGE_TAG);
