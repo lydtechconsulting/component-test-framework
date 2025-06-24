@@ -18,7 +18,7 @@ _note that `elasticsearch.enabled` must be `false` for the opensearch to contain
 The container base URL can be obtained using the `OpensearchClient`:
 
 ```
-import dev.lydtech.component.framework.client.open.OpensearchCtfClient;
+import dev.lydtech.component.framework.client.opensearch.OpensearchCtfClient;
 
 String baseUrl = OpensearchCtfClient.getInstance().getBaseUrl();
 ```
