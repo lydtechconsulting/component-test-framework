@@ -19,7 +19,7 @@ public class OpensearchCtfClient {
     private OpensearchCtfClient() {
         String host = Optional.ofNullable(System.getProperty("docker.host"))
             .orElse("localhost");
-        String port = Optional.ofNullable(System.getProperty("elasticsearch.mapped.port"))
+        String port = Optional.ofNullable(System.getProperty("opensearch.mapped.port"))
             .orElseThrow(() -> new RuntimeException("opensearch.mapped.port property not found"));
         baseUrl = "http://" + host + ":" + port;
         log.info("Opensearch base URL is: " + baseUrl);
