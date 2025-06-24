@@ -761,6 +761,7 @@ com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"c
 - [Wiremock](./documentation/README-wiremock.md)
 - [Localstack](./documentation/README-localstack.md)
 - [ElasticSearch](./documentation/README-elastic.md)
+- [OpenSearch](./documentation/README-opensearch.md)
 - [Ambar](./documentation/README-ambar.md)
 
 # Troubleshooting
