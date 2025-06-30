@@ -423,7 +423,7 @@ As it can take some time to spin up multiple Docker containers for the different
 
 To achieve this, use the `containers.stayup` configuration property:
 ```
-`mvn test -Pcomponent -Dcontainers.stayup
+mvn test -Pcomponent -Dcontainers.stayup
 ```
 or for Gradle
 ```
