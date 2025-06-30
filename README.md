@@ -16,29 +16,12 @@ Just annotate your JUnit test, and the framework handles everything—startup, w
 # Quick Start
 Follow these steps to add your first Component Test to a minimal Spring Boot App.
 
-1. visit https://start.spring.io
-2. Choose Maven, accept the defaults for other fields, choose a project name & add the following dependencies
+1. Clone & open the [starting point project](https://github.com/lydtechconsulting/ctf-getting-started-starting-point) - a simple Spring Boot app, generated using https://start.spring.io with the following dependencies
    - `Spring Web` - this project will have a simple Rest Controller
    - `Spring Boot Actuator` - the application health endpoint is a helpful way to know the service has started
-3. Generate the project and open in your favourite IDE
-4. Add a simple REST controller `MyController.java` that responds with a fixed string:
-```java
-@RestController
-public class MyController {
-    @GetMapping("/api/v1/hello")
-    public String sayHello(){
-        return "Hello there";
-    }
-}
-```
-5. Add a simple Dockerfile to allow your app to be packaged into a Docker image
-```
-FROM openjdk:17-jdk-slim
-COPY target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
-```
-6. Now its time for the Lydtech Component Test Framework. add the following test dependencies to your pom.xml. The first pulls in CTF, the second pulls in RestAssured - a handy tool for testing HTTP services.
+
+   The project includes a simple REST controller that returns a fixed String from `GET /api/v1/hello` and a simple Dockerfile to containerise the service.
+2. Now its time for the Lydtech Component Test Framework. add the following test dependencies to your pom.xml. The first pulls in CTF, the second pulls in RestAssured - a handy tool for testing HTTP services.
 ```xml
 <dependency>
    <groupId>dev.lydtech</groupId>
@@ -52,7 +35,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
    <scope>test</scope>
 </dependency>
 ```
-7. With the dependency added, Lets add some config to initiate the Component tests. 
+3. With the dependency added, Lets add some config to initiate the Component tests. 
    1. In the `properties` block of your pom, add `<containers.stayup>false</containers.stayup>` 
    2. This config introduces a minimal `component` profile to run all tests named with the pattern *CT.java.
 ```xml
@@ -79,7 +62,7 @@ ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
         </profile>
 </profiles>
 ```
-8. Add a configuration file for the component tests in src/test/resources/component-test.yml. This is a minimal file that tells CTF to:
+4.Add a configuration file for the component tests in src/test/resources/component-test.yml. This is a minimal file that tells CTF to:
    - bind a docker container port to port 8080 which is what the application listens on
    - use the following Docker image name for the service container: `samples/my-maven-app`
 ```yaml
@@ -90,7 +73,7 @@ container:
    name:
       prefix: samples
 ```
-9. Finally, lets add our Component test. Note the `@ExtendWith` annotation to enable the Lydtech Component Test Framework. Also notice how it retrieves the pre-configured `RestAssured` instance which is configured to hit the service that the framework initiated. The test issues a `GET api/v1/hello` and asserts that the response code is 200 with the correct body.
+5. Finally, lets add our Component test. Note the `@ExtendWith` annotation to enable the Lydtech Component Test Framework. Also notice how it retrieves the pre-configured `RestAssured` instance which is configured to hit the service that the framework initiated. The test issues a `GET api/v1/hello` and asserts that the response code is 200 with the correct body.
 ```java
 @ExtendWith(ComponentTestExtension.class)
 public class MyComponentTestCT {
@@ -103,10 +86,10 @@ public class MyComponentTestCT {
     }
 }
 ```
-10. Now lets build the service: Run `./mvnw clean install; docker build -t samples/my-maven-app .` 
-11. Now run the Component Tests using `./mvnw clean test -Pcomponent` and see the test run and pass. Thats it, you've added your first component test against your simple service! Now check out some of the examples below for more complex examples - where the real value of the framework lies.
+6. Now lets build the service: Run `./mvnw clean install; docker build -t samples/my-maven-app .` 
+7. Now run the Component Tests using `./mvnw clean test -Pcomponent` and see the test run and pass. Thats it, you've added your first component test against your simple service! Now check out some of the examples below for more complex examples - where the real value of the framework lies.
 
-See the following repo for this code
+See the following repo for the resulting code
 https://github.com/lydtechconsulting/simple-component-test
 
 # Contents
