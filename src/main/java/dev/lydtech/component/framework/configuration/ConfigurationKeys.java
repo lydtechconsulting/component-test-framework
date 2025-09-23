@@ -108,6 +108,13 @@ public final class ConfigurationKeys {
     public static final String DEBEZIUM_PORT_KEY = "debezium.port";
     public static final String DEBEZIUM_CONTAINER_LOGGING_ENABLED_KEY = "debezium.container.logging.enabled";
 
+    // --- RabbitMQ configuration keys ---
+    public static final String RABBITMQ_ENABLED_KEY = "rabbitmq.enabled";
+    public static final String RABBITMQ_IMAGE_TAG_KEY = "rabbitmq.image.tag";
+    public static final String RABBITMQ_USERNAME = "rabbitmq.username";
+    public static final String RABBITMQ_PASSWORD = "rabbitmq.password";
+    public static final String RABBITMQ_CONTAINER_LOGGING_ENABLED_KEY = "rabbitmq.container.logging.enabled";
+
     // --- Wiremock configuration keys ---
     public static final String WIREMOCK_ENABLED_KEY = "wiremock.enabled";
     public static final String WIREMOCK_IMAGE_TAG_KEY = "wiremock.image.tag";
@@ -238,6 +245,12 @@ public final class ConfigurationKeys {
                 DEBEZIUM_IMAGE_TAG_KEY,
                 DEBEZIUM_PORT_KEY,
                 DEBEZIUM_CONTAINER_LOGGING_ENABLED_KEY,
+
+                RABBITMQ_ENABLED_KEY,
+                RABBITMQ_IMAGE_TAG_KEY,
+                RABBITMQ_USERNAME,
+                RABBITMQ_PASSWORD,
+                RABBITMQ_CONTAINER_LOGGING_ENABLED_KEY,
 
                 WIREMOCK_ENABLED_KEY,
                 WIREMOCK_IMAGE_TAG_KEY,

@@ -45,6 +45,8 @@ import static dev.lydtech.component.framework.configuration.TestcontainersConfig
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.POSTGRES_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.MARIADB_PORT;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.RABBITMQ_ENABLED;
+import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.RABBITMQ_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.SERVICE_PORT;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_ENABLED;
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.WIREMOCK_PORT;
@@ -57,6 +59,7 @@ import static dev.lydtech.component.framework.resource.Resource.LOCALSTACK;
 import static dev.lydtech.component.framework.resource.Resource.MONGODB;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
 import static dev.lydtech.component.framework.resource.Resource.MARIADB;
+import static dev.lydtech.component.framework.resource.Resource.RABBITMQ;
 import static dev.lydtech.component.framework.resource.Resource.SERVICE;
 import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
 import static java.util.Collections.singletonList;
@@ -130,6 +133,7 @@ public final class DockerManager {
         }
         findContainerAndMapPort(dockerClient, DEBEZIUM.toString(), DEBEZIUM_ENABLED, DEBEZIUM_PORT);
         findContainerAndMapPort(dockerClient, KAFKA_SCHEMA_REGISTRY.toString().replace("_", "."), KAFKA_SCHEMA_REGISTRY_ENABLED, KAFKA_SCHEMA_REGISTRY_PORT);
+        findContainerAndMapPort(dockerClient, RABBITMQ.toString(), RABBITMQ_ENABLED, RABBITMQ_PORT);
         findContainerAndMapPort(dockerClient, WIREMOCK.toString(), WIREMOCK_ENABLED, WIREMOCK_PORT);
         findContainerAndMapPort(dockerClient, LOCALSTACK.toString(), LOCALSTACK_ENABLED, LOCALSTACK_PORT);
         findContainerAndMapPort(dockerClient, CONDUKTORGATEWAY.toString(), CONDUKTOR_GATEWAY_ENABLED, CONDUKTOR_GATEWAY_HTTP_PORT);

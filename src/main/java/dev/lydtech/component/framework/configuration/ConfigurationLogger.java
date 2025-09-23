@@ -143,6 +143,14 @@ public class ConfigurationLogger {
             log.info("debezium.container.logging.enabled: " + DEBEZIUM_CONTAINER_LOGGING_ENABLED);
         }
 
+        log.info("rabbitmq.enabled: " + RABBITMQ_ENABLED);
+        if(RABBITMQ_ENABLED) {
+            log.info("rabbitmq.image.tag: " + RABBITMQ_IMAGE_TAG);
+            log.info("rabbitmq.username: " + RABBITMQ_USERNAME);
+            log.info("rabbitmq.password: " + RABBITMQ_PASSWORD);
+            log.info("rabbitmq.container.logging.enabled: " + RABBITMQ_CONTAINER_LOGGING_ENABLED);
+        }
+
         log.info("wiremock.enabled: " + WIREMOCK_ENABLED);
         if(WIREMOCK_ENABLED) {
             log.info("wiremock.image.tag: " + WIREMOCK_IMAGE_TAG);

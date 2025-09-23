@@ -151,6 +151,7 @@ The current list of supported resources / features / backing services is current
 - Additional containers (simulators/services)
 - Kafka broker (standard or native build)
 - Kafka Schema Registry
+- RabbitMQ broker
 - Postgres database
 - MongoDB database
 - MariaDB database
@@ -292,6 +293,8 @@ https://github.com/lydtechconsulting/kafka-chaos-testing - demonstrates using Co
 https://github.com/lydtechconsulting/kafka-connect-debezium-postgres - demonstrates using Kafka Connect with Debezium for Change Data Capture with Postgres.
 
 https://github.com/lydtechconsulting/kafka-connect-debezium-mongodb - demonstrates using Kafka Connect with Debezium for Change Data Capture with MongoDB.
+
+https://github.com/lydtechconsulting/rabbitmq-springboot - demonstrates using RabbitMQ as the messaging broker to send and receive messages.
 
 https://github.com/lydtechconsulting/springboot-rest - demonstrates hitting the service via a REST API to perform CRUD operations.
 
@@ -741,6 +744,7 @@ com.github.dockerjava.api.exception.NotFoundException: Status 404: {"message":"c
 - [Conduktor Platform](./documentation/README-conduktor-platform.md)
 - [Conduktor Gateway](./documentation/README-conduktor-gateway.md)
 - [Debezium](./documentation/README-debezium.md)
+- [RabbitMQ](./documentation/README-rabbitmq.md)
 - [Wiremock](./documentation/README-wiremock.md)
 - [Localstack](./documentation/README-localstack.md)
 - [ElasticSearch](./documentation/README-elastic.md)
@@ -814,7 +818,6 @@ Occasionally, there can be a conflict between the versions of Java libraries nee
 For Maven multi-module builds - the solution is easier since you can declare the required dependencies in the component-test module of your project.
 
 [[Back To Top](README.md#component-test-framework)]
-
 
 # Versioning & Release
 

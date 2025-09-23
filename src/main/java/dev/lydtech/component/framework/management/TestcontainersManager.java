@@ -33,6 +33,7 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -52,6 +53,7 @@ import static dev.lydtech.component.framework.resource.Resource.MONGODB;
 import static dev.lydtech.component.framework.resource.Resource.OPENSEARCH;
 import static dev.lydtech.component.framework.resource.Resource.POSTGRES;
 import static dev.lydtech.component.framework.resource.Resource.MARIADB;
+import static dev.lydtech.component.framework.resource.Resource.RABBITMQ;
 import static dev.lydtech.component.framework.resource.Resource.WIREMOCK;
 
 @Slf4j
@@ -77,6 +79,7 @@ public final class TestcontainersManager {
     private GenericContainer elasticSearchContainer;
     private GenericContainer openSearchContainer;
     private GenericContainer ambarContainer;
+    private GenericContainer rabbitMQContainer;
 
     private TestcontainersManager(){}
 
@@ -158,6 +161,9 @@ public final class TestcontainersManager {
                 throw new RuntimeException("Kafka must be enabled in order to use Kafka schema registry.");
             }
             kafkaSchemaRegistryContainer = createKafkaSchemaRegistryContainer();
+        }
+        if (RABBITMQ_ENABLED) {
+            rabbitMQContainer = createRabbitMQContainer();
         }
         if (WIREMOCK_ENABLED) {
             wiremockContainer = createWiremockContainer();
@@ -245,6 +251,9 @@ public final class TestcontainersManager {
             if(CONDUKTOR_GATEWAY_ENABLED) {
                 conduktorGatewayContainer.start();
             }
+            if(RABBITMQ_ENABLED) {
+                startUpRabbitMQ();
+            }
             if(WIREMOCK_ENABLED) {
                 wiremockContainer.start();
             }
@@ -264,7 +273,7 @@ public final class TestcontainersManager {
             additionalContainers.stream().forEach(container -> container.start());
         } catch (Exception e) {
             log.error("Component test containers failed to start", e);
-            throw e;
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -356,7 +365,6 @@ public final class TestcontainersManager {
         }
         return container;
     }
-
 
     private MongoDBContainer createMongoDBContainer() {
         String containerName = MONGODB.toString();
@@ -685,6 +693,38 @@ public final class TestcontainersManager {
         }
 
         return container;
+    }
+
+    private RabbitMQContainer createRabbitMQContainer() {
+        String containerName = RABBITMQ.toString();
+        RabbitMQContainer container = new RabbitMQContainer("rabbitmq:" + RABBITMQ_IMAGE_TAG)
+                .withNetwork(network)
+                .withNetworkAliases(containerName)
+                .withReuse(true)
+                .withCreateContainerCmdModifier(cmd -> {
+                    String containerCmdModifier = CONTAINER_APPEND_GROUP_ID ?CONTAINER_NAME_PREFIX + "-" + containerName + "-" + CONTAINER_GROUP_ID :CONTAINER_NAME_PREFIX + "-" + containerName;
+                    cmd.withName(containerCmdModifier);
+                });
+        if(RABBITMQ_CONTAINER_LOGGING_ENABLED) {
+            container.withLogConsumer(getLogConsumer(containerName));
+        }
+        return container;
+    }
+
+    /**
+     * Configure the user/password.
+     */
+    private void startUpRabbitMQ() throws Exception {
+        rabbitMQContainer.start();
+        rabbitMQContainer.execInContainer(
+            "rabbitmqadmin", "declare", "user",
+            "name="+RABBITMQ_USERNAME, "password="+RABBITMQ_PASSWORD, "tags="
+        );
+        rabbitMQContainer.execInContainer(
+            "rabbitmqadmin", "declare", "permission",
+            "vhost=/", "user="+RABBITMQ_USERNAME,
+            "configure=.*", "write=.*", "read=.*"
+        );
     }
 
     private GenericContainer createWiremockContainer() {

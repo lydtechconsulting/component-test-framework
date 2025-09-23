@@ -10,6 +10,7 @@ public enum Resource {
     KAFKA_CONTROL_CENTER,
     CONDUKTOR,
     CONDUKTORGATEWAY,
+    RABBITMQ,
     WIREMOCK,
     LOCALSTACK,
     MONGODB,

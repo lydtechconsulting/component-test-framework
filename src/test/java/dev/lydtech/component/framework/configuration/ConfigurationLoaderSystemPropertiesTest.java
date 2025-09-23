@@ -127,6 +127,12 @@ public class ConfigurationLoaderSystemPropertiesTest {
         System.clearProperty("debezium.port");
         System.clearProperty("debezium.container.logging.enabled");
 
+        System.clearProperty("rabbitmq.enabled");
+        System.clearProperty("rabbitmq.image.tag");
+        System.clearProperty("rabbitmq.username");
+        System.clearProperty("rabbitmq.password");
+        System.clearProperty("rabbitmq.container.logging.enabled");
+
         System.clearProperty("wiremock.enabled");
         System.clearProperty("wiremock.image.tag");
         System.clearProperty("wiremock.port");
@@ -239,6 +245,11 @@ public class ConfigurationLoaderSystemPropertiesTest {
         assertThat(DEBEZIUM_IMAGE_TAG, equalTo("2.4.0.Final"));
         assertThat(DEBEZIUM_PORT, equalTo(8083));
         assertThat(DEBEZIUM_CONTAINER_LOGGING_ENABLED, equalTo(false));
+        assertThat(RABBITMQ_ENABLED, equalTo(false));
+        assertThat(RABBITMQ_IMAGE_TAG, equalTo("3.7.25-management-alpine"));
+        assertThat(RABBITMQ_USERNAME, equalTo("guest"));
+        assertThat(RABBITMQ_PASSWORD, equalTo("guest"));
+        assertThat(RABBITMQ_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(WIREMOCK_ENABLED, equalTo(false));
         assertThat(WIREMOCK_IMAGE_TAG, equalTo("3.6.0"));
         assertThat(WIREMOCK_PORT, equalTo(8080));
@@ -353,6 +364,12 @@ public class ConfigurationLoaderSystemPropertiesTest {
         System.setProperty("debezium.port", "8084");
         System.setProperty("debezium.container.logging.enabled", "true");
 
+        System.setProperty("rabbitmq.enabled", "true");
+        System.setProperty("rabbitmq.image.tag", "rabbitmq-override");
+        System.setProperty("rabbitmq.username", "rabbitmq-username-override");
+        System.setProperty("rabbitmq.password", "rabbitmq-password-override");
+        System.setProperty("rabbitmq.container.logging.enabled", "true");
+
         System.setProperty("wiremock.enabled", "true");
         System.setProperty("wiremock.image.tag", "wiremock-override");
         System.setProperty("wiremock.port", "8081");
@@ -464,6 +481,11 @@ public class ConfigurationLoaderSystemPropertiesTest {
         assertThat(DEBEZIUM_IMAGE_TAG, equalTo("debezium-override"));
         assertThat(DEBEZIUM_PORT, equalTo(8084));
         assertThat(DEBEZIUM_CONTAINER_LOGGING_ENABLED, equalTo(true));
+        assertThat(RABBITMQ_ENABLED, equalTo(true));
+        assertThat(RABBITMQ_IMAGE_TAG, equalTo("rabbitmq-override"));
+        assertThat(RABBITMQ_USERNAME, equalTo("rabbitmq-username-override"));
+        assertThat(RABBITMQ_PASSWORD, equalTo("rabbitmq-password-override"));
+        assertThat(RABBITMQ_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(WIREMOCK_ENABLED, equalTo(true));
         assertThat(WIREMOCK_IMAGE_TAG, equalTo("wiremock-override"));
         assertThat(WIREMOCK_PORT, equalTo(8081));

@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.11.0] - 2025-09-23
+### Added
+- Supports RabbitMQ.
+
 ## [3.10.0] - 2025-06-24
 ### Added
 - Supports Opensearch.

@@ -126,6 +126,14 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_CONDUKTOR_GATEWAY_PROXY_PORT = "6969";
     private static final String DEFAULT_CONDUKTOR_GATEWAY_HTTP_PORT = "8888";
 
+    // --- RabbitMQ configuration ---
+    private static final String DEFAULT_RABBITMQ_ENABLED = "false";
+    private static final String DEFAULT_RABBITMQ_IMAGE_TAG = "3.7.25-management-alpine";
+    private static final String DEFAULT_RABBITMQ_PORT = "5672";
+    private static final String DEFAULT_RABBITMQ_USERNAME = "guest";
+    private static final String DEFAULT_RABBITMQ_PASSWORD = "guest";
+    private static final String DEFAULT_RABBITMQ_CONTAINER_LOGGING_ENABLED = "false";
+
     // --- Wiremock configuration ---
     private static final String DEFAULT_WIREMOCK_ENABLED = "false";
     private static final String DEFAULT_WIREMOCK_IMAGE_TAG = "3.6.0";
@@ -284,6 +292,14 @@ public final class TestcontainersConfiguration {
     public static String DEBEZIUM_IMAGE_TAG;
     public static int DEBEZIUM_PORT;
     public static boolean DEBEZIUM_CONTAINER_LOGGING_ENABLED;
+
+    // --- RabbitMQ configuration ---
+    public static boolean RABBITMQ_ENABLED;
+    public static String RABBITMQ_IMAGE_TAG;
+    public static int RABBITMQ_PORT;
+    public static String RABBITMQ_USERNAME;
+    public static String RABBITMQ_PASSWORD;
+    public static boolean RABBITMQ_CONTAINER_LOGGING_ENABLED;
 
     // --- Wiremock configuration ---
     public static boolean WIREMOCK_ENABLED;
@@ -452,6 +468,15 @@ public final class TestcontainersConfiguration {
         DEBEZIUM_IMAGE_TAG = properties.getProperty("debezium.image.tag", DEFAULT_DEBEZIUM_IMAGE_TAG);
         DEBEZIUM_PORT = Integer.parseInt(properties.getProperty("debezium.port", DEFAULT_DEBEZIUM_PORT));
         DEBEZIUM_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("debezium.container.logging.enabled", DEFAULT_DEBEZIUM_CONTAINER_LOGGING_ENABLED));
+
+        // --- RabbitMQ configuration ---
+        RABBITMQ_ENABLED = Boolean.parseBoolean(properties.getProperty("rabbitmq.enabled", DEFAULT_RABBITMQ_ENABLED));
+        RABBITMQ_IMAGE_TAG = properties.getProperty("rabbitmq.image.tag", DEFAULT_RABBITMQ_IMAGE_TAG);
+        // Port cannot be overridden in the RabbitMQ Testcontainer.
+        RABBITMQ_PORT = Integer.parseInt(DEFAULT_RABBITMQ_PORT);
+        RABBITMQ_USERNAME = properties.getProperty("rabbitmq.username", DEFAULT_RABBITMQ_USERNAME);
+        RABBITMQ_PASSWORD = properties.getProperty("rabbitmq.password", DEFAULT_RABBITMQ_PASSWORD);
+        RABBITMQ_CONTAINER_LOGGING_ENABLED = Boolean.parseBoolean(properties.getProperty("rabbitmq.container.logging.enabled",DEFAULT_RABBITMQ_CONTAINER_LOGGING_ENABLED));
 
         // --- Wiremock configuration ---
         WIREMOCK_ENABLED = Boolean.valueOf(properties.getProperty("wiremock.enabled", DEFAULT_WIREMOCK_ENABLED));
