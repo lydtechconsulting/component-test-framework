@@ -74,6 +74,13 @@ jobs:
           echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import --allow-secret-key-import
           gpg --list-secret-keys --keyid-format=long
 
+      - name: Debug Authentication
+        run: |
+          echo "Checking settings.xml..."
+          cat ~/.m2/settings.xml
+          echo "Testing connection..."
+          mvn help:effective-settings -Prelease
+
       - name: Publish to Maven Central
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
