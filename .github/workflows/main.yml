@@ -87,14 +87,24 @@ jobs:
           echo "Testing connection..."
           mvn help:effective-settings -Prelease
 
+#      - name: Publish to Maven Central
+#        env:
+#          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+#          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN }}
+#          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+#        run: |
+#          mvn -B clean deploy -Prelease \
+#            -Dgpg.executable=gpg \
+#            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+#            -Dgpg.homedir=$HOME/.gnupg \
+#            -Dgpg.useagent=false
+
       - name: Publish to Maven Central
-        env:
-          MAVEN_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mvn -B clean deploy -Prelease \
-            -Dgpg.executable=gpg \
-            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
-            -Dgpg.homedir=$HOME/.gnupg \
-            -Dgpg.useagent=false
+          -Dgpg.executable=gpg \
+          -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+          -Dgpg.homedir=$HOME/.gnupg \
+          -Dgpg.useagent=false \
+          -Dusername=${{ secrets.CENTRAL_USERNAME }} \
+          -Dpassword=${{ secrets.CENTRAL_TOKEN }}
