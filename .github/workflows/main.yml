@@ -83,8 +83,8 @@ jobs:
         env:
           server-username: rVtOfq
           server-password: ${{ secrets.CENTRAL_TOKEN }}
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-#        run: mvn -B -Dgpg.executable=gpg -Dgpg.passphrase="$GPG_PASSPHRASE" deploy -Prelease -X
         run: |
           echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
           mvn -B -Dgpg.executable=gpg \
