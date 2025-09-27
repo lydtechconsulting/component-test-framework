@@ -23,6 +23,12 @@ jobs:
           server-password: ${{ secrets.CENTRAL_TOKEN }}
           overwrite-settings: true
 
+      - name: Debug settings.xml
+        run: |
+          echo "Checking settings.xml..."
+          cat /home/runner/.m2/settings.xml | sed 's/<password>.*<\/password>/<password>***<\/password>/g'
+
+
       - name: Build with Maven
         run: mvn package
 
