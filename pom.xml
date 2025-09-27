@@ -42,6 +42,24 @@
 			<organization>Lydtech Consulting</organization>
 			<organizationUrl>http://www.lydtechconsulting.com</organizationUrl>
 		</developer>
+		<developer>
+			<name>Rob Golder</name>
+			<email>rob.golder@lydtechconsulting.com</email>
+			<organization>Lydtech Consulting</organization>
+			<organizationUrl>http://www.lydtechconsulting.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>James Powell</name>
+			<email>james.powell@lydtechconsulting.com</email>
+			<organization>Lydtech Consulting</organization>
+			<organizationUrl>http://www.lydtechconsulting.com</organizationUrl>
+		</developer>
+		<developer>
+			<name>Dan Edwards</name>
+			<email>dan.edwards@lydtechconsulting.com</email>
+			<organization>Lydtech Consulting</organization>
+			<organizationUrl>http://www.lydtechconsulting.com</organizationUrl>
+		</developer>
 	</developers>
 
 	<scm>
