@@ -82,4 +82,9 @@ jobs:
       - name: Publish to Maven Central
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn -B clean deploy -Prelease
+        run: |
+          mvn -B clean deploy -Prelease \
+            -Dgpg.executable=gpg \
+            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+            -Dgpg.homedir=$HOME/.gnupg \
+            -Dgpg.useagent=false
