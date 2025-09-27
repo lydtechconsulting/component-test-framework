@@ -70,5 +70,6 @@ jobs:
           echo "Tagged: v${version}"
 
       - name: Publish to Maven Central
-        run: |
-          mvn -B deploy -Prelease
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn -B -Dgpg.executable=gpg -Dgpg.passphrase="$GPG_PASSPHRASE" deploy -Prelease
