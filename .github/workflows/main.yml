@@ -19,7 +19,7 @@ jobs:
           java-version: 17
           distribution: temurin
           server-id: central
-          server-username: token
+          server-username: rVtOfq
           server-password: ${{ secrets.CENTRAL_TOKEN }}
 #          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
 #          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
