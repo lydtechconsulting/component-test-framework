@@ -76,9 +76,6 @@ jobs:
         run: |
           echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
 
-#      - name: Dry-run Maven Central deploy
-#        run: mvn clean deploy -Prelease -Dcentral.dryRun=true -Dgpg.passphrase="$GPG_PASSPHRASE" -X
-
       - name: Publish to Maven Central
         env:
 #          server-username: rVtOfq
