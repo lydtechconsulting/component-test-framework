@@ -135,8 +135,6 @@ jobs:
 #            -Dusername=${{ secrets.CENTRAL_USERNAME }} \
 #            -Dpassword=${{ secrets.CENTRAL_TOKEN }}
 
-
-
       - name: Publish to Maven Central
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
