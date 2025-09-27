@@ -21,8 +21,8 @@ jobs:
           server-id: central
           server-username: rVtOfq
           server-password: ${{ secrets.CENTRAL_TOKEN }}
-#          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
-#          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           overwrite-settings: true
 
       - name: Build with Maven
@@ -81,8 +81,8 @@ jobs:
 
       - name: Publish to Maven Central
         env:
-          server-username: rVtOfq
-          server-password: ${{ secrets.CENTRAL_TOKEN }}
+#          server-username: rVtOfq
+#          server-password: ${{ secrets.CENTRAL_TOKEN }}
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
