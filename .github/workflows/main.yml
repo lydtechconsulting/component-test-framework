@@ -80,6 +80,14 @@ jobs:
           echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import --allow-secret-key-import
           gpg --list-secret-keys --keyid-format=long
 
+      - name: Import GPG key
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+        run: |
+          mkdir -p $HOME/.gnupg
+          chmod 700 $HOME/.gnupg
+          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
+
       - name: Debug Authentication
         run: |
           echo "Checking settings.xml..."
@@ -100,11 +108,13 @@ jobs:
 #            -Dgpg.useagent=false
 
       - name: Publish to Maven Central
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mvn -B clean deploy -Prelease \
-          -Dgpg.executable=gpg \
-          -Dgpg.passphrase="${GPG_PASSPHRASE}" \
-          -Dgpg.homedir=$HOME/.gnupg \
-          -Dgpg.useagent=false \
-          -Dusername=${{ secrets.CENTRAL_USERNAME }} \
-          -Dpassword=${{ secrets.CENTRAL_TOKEN }}
+            -Dgpg.executable=gpg \
+            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+            -Dgpg.homedir=$HOME/.gnupg \
+            -Dgpg.useagent=false \
+            -Dusername=${{ secrets.CENTRAL_USERNAME }} \
+            -Dpassword=${{ secrets.CENTRAL_TOKEN }}
