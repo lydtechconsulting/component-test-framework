@@ -21,8 +21,8 @@ jobs:
           server-id: central
           server-username: rVtOfq
           server-password: ${{ secrets.CENTRAL_TOKEN }}
-          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+#          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+#          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           overwrite-settings: true
 
       - name: Build with Maven
@@ -69,12 +69,12 @@ jobs:
           git push origin v${version}
           echo "Tagged: v${version}"
 
-#      - name: Import GPG key
-#        env:
-#          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+      - name: Import GPG key
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
 #          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-#        run: |
-#          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
+        run: |
+          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
 
 #      - name: Dry-run Maven Central deploy
 #        run: mvn clean deploy -Prelease -Dcentral.dryRun=true -Dgpg.passphrase="$GPG_PASSPHRASE" -X
@@ -83,10 +83,10 @@ jobs:
         env:
 #          server-username: rVtOfq
 #          server-password: ${{ secrets.CENTRAL_TOKEN }}
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+#          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
+#          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
           mvn -B -Dgpg.executable=gpg \
           -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
           -Dgpg.homedir=$HOME/.gnupg \
