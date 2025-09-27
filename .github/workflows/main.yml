@@ -69,6 +69,14 @@ jobs:
           git push origin v${version}
           echo "Tagged: v${version}"
 
-      - name: Publish to Maven Central
+      - name: Import GPG key
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          mvn -B deploy -Prelease
+          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
+
+      - name: Publish to Maven Central
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn -B -Dgpg.executable=gpg -Dgpg.passphrase="$GPG_PASSPHRASE" deploy -Prelease
