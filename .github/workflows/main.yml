@@ -73,20 +73,20 @@ jobs:
           git push origin v${version}
           echo "Tagged: v${version}"
 
-#      - name: Configure Maven settings
-#        run: |
-#          mkdir -p $HOME/.m2
-#          cat > $HOME/.m2/settings.xml <<EOF
-#          <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
-#          <servers>
-#          <server>
-#          <id>central</id>
-#          <username>${{ secrets.CENTRAL_USERNAME }}</username>
-#          <password>${{ secrets.CENTRAL_TOKEN }}</password>
-#          </server>
-#          </servers>
-#          </settings>
-#          EOF
+      - name: Configure Maven settings
+        run: |
+          mkdir -p $HOME/.m2
+          cat > $HOME/.m2/settings.xml <<EOF
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0">
+          <servers>
+          <server>
+          <id>central</id>
+          <username>${{ secrets.CENTRAL_USERNAME }}</username>
+          <password>${{ secrets.CENTRAL_TOKEN }}</password>
+          </server>
+          </servers>
+          </settings>
+          EOF
 
       - name: Import GPG key
         env:
@@ -108,22 +108,10 @@ jobs:
       #            -Dgpg.homedir=$HOME/.gnupg \
       #            -Dgpg.useagent=false
 
-      - name: Publish to Maven Central
-        env:
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          mvn -B clean deploy -Prelease \
-            -Dgpg.executable=gpg \
-            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
-            -Dgpg.homedir=$HOME/.gnupg \
-            -Dgpg.useagent=false \
-            -Dusername=${CENTRAL_USERNAME} \
-            -Dpassword=${CENTRAL_TOKEN}
-
 #      - name: Publish to Maven Central
 #        env:
+#          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+#          CENTRAL_TOKEN: ${{ secrets.CENTRAL_TOKEN }}
 #          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 #        run: |
 #          mvn -B clean deploy -Prelease \
@@ -131,4 +119,16 @@ jobs:
 #            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
 #            -Dgpg.homedir=$HOME/.gnupg \
 #            -Dgpg.useagent=false \
-#            -s $HOME/.m2/settings.xml
+#            -Dusername=${CENTRAL_USERNAME} \
+#            -Dpassword=${CENTRAL_TOKEN}
+
+      - name: Publish to Maven Central
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          mvn -B clean deploy -Prelease \
+            -Dgpg.executable=gpg \
+            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+            -Dgpg.homedir=$HOME/.gnupg \
+            -Dgpg.useagent=false \
+            -s $HOME/.m2/settings.xml
