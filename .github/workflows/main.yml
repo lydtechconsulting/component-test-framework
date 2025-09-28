@@ -88,13 +88,13 @@ jobs:
           </settings>
           EOF
 
-      - name: Import GPG key
-        env:
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-        run: |
-          mkdir -p $HOME/.gnupg
-          chmod 700 $HOME/.gnupg
-          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
+#      - name: Import GPG key
+#        env:
+#          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+#        run: |
+#          mkdir -p $HOME/.gnupg
+#          chmod 700 $HOME/.gnupg
+#          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
 
       #      - name: Publish to Maven Central
       #        env:
