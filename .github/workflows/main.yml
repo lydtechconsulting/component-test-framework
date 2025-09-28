@@ -73,13 +73,6 @@ jobs:
           git push origin v${version}
           echo "Tagged: v${version}"
 
-      #      - name: Import GPG key
-      #        env:
-      #          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-      #        run: |
-      #          echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import --allow-secret-key-import
-      #          gpg --list-secret-keys --keyid-format=long
-
       - name: Configure Maven settings
         run: |
           mkdir -p $HOME/.m2
@@ -95,7 +88,6 @@ jobs:
           </settings>
           EOF
 
-
       - name: Import GPG key
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
@@ -103,13 +95,6 @@ jobs:
           mkdir -p $HOME/.gnupg
           chmod 700 $HOME/.gnupg
           echo "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --import
-
-      - name: Debug Authentication
-        run: |
-          echo "Checking settings.xml..."
-          cat ~/.m2/settings.xml
-          echo "Testing connection..."
-          mvn help:effective-settings -Prelease
 
       #      - name: Publish to Maven Central
       #        env:
