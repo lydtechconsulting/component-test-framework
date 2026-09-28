@@ -149,6 +149,15 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED = "false";
     private static final String DEFAULT_LOCALSTACK_INIT_FILE_PATH = null;
 
+    /**
+     * The directory on the Localstack container that the init file is mounted into.
+     *
+     * Defaults to the hook directory used by Localstack 0.x.  Localstack dropped this
+     * directory in 2.0 in favour of /etc/localstack/init/ready.d, so an init file used with a
+     * 2.0 or later image tag must override this.
+     */
+    private static final String DEFAULT_LOCALSTACK_INIT_DIR = "/docker-entrypoint-initaws.d";
+
     // --- Elasticsearch configuration ---
     private static final String DEFAULT_ELASTICSEARCH_ENABLED = "false";
     private static final String DEFAULT_ELASTICSEARCH_IMAGE_TAG = "8.10.4";
@@ -315,6 +324,7 @@ public final class TestcontainersConfiguration {
     public static String LOCALSTACK_SERVICES;
     public static boolean LOCALSTACK_CONTAINER_LOGGING_ENABLED;
     public static String LOCALSTACK_INIT_FILE_PATH;
+    public static String LOCALSTACK_INIT_DIR;
 
     // --- Elasticsearch configuration ---
     public static boolean ELASTICSEARCH_ENABLED;
@@ -492,6 +502,7 @@ public final class TestcontainersConfiguration {
         LOCALSTACK_SERVICES = properties.getProperty("localstack.services", DEFAULT_LOCALSTACK_SERVICES);
         LOCALSTACK_CONTAINER_LOGGING_ENABLED = Boolean.valueOf(properties.getProperty("localstack.container.logging.enabled", DEFAULT_LOCALSTACK_CONTAINER_LOGGING_ENABLED));
         LOCALSTACK_INIT_FILE_PATH = properties.getProperty("localstack.init.file.path", DEFAULT_LOCALSTACK_INIT_FILE_PATH);
+        LOCALSTACK_INIT_DIR = properties.getProperty("localstack.init.dir", DEFAULT_LOCALSTACK_INIT_DIR);
 
         // --- Elasticsearch configuration ---
         ELASTICSEARCH_ENABLED = Boolean.valueOf(properties.getProperty("elasticsearch.enabled", DEFAULT_ELASTICSEARCH_ENABLED));

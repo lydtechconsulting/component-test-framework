@@ -763,7 +763,7 @@ public final class TestcontainersManager {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         if (LOCALSTACK_INIT_FILE_PATH != null) {
-            container.withFileSystemBind(LOCALSTACK_INIT_FILE_PATH, "/docker-entrypoint-initaws.d/init.sh");
+            container.withFileSystemBind(LOCALSTACK_INIT_FILE_PATH, LOCALSTACK_INIT_DIR + "/init.sh");
         }
         return container;
     }

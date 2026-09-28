@@ -145,6 +145,7 @@ public class ConfigurationLoaderSystemPropertiesTest {
         System.clearProperty("localstack.services");
         System.clearProperty("localstack.container.logging.enabled");
         System.clearProperty("localstack.init.file.path");
+        System.clearProperty("localstack.init.dir");
 
         System.clearProperty("elasticsearch.enabled");
         System.clearProperty("elasticsearch.image.tag");
@@ -261,6 +262,7 @@ public class ConfigurationLoaderSystemPropertiesTest {
         assertThat(LOCALSTACK_SERVICES, equalTo("dynamodb"));
         assertThat(LOCALSTACK_CONTAINER_LOGGING_ENABLED, equalTo(false));
         assertThat(LOCALSTACK_INIT_FILE_PATH, nullValue());
+        assertThat(LOCALSTACK_INIT_DIR, equalTo("/docker-entrypoint-initaws.d"));
         assertThat(ELASTICSEARCH_ENABLED, equalTo(false));
         assertThat(ELASTICSEARCH_IMAGE_TAG, equalTo("8.10.4"));
         assertThat(ELASTICSEARCH_PORT, equalTo(9200));
@@ -382,6 +384,7 @@ public class ConfigurationLoaderSystemPropertiesTest {
         System.setProperty("localstack.services", "dynamodb,s3");
         System.setProperty("localstack.container.logging.enabled", "true");
         System.setProperty("localstack.init.file.path", "./path-to-init-file");
+        System.setProperty("localstack.init.dir", "/etc/localstack/init/ready.d");
 
         System.setProperty("elasticsearch.enabled", "true");
         System.setProperty("elasticsearch.image.tag", "elasticsearch-override");
@@ -497,6 +500,7 @@ public class ConfigurationLoaderSystemPropertiesTest {
         assertThat(LOCALSTACK_SERVICES, equalTo("dynamodb,s3"));
         assertThat(LOCALSTACK_CONTAINER_LOGGING_ENABLED, equalTo(true));
         assertThat(LOCALSTACK_INIT_FILE_PATH, equalTo("./path-to-init-file"));
+        assertThat(LOCALSTACK_INIT_DIR, equalTo("/etc/localstack/init/ready.d"));
         assertThat(ELASTICSEARCH_ENABLED, equalTo(true));
         assertThat(ELASTICSEARCH_IMAGE_TAG, equalTo("elasticsearch-override"));
         assertThat(ELASTICSEARCH_PORT, equalTo(9200));

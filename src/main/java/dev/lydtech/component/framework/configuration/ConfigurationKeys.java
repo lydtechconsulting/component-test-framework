@@ -129,6 +129,7 @@ public final class ConfigurationKeys {
     public static final String LOCALSTACK_SERVICES_KEY = "localstack.services";
     public static final String LOCALSTACK_CONTAINER_LOGGING_ENABLED_KEY = "localstack.container.logging.enabled";
     public static final String LOCALSTACK_INIT_FILE_PATH_KEY = "localstack.init.file.path";
+    public static final String LOCALSTACK_INIT_DIR_KEY = "localstack.init.dir";
 
     // --- Elasticsearch configuration keys ---
     public static final String ELASTICSEARCH_ENABLED_KEY = "elasticsearch.enabled";
@@ -264,6 +265,7 @@ public final class ConfigurationKeys {
                 LOCALSTACK_SERVICES_KEY,
                 LOCALSTACK_CONTAINER_LOGGING_ENABLED_KEY,
                 LOCALSTACK_INIT_FILE_PATH_KEY,
+                LOCALSTACK_INIT_DIR_KEY,
 
                 ELASTICSEARCH_ENABLED_KEY,
                 ELASTICSEARCH_IMAGE_TAG_KEY,
