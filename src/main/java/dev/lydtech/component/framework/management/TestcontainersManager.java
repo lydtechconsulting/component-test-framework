@@ -38,6 +38,7 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 import static dev.lydtech.component.framework.configuration.TestcontainersConfiguration.*;
 import static dev.lydtech.component.framework.resource.Resource.AMBAR;
@@ -763,7 +764,12 @@ public final class TestcontainersManager {
             container.withLogConsumer(getLogConsumer(containerName));
         }
         if (LOCALSTACK_INIT_FILE_PATH != null) {
-            container.withFileSystemBind(LOCALSTACK_INIT_FILE_PATH, LOCALSTACK_INIT_DIR + "/init.sh");
+            // Copied rather than bind mounted so that the executable bit is set regardless of the
+            // permissions of the file on the host.  Localstack 2.0 and later execute the init
+            // script, so a file mounted without it fails with a permission denied error that is
+            // only visible if localstack.container.logging.enabled is turned on.
+            container.withCopyFileToContainer(MountableFile.forHostPath(LOCALSTACK_INIT_FILE_PATH, 0755),
+                                              LOCALSTACK_INIT_DIR + "/init.sh");
         }
         return container;
     }

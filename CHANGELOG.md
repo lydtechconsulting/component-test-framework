@@ -3,6 +3,7 @@
 ## [3.12.0] - 2026-09-28
 ### Added
 - Supports configuring the Localstack init file mount directory via `localstack.init.dir`, for use with Localstack image tags of 2.0 and above.
+- The Localstack init file is now copied to the container as executable, as required by Localstack 2.0 and above.
 
 ## [3.11.0] - 2025-09-23
 ### Added
