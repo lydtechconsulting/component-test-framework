@@ -165,6 +165,8 @@ public class ConfigurationLogger {
             log.info("localstack.port: " + LOCALSTACK_PORT);
             log.info("localstack.services: " + LOCALSTACK_SERVICES);
             log.info("localstack.container.logging.enabled: " + LOCALSTACK_CONTAINER_LOGGING_ENABLED);
+            log.info("localstack.init.file.path: " + LOCALSTACK_INIT_FILE_PATH);
+            log.info("localstack.init.dir: " + LOCALSTACK_INIT_DIR);
         }
 
         log.info("elasticsearch.enabled: " + ELASTICSEARCH_ENABLED);
