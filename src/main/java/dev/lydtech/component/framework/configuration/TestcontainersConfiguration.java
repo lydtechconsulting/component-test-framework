@@ -20,6 +20,7 @@ public final class TestcontainersConfiguration {
     private static final String DEFAULT_CONTAINER_MAIN_LABEL_NAME = "main-container";
     private static final String DEFAULT_CONTAINERS_STAYUP = "false";
     private static final String DEFAULT_CONTAINER_APPEND_GROUP_ID = "false";
+    private static final String DEFAULT_CONTAINER_PARALLEL_STARTUP_ENABLED = "false";
 
     // --- Service default configuration ---
     private static final String DEFAULT_SERVICE_NAME = "app";
@@ -193,6 +194,7 @@ public final class TestcontainersConfiguration {
     public static String CONTAINER_GROUP_ID;
     public static boolean CONTAINERS_STAYUP;
     public static boolean CONTAINER_APPEND_GROUP_ID;
+    public static boolean CONTAINER_PARALLEL_STARTUP_ENABLED;
     public static String CONTAINER_NAME_PREFIX;
     public static String CONTAINER_MAIN_LABEL_NAME;
 
@@ -368,6 +370,7 @@ public final class TestcontainersConfiguration {
         CONTAINER_NAME_PREFIX = properties.getProperty("container.name.prefix", DEFAULT_CONTAINER_NAME_PREFIX);
         CONTAINER_MAIN_LABEL_NAME = properties.getProperty("container.main.label", DEFAULT_CONTAINER_MAIN_LABEL_NAME);
         CONTAINER_APPEND_GROUP_ID = Boolean.parseBoolean(properties.getProperty("container.append.group.id", DEFAULT_CONTAINER_APPEND_GROUP_ID));
+        CONTAINER_PARALLEL_STARTUP_ENABLED = Boolean.parseBoolean(properties.getProperty("container.parallel.startup.enabled", DEFAULT_CONTAINER_PARALLEL_STARTUP_ENABLED));
 
         // --- Service configuration ---
         SERVICE_NAME = properties.getProperty("service.name", DEFAULT_SERVICE_NAME).toLowerCase();

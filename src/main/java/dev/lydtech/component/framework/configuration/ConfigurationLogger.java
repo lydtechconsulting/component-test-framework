@@ -14,6 +14,7 @@ public class ConfigurationLogger {
         log.info("container.name.prefix: " + CONTAINER_NAME_PREFIX);
         log.info("container.main.label: " + CONTAINER_MAIN_LABEL_NAME);
         log.info("container.append.group.id: " + CONTAINER_APPEND_GROUP_ID);
+        log.info("container.parallel.startup.enabled: " + CONTAINER_PARALLEL_STARTUP_ENABLED);
         if(CONTAINER_APPEND_GROUP_ID) {
             log.info("container group unique id: " + CONTAINER_GROUP_ID);
         }

@@ -42,6 +42,7 @@ public class ConfigurationLoaderSystemPropertiesTest {
         System.clearProperty("container.name.prefix");
         System.clearProperty("container.main.label");
         System.clearProperty("container.append.group.id");
+        System.clearProperty("container.parallel.startup.enabled");
         System.clearProperty("service.name");
         System.clearProperty("service.instance.count");
         System.clearProperty("service.port");
@@ -178,6 +179,7 @@ public class ConfigurationLoaderSystemPropertiesTest {
         assertThat(CONTAINER_NAME_PREFIX, equalTo("ct"));
         assertThat(CONTAINER_MAIN_LABEL_NAME, equalTo("main-container"));
         assertThat(CONTAINER_APPEND_GROUP_ID, equalTo(false));
+        assertThat(CONTAINER_PARALLEL_STARTUP_ENABLED, equalTo(false));
         assertThat(SERVICE_NAME, equalTo("app"));
         assertThat(SERVICE_INSTANCE_COUNT, equalTo(1));
         assertThat(SERVICE_PORT, equalTo(8080));
@@ -282,6 +284,7 @@ public class ConfigurationLoaderSystemPropertiesTest {
         System.setProperty("container.name.prefix", "ct-override");
         System.setProperty("container.main.label", "main-override");
         System.setProperty("container.append.group.id", "true");
+        System.setProperty("container.parallel.startup.enabled", "true");
         System.setProperty("service.name", "app-override");
         System.setProperty("service.instance.count", "2");
         System.setProperty("service.port", "9002");
@@ -403,6 +406,7 @@ public class ConfigurationLoaderSystemPropertiesTest {
         assertThat(CONTAINER_NAME_PREFIX, equalTo("ct-override"));
         assertThat(CONTAINER_MAIN_LABEL_NAME, equalTo("main-override"));
         assertThat(CONTAINER_APPEND_GROUP_ID, equalTo(true));
+        assertThat(CONTAINER_PARALLEL_STARTUP_ENABLED, equalTo(true));
         assertThat(SERVICE_NAME, equalTo("app-override"));
         assertThat(SERVICE_INSTANCE_COUNT, equalTo(2));
         assertThat(SERVICE_PORT, equalTo(9002));

@@ -11,6 +11,7 @@ public final class ConfigurationKeys {
     public static final String CONTAINER_NAME_PREFIX_KEY = "container.name.prefix";
     public static final String CONTAINER_MAIN_LABEL_NAME_KEY = "container.main.label";
     public static final String CONTAINER_APPEND_GROUP_ID_KEY = "container.append.group.id";
+    public static final String CONTAINER_PARALLEL_STARTUP_ENABLED_KEY = "container.parallel.startup.enabled";
 
     // --- Service configuration keys ---
     public static final String SERVICE_NAME_KEY = "service.name";
@@ -161,6 +162,7 @@ public final class ConfigurationKeys {
                 CONTAINER_NAME_PREFIX_KEY,
                 CONTAINER_MAIN_LABEL_NAME_KEY,
                 CONTAINER_APPEND_GROUP_ID_KEY,
+                CONTAINER_PARALLEL_STARTUP_ENABLED_KEY,
 
                 SERVICE_NAME_KEY,
                 SERVICE_INSTANCE_COUNT_KEY,
