@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -216,65 +219,131 @@ public final class TestcontainersManager {
 
     private void startContainers() {
         try {
+            // Each element is an ordered startup sequence. Containers within a sequence must start in
+            // the given order; the sequences themselves are independent, so they can run concurrently.
+            // Everything Kafka-adjacent stays in one sequence, preserving the original relative order,
+            // rather than relying on dependsOn being declared for each of them.
+            List<Runnable> startupSequences = new ArrayList<>();
+
             if(POSTGRES_ENABLED) {
-                postgresContainer.start();
+                startupSequences.add(() -> postgresContainer.start());
             }
             if(MONGODB_ENABLED) {
-                mongoDbContainer.start();
+                startupSequences.add(() -> mongoDbContainer.start());
             }
             if(MARIADB_ENABLED) {
-                mariaDBContainer.start();
+                startupSequences.add(() -> mariaDBContainer.start());
             }
-            if(KAFKA_ENABLED) {
-                if(KAFKA_BROKER_COUNT>1) {
-                    // As there are multiple Kafka instances they need to use the same external Zookeeper.
-                    zookeeperContainer.start();
-                }
-                kafkaContainers.stream().forEach(container -> container.start());
-                createTopics();
-            } else if(KAFKA_NATIVE_ENABLED) {
-                kafkaNativeContainers.stream().forEach(container -> container.start());
-                createTopics();
-            }
-            if(DEBEZIUM_ENABLED) {
-                debeziumContainer.start();
-            }
-            if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
-                kafkaSchemaRegistryContainer.start();
-            }
-            if(KAFKA_CONTROL_CENTER_ENABLED) {
-                controlCenterContainer.start();
-            }
-            if(CONDUKTOR_ENABLED) {
-                conduktorPostgresContainer.start();
-                conduktorContainer.start();
-            }
-            if(CONDUKTOR_GATEWAY_ENABLED) {
-                conduktorGatewayContainer.start();
+            if(KAFKA_ENABLED || KAFKA_NATIVE_ENABLED || DEBEZIUM_ENABLED || KAFKA_SCHEMA_REGISTRY_ENABLED
+                    || KAFKA_CONTROL_CENTER_ENABLED || CONDUKTOR_ENABLED || CONDUKTOR_GATEWAY_ENABLED) {
+                startupSequences.add(this::startKafkaSequence);
             }
             if(RABBITMQ_ENABLED) {
-                startUpRabbitMQ();
+                startupSequences.add(() -> {
+                    try {
+                        startUpRabbitMQ();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
             if(WIREMOCK_ENABLED) {
-                wiremockContainer.start();
+                startupSequences.add(() -> wiremockContainer.start());
             }
             if(LOCALSTACK_ENABLED) {
-                localstackContainer.start();
+                startupSequences.add(() -> localstackContainer.start());
             }
             if(ELASTICSEARCH_ENABLED) {
-                elasticSearchContainer.start();
+                startupSequences.add(() -> elasticSearchContainer.start());
             }
             if(OPENSEARCH_ENABLED) {
-                openSearchContainer.start();
+                startupSequences.add(() -> openSearchContainer.start());
             }
             if(AMBAR_ENABLED) {
-                ambarContainer.start();
+                startupSequences.add(() -> ambarContainer.start());
             }
+
+            runStartupSequences(startupSequences);
+
+            // The service containers consume everything above, so they start only once it is all up.
             serviceContainers.stream().forEach(container -> container.start());
             additionalContainers.stream().forEach(container -> container.start());
         } catch (Exception e) {
             log.error("Component test containers failed to start", e);
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Kafka and everything that talks to it, in the order it has always started in.
+     */
+    private void startKafkaSequence() {
+        if(KAFKA_ENABLED) {
+            if(KAFKA_BROKER_COUNT>1) {
+                // As there are multiple Kafka instances they need to use the same external Zookeeper.
+                zookeeperContainer.start();
+            }
+            kafkaContainers.stream().forEach(container -> container.start());
+            createTopics();
+        } else if(KAFKA_NATIVE_ENABLED) {
+            kafkaNativeContainers.stream().forEach(container -> container.start());
+            createTopics();
+        }
+        if(DEBEZIUM_ENABLED) {
+            debeziumContainer.start();
+        }
+        if(KAFKA_SCHEMA_REGISTRY_ENABLED) {
+            kafkaSchemaRegistryContainer.start();
+        }
+        if(KAFKA_CONTROL_CENTER_ENABLED) {
+            controlCenterContainer.start();
+        }
+        if(CONDUKTOR_ENABLED) {
+            conduktorPostgresContainer.start();
+            conduktorContainer.start();
+        }
+        if(CONDUKTOR_GATEWAY_ENABLED) {
+            conduktorGatewayContainer.start();
+        }
+    }
+
+    /**
+     * Run the independent startup sequences, concurrently unless disabled.
+     *
+     * <p>Startup is dominated by each container's wait strategy, which is idle time, so overlapping the
+     * independent ones removes most of it. Off by default, so upgrading does not change how anyone's
+     * containers start; opt in with container.parallel.startup.enabled=true.
+     *
+     * <p>A failure is rethrown as the original exception, so a container that fails to start reports the
+     * same error either way. Every sequence is awaited first, so a failure does not leave the others
+     * starting containers in the background while the error propagates.
+     *
+     * <p>Package private so it can be unit tested.
+     */
+    static void runStartupSequences(List<Runnable> startupSequences) {
+        if(!CONTAINER_PARALLEL_STARTUP_ENABLED || startupSequences.size() < 2) {
+            startupSequences.forEach(Runnable::run);
+            return;
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(startupSequences.size());
+        try {
+            CompletableFuture<?>[] futures = startupSequences.stream()
+                    .map(sequence -> CompletableFuture.runAsync(sequence, executor))
+                    .toArray(CompletableFuture[]::new);
+            CompletableFuture.allOf(futures).exceptionally(throwable -> null).join();
+            for (CompletableFuture<?> future : futures) {
+                try {
+                    future.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                } catch (ExecutionException e) {
+                    Throwable cause = e.getCause();
+                    throw cause instanceof RuntimeException ? (RuntimeException) cause : new RuntimeException(cause);
+                }
+            }
+        } finally {
+            executor.shutdown();
         }
     }
 
