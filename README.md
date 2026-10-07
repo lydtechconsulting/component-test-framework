@@ -257,7 +257,7 @@ The configuration is logged at test execution time at INFO level.  Enable in `lo
 
 # Sample Projects
 
-Example companion projects have been created to demonstrate usage of this framework
+Example companion projects have been created to demonstrate usage of this framework.
 
 This project https://github.com/lydtechconsulting/ctf-example-service demonstrates using:
 - Kafka
